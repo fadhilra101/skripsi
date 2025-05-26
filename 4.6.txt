@@ -1,0 +1,54 @@
+4.6	Interpretasi Hasil:
+
+isi nya adalah
+
+paragraf 1:
+menjelaskan bahwa model yang sudah kita buat bisa digunakan untuk perhitungan metrik xG secara lumayan akurat, 
+
+paragraf 2
+untuk interpretasikan model ini kita akan melakukan perhitungan metrik xG di data tertentu, misal nya terhadap pertandingan tertentu, gambar 4.11 menunjukan hasil xG pada pertandingan Inggris vs Iran di WC 2022
+
+paragraf 3
+dalam hal visualisasi / analisis sepak bola model ini bisa sangat membuat metrik xG yang dapat digunakan tim analis, 
+
+paragraf 4
+model ini dapat digunakan sebagai metrik pengukur yang ter visualisasi dengan baik, gambar 4.12 menunjukan visualisasi perseberan shot berserta nilai xG nya di dalam lapangan pada pertandingan Inggris vs Iran di WC 2022
+
+paragraf 5
+untuk mengetahui bagaimana performa model dalam prediksi dalam pertandingan langsung dibanding model yang ada di internet dari para penyedia stats sepakbola seperti Opta, PFF, fbref, xgscore dll.
+kita bisa cek dari 3 pertandingan WC yaitu Inggris dan Iran, ENG VS FRA, ARG V CRO WC 2022
+1 pertandingan final euro 2024, tabel 4.8 menunjukan nilai xG para pertandingan tersebut dan perbandingan dengan penyedia stats lain
+
+tabel 4.8
+paragraf 6
+ENGLAND VS IRAN WC 2022 (6-2)
+model ini England 3.09 vs Iran	0.87
+opta England 2.109 vs Iran 1.751
+xgscore.io England 2.14 vs Iran 1.42
+fbref England 2.1 vs Iran 1.4
+PFF England 2.14, Iran 1.62
+
+paragraf 7
+ENG VS FRA WC 2022 (1-2)
+model ini England 1.98 vs France 0.64
+PFF England 2.4, France 0.73
+xgscore.io England 2.55, France 1.21
+fbref England 2.4, France 0.9
+opta England 2.407, France 1.012
+
+paragraf 8
+ARG VS CRO WC 2022 (3-0)
+model ini Argentina 2.01, Croatia 0.95
+PFF Argentina  2.12, Croatia 0.30
+xgscore.io Argentina  2.76, Croatia 0.57
+opta Argentina  2.336, Croatia 0.520
+fbref	Argentina  2.3, Croatia 0.5
+
+paragraf 9
+SPAIN VS ENGLAND FINAL  EURO 2024 (2-1)
+model ini England	0.67 , Spain	1.63
+xgscore.io England	0.63 , Spain	1.90
+fbref England	0.5 , Spain	1.9
+opta England	0.527 , Spain	1.953
+pff -
+

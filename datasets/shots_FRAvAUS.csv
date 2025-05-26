@@ -1,0 +1,28 @@
+minute,second,possession,duration,type_name,possession_team_name,play_pattern,play_pattern_name,team,team_name,player_name,position,position_name,shot_technique,shot_technique_name,shot_body_part,shot_body_part_name,shot_type,shot_type_name,shot_outcome,shot_outcome_name,shot_first_time,shot_open_goal,shot_one_on_one,shot_key_pass,shot_aerial_won,under_pressure,start_x,start_y,end_x,end_y
+1,32,3,0.500583,Shot,France,2,From Corner,771,France,Ousmane Dembélé,17.0,Right Wing,95.0,Volley,38.0,Left Foot,87.0,Open Play,0.0,Blocked,1.0,0.0,0.0,0,0.0,0.0,95.0,47.8,108.1,42.8
+2,25,5,1.80039,Shot,Australia,4,From Throw In,792,Australia,Riley McGree,15.0,Left Center Midfield,93.0,Normal,40.0,Right Foot,87.0,Open Play,0.0,Off T,0.0,0.0,0.0,0,0.0,0.0,89.5,39.1,120.0,24.4
+8,24,15,0.58669,Shot,Australia,4,From Throw In,792,Australia,Craig Goodwin,16.0,Left Midfield,91.0,Half Volley,38.0,Left Foot,87.0,Open Play,1.0,Goal,1.0,0.0,0.0,1,0.0,0.0,114.2,31.3,120.0,41.3
+12,26,17,0.955886,Shot,France,2,From Corner,771,France,Theo Bernard François Hernández,6.0,Left Back,95.0,Volley,38.0,Left Foot,87.0,Open Play,0.0,Wayward,1.0,0.0,0.0,0,0.0,0.0,92.7,34.0,105.3,40.4
+21,5,32,1.050927,Shot,France,4,From Throw In,792,Australia,Mitchell Thomas Duke,23.0,Center Forward,93.0,Normal,40.0,Right Foot,87.0,Open Play,0.0,Off T,0.0,0.0,0.0,0,0.0,0.0,91.1,46.9,120.0,44.6
+25,33,39,0.091224,Shot,France,4,From Throw In,771,France,Antoine Griezmann,19.0,Center Attacking Midfield,91.0,Half Volley,40.0,Right Foot,87.0,Open Play,0.0,Blocked,0.0,0.0,0.0,1,0.0,0.0,112.1,52.7,112.7,51.9
+26,2,40,1.007723,Shot,France,2,From Corner,771,France,Adrien Rabiot,11.0,Left Defensive Midfield,93.0,Normal,37.0,Head,87.0,Open Play,1.0,Goal,0.0,0.0,0.0,1,0.0,0.0,111.6,42.0,120.0,39.9
+28,59,44,0.706883,Shot,France,2,From Corner,771,France,Olivier Giroud,23.0,Center Forward,93.0,Normal,37.0,Head,87.0,Open Play,0.0,Off T,0.0,0.0,1.0,1,1.0,1.0,112.3,39.8,120.0,43.7
+31,18,48,0.815348,Shot,France,1,Regular Play,771,France,Olivier Giroud,23.0,Center Forward,93.0,Normal,40.0,Right Foot,87.0,Open Play,1.0,Goal,1.0,0.0,0.0,1,0.0,0.0,110.5,39.2,120.0,39.4
+36,3,51,0.081254,Shot,France,7,From Goal Kick,771,France,Kylian Mbappé Lottin,21.0,Left Wing,91.0,Half Volley,40.0,Right Foot,87.0,Open Play,0.0,Blocked,1.0,0.0,0.0,1,0.0,0.0,105.0,47.2,106.8,47.0
+36,5,51,0.113734,Shot,France,7,From Goal Kick,771,France,Olivier Giroud,23.0,Center Forward,91.0,Half Volley,40.0,Right Foot,87.0,Open Play,0.0,Off T,1.0,0.0,0.0,0,0.0,0.0,104.5,38.9,120.0,41.6
+39,28,55,0.039804,Shot,France,4,From Throw In,771,France,Ousmane Dembélé,17.0,Right Wing,91.0,Half Volley,40.0,Right Foot,87.0,Open Play,0.0,Off T,1.0,0.0,0.0,1,0.0,0.0,106.5,38.2,120.0,49.2
+41,54,57,0.124858,Shot,France,1,Regular Play,771,France,Antoine Griezmann,19.0,Center Attacking Midfield,93.0,Normal,38.0,Left Foot,87.0,Open Play,0.0,Off T,1.0,0.0,0.0,1,0.0,0.0,99.5,47.5,120.0,45.3
+44,38,61,0.18499,Shot,France,1,Regular Play,771,France,Kylian Mbappé Lottin,21.0,Left Wing,95.0,Volley,40.0,Right Foot,87.0,Open Play,0.0,Off T,1.0,0.0,0.0,1,0.0,0.0,112.9,40.2,120.0,42.0
+46,1,63,1.179568,Shot,Australia,4,From Throw In,792,Australia,Jackson Irvine,13.0,Right Center Midfield,93.0,Normal,37.0,Head,87.0,Open Play,0.0,Post,0.0,0.0,0.0,1,0.0,0.0,110.1,43.4,120.0,36.1
+49,11,78,0.482603,Shot,France,3,From Free Kick,771,France,Aurélien Djani Tchouaméni,9.0,Right Defensive Midfield,93.0,Normal,40.0,Right Foot,87.0,Open Play,0.0,Blocked,1.0,0.0,0.0,0,0.0,0.0,96.3,40.8,109.8,40.4
+49,28,78,0.267184,Shot,France,3,From Free Kick,771,France,Olivier Giroud,23.0,Center Forward,94.0,Overhead Kick,38.0,Left Foot,87.0,Open Play,0.0,Off T,1.0,0.0,0.0,1,0.0,0.0,111.6,44.2,120.0,32.6
+60,12,92,0.068383,Shot,France,4,From Throw In,771,France,Kylian Mbappé Lottin,21.0,Left Wing,93.0,Normal,40.0,Right Foot,87.0,Open Play,0.0,Blocked,1.0,0.0,0.0,1,0.0,0.0,107.5,31.1,108.2,31.7
+62,0,93,0.128023,Shot,France,2,From Corner,771,France,Kylian Mbappé Lottin,21.0,Left Wing,93.0,Normal,38.0,Left Foot,87.0,Open Play,0.0,Blocked,0.0,0.0,0.0,1,0.0,0.0,109.2,30.1,110.1,30.8
+62,31,94,0.404166,Shot,France,2,From Corner,771,France,Ibrahima Konaté,3.0,Right Center Back,93.0,Normal,37.0,Head,87.0,Open Play,0.0,Off T,0.0,0.0,0.0,1,1.0,1.0,113.0,40.0,120.0,50.3
+63,51,99,0.089177,Shot,France,3,From Free Kick,771,France,Kylian Mbappé Lottin,21.0,Left Wing,93.0,Normal,40.0,Right Foot,87.0,Open Play,0.0,Blocked,0.0,0.0,0.0,1,0.0,0.0,108.0,25.2,109.0,26.6
+66,30,101,0.657302,Shot,France,1,Regular Play,771,France,Antoine Griezmann,19.0,Center Attacking Midfield,93.0,Normal,38.0,Left Foot,87.0,Open Play,0.0,Blocked,1.0,0.0,0.0,1,0.0,0.0,105.3,36.2,119.8,42.8
+66,54,101,0.582095,Shot,France,1,Regular Play,771,France,Kylian Mbappé Lottin,21.0,Left Wing,93.0,Normal,38.0,Left Foot,87.0,Open Play,0.0,Wayward,1.0,0.0,0.0,1,0.0,0.0,115.7,24.7,117.7,49.6
+67,3,101,0.832167,Shot,France,1,Regular Play,771,France,Kylian Mbappé Lottin,21.0,Left Wing,93.0,Normal,37.0,Head,87.0,Open Play,1.0,Goal,0.0,0.0,0.0,1,1.0,1.0,113.5,42.2,120.0,37.8
+70,50,106,0.716389,Shot,France,3,From Free Kick,771,France,Olivier Giroud,23.0,Center Forward,93.0,Normal,37.0,Head,87.0,Open Play,1.0,Goal,0.0,0.0,0.0,1,0.0,0.0,113.5,42.6,120.0,42.6
+89,2,127,0.580135,Shot,France,2,From Corner,771,France,Ibrahima Konaté,3.0,Right Center Back,93.0,Normal,37.0,Head,87.0,Open Play,0.0,Saved,0.0,0.0,0.0,1,0.0,0.0,112.1,41.4,119.6,41.4
+90,25,129,0.331276,Shot,France,4,From Throw In,771,France,Theo Bernard François Hernández,6.0,Left Back,93.0,Normal,37.0,Head,87.0,Open Play,0.0,Saved,0.0,0.0,0.0,1,1.0,1.0,112.8,32.1,118.5,37.6

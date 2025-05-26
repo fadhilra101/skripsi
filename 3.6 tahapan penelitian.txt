@@ -1,0 +1,11 @@
+sekarang kita menuju 3.6 Tahapan Penelitian:
+1. Identifikasi dan perumusan masalah
+2. KDD data selection, preprocessing, transformation, data mining, dan evaluation
+3. data selection, download from GitHub, ambil data events
+4. preprocessing, pemilihan variabel, cleaning, encoding, normalisasi
+5. transformation, feature engineering, analisis korelasi, seleksi fitur, split data
+6. mining, RandomizedSearchCV, kalibrasi
+7. evaluation, ROC AUC, Brier Score
+
+buat teks paragraf nya yang baik dengan format yang semirip mungkin dengan teks berikut:
+Tahapan pertama dalam penelitian ini yaitu identifikasi masalah dengan membaca literatur terkait dengan topik penelitian untuk mengetahui isu-isu terkini dalam area tersebut. Literatur tersebut meliputi jurnal, artikel, dan riset. Tahapan selanjutnya yaitu memasuki langkah pada metode KDD yang terdiri atas data selection, preprocessing, transformation, data mining, dan evaluation. Tahapan data selection melakukan scraping menggunakan Rstudio dengan bahasa pemrograman R. Data diambil dengan memasukkan kata kunci “artificial intelligence” pada rentang tanggal 5-10 juni 2023. Setelah data hasil scraping diseleksi, tahapan selanjutnya adalah preprocessing yang berisi kegiatan pembersihan data serta pelabelan. Kemudian setelah data sudah bersih dan memiliki label tahapan selanjutnya yaitu transformation yaitu pengubahan bentuk data sesuai dengan input dari model LSTM yang terdiri atas pengubahan bentuk label, pemisahan data, dan pengubahan bentuk teks pada tweet. Setelah itu masuk ke tahap data mining yang berisi pemberian bobot pada kelas, hyperparameter tuning, pelatihan model LSTM, dan analisa hasil visualisasi wordcloud. Langkah terakhir dari metode KDD yaitu evaluation yang untuk melihat hasil kinerja model menggunakan confusion matrix dan melakukan k-fold cross validation. Setelah langkah dari metode KDD selesai selanjutnya adalah interpretasi hasil serta pembuatan kesimpulan dan saran dari penelitian.

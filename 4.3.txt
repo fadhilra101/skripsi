@@ -1,0 +1,73 @@
+sekarang kita menuju 4.3 Data Transformation, kita akan menjelaskan tentang:
+1. Feature Engineering:
+#@paragraf 1 Menghitung jarak dan sudut
+# 1. Buat kolom binary untuk goal direction: 0 = left goal, 1 = right goal
+df['goal_direction'] = np.where(df['end_x'] >= 120, 1, 0)
+
+# 2. Fungsi untuk menghitung jarak dan sudut ke gawang yang relevan
+def calculate_distance_and_angle(row):
+    if row['goal_direction'] == 1:  # Right goal (x = 120, y = 40)
+        distance = np.sqrt((row['start_x'] - 120) ** 2 + (row['start_y'] - 40) ** 2)
+        angle = np.degrees(np.arctan2((row['start_y'] - 40), (row['start_x'] - 120)))
+    else:  # Left goal (x = 0, y = 40)
+        distance = np.sqrt((row['start_x'] - 0) ** 2 + (row['start_y'] - 40) ** 2)
+        angle = np.degrees(np.arctan2((row['start_y'] - 40), (row['start_x'] - 0)))
+
+    return pd.Series([distance, angle])
+
+# 3. Terapkan fungsi ke DataFrame untuk menghitung jarak dan sudut
+df[['distance_to_goal', 'angle_to_goal']] = df.apply(calculate_distance_and_angle, axis=1)
+
+paragraf selanjutnya menjelaskan tentang di poin yang sama (feature engineering):
+#@title 3. Menentukan Time Segmentation
+def match_time_segment(minute):
+    if minute <= 15:
+        return 'first_15'
+    elif minute <= 30:
+        return 'first_30'
+    elif minute <= 45:
+        return 'first_45'
+    elif 45 < minute <= 60:
+        return 'second_15'
+    elif 60 < minute <= 75:
+        return 'second_30'
+    elif 75 < minute <= 90:
+        return 'second_45'
+    else:
+        return 'extra_time'  # 90+ or additional time
+
+# 2. Terapkan fungsi dan buat kolom baru 'time_segment'
+df['time_segment'] = df['minute'].apply(match_time_segment)
+
+# 3. One-hot encoding untuk menghasilkan kolom binary
+time_segment_dummies = pd.get_dummies(df['time_segment'])
+
+# 4. Gabungkan kolom binary ke DataFrame asli
+df = pd.concat([df, time_segment_dummies], axis=1)
+
+# 5. Drop kolom 'time_segment' jika tidak diperlukan
+df.drop('time_segment', axis=1, inplace=True)
+
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks berikut:
+Tahapan pertama dalam proses transformation pada penelitian ini yaitu pengubahan bentuk data dalam kolom label yang sebelumnya bertipe string menjadi numerik. Hal ini penting dilakukan karena model LSTM memerlukan input dalam bentuk numerik. Proses ini menggunakan kelas LabelEncoder yang disediakan oleh library sklearn. LabelEncoder akan melakukan konversi dengan mengaitkan setiap kategori unik dengan sebuah angka.
+
+2. Seleksi Fitur
+
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks sebelumnya
+
+3.Pemisahan Data Uji dan Data Latih:
+#@title 6. Split Train dan Test Data
+#split data to 90% train dan 10% test
+train_df, test_df = train_test_split(df, test_size=0.1, random_state=42)
+#make X and y train and test data
+X_train = train_df.drop(['shot_outcome', 'end_x', 'end_y'], axis=1)
+y_train = train_df['shot_outcome']
+X_test = test_df.drop(['shot_outcome', 'end_x', 'end_y'], axis=1)
+y_test = test_df['shot_outcome']
+
+#get number of rows (data) of train and test
+X_train.shape[0], X_test.shape[0]
+
+(23106, 2568)
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks sebelumnya:
+Salah satu hal yang penting dilakukan pada tahap transformation adalah pemisahan data latih dan data uji. Proses ini bertujuan untuk memastikan bahwa model yang dibuat memiliki kinerja yang baik terhadap data yang belum pernah dilihat sebelumnya pada proses pelatihan. Proses ini menggunakan fungsi train_test_split yang disediakan oleh library sklearn untuk memisahkan data latih dan uji. Parameter yang test size menentukan berapa persentase dari dataset akan digunakan sebagai data uji kemudian sisanya akan digunakan sebagai data latih. Parameter random state sebesar 42 digunakan untuk memastikan bahwa pemisahan data akan dilakukan dengan cara yang sama setiap kode tersebut dijalankan. 

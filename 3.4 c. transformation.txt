@@ -1,0 +1,9 @@
+selanjutnya kita akan membuat paragraf mengenai tahap Transformation:
+1. Feature Engineering:
+Feature engineering enhances the dataset by creating new features that provide deeper insights into player performance. This process involves transforming raw data into meaningful inputs that improve model performance, predictive accuracy, and the overall understanding of player dynamics. Malikov, D., & Kim, J. (2024). Beyond xG: A Dual Prediction Model for Analyzing Player Performance Through Expected and Actual Goals in European Soccer Leagues. Applied Sciences, 14(22), 10390.
+2. Analisis Korelasi (Heat-map Based Feature Extraction)
+This visualization helps in understanding the strength and direction of relationships among features, with color intensity indicating the degree of correlation. We set a predefined correlation threshold, typically ±0.5, to guide our selection process. Features with coefficients greater than 0.5 were considered to have a significant positive correlation, while those less than −0.5 indicated a significant negative correlation. Malikov, D., & Kim, J. (2024). Beyond xG: A Dual Prediction Model for Analyzing Player Performance Through Expected and Actual Goals in European Soccer Leagues. Applied Sciences, 14(22), 10390.
+3. Split Data
+
+buat teks paragraf nya yang baik dengan format yang semirip mungkin dengan teks berikut:
+Tahap ini bertujuan untuk mengubah bentuk data sehingga dapat diolah dalam tahapan data mining. Pertama kolom label pada data hasil preprocessing akan diubah menjadi tipe numerik. Kemudian data dibagi menjadi data latih dan uji. Setelah dilakukan pemisahan data, masing-masing kolom teks pada data latih dan uji akan ditransformasi menjadi vektor karena model LSTM hanya menerima input dengan data bertipe numerik. Alur tahapan transformation ditunjukkan pada Gambar 3.3. 

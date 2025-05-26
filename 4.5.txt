@@ -1,0 +1,57 @@
+4.5 Evaluation:
+paragraf-paragraf berisi:
+
+paragraf 1 :Sebutkan bahwa evaluasi dilakukan terhadap data uji.
+
+paragraf 2: menggunakan roc auc dan brier score sebesar Brier score, Light GBM: 0.06635118834852105
+ROC AUC, Light GBM: 0.9134024103468548 (tabel 4.6)
+
+a. Brier Score
+paragraf 3: penjelasan hasil evaluasi
+
+b. ROC AUC
+paragraf 4: penjelasan hasil evaluasi
+
+c. Perbandingan dengan Model Pada Literatur Lain
+paragraf 5: pengantar, menunjukan tabel 4.7 perbandingan dengan model lain:
+
+
+
+0.075 brier score 
+- roc auc
+model : tak tertera
+Scholtes, A., & Karakuş, O. (2024). Bayes-xG: player and position correction on expected goals (xG) using Bayesian hierarchical approach. Frontiers in sports and active living, 6, 1348983. https://doi.org/10.3389/fspor.2024.1348983
+
+0.07150071 brier score
+- roc auc
+model : XGBOOST
+Opta non-penalty xG (npxG)
+ElHabr, T. (2023). XG model calibration. Tony ElHabr – Tony’s Blog. Retrieved May 11, 2025, from https://tonyelhabr.rbind.io/posts/opta-xg-model-calibration/
+
+0.173 brier score
+0.818 roc auc
+model: lightgbm
+Cavus, M., & Biecek, P. (2022). Explainable expected goal models for performance analysis in football analytics. 2022 IEEE 9th International Conference on Data Science and Advanced Analytics (DSAA), 1–9. doi:10.1109/DSAA54385.2022.10032440
+
+0.082 brier
+0.793 roc auc
+model: boosting machine
+Haaren (2021)
+
+- brier score
+0.814 roc auc
+model: random forest
+Eggels et al. (2016)
+
+- brier score
+0.822 roc auc
+model: gbm
+Anzer and Bauer (2021)
+
+0.0799 brier score
+0.8 roc auc
+model: XGBoost
+Mead J, O’Hare A, McMenemy P (2023) Expected goals in football: Improving model performance and demonstrating value. PLOS ONE 18(4): e0282295. https://doi.org/10.1371/journal.pone.0282295
+
+
+penjelasan perbandingan dengan masing-masing model lain

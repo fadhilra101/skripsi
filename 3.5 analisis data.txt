@@ -1,0 +1,8 @@
+sekarang kita menuju 3.5 analisis data dan intepretasi hasil.
+1. KDD
+2. data selection, preprocessing, transformation, data mining, dan evaluation.
+3. hyperparameter RandomizedSearchCV 
+4. ROC AUC, Brier Score
+
+buat teks paragraf nya yang baik dengan format yang semirip mungkin dengan teks berikut:
+Analisis data dilakukan berdasarkan metode KDD (Knowledge Discovery in Database) yang meliputi tahapan data selection, preprocessing, transformation, data mining, dan evaluation. Analisis data dimulai pada tahap data selection yaitu scraping data Twitter dan menyeleksi data yang relevan untuk penelitian. Tahapan selanjutnya yaitu preprocessing yang terdiri atas  pembersihan tweet spam, filter tweet, penghapusan data duplikat, text preprocessing, dan pelabelan .Tahap transformasion berisi kegiatan pengubahan label menjadi tipe numerik, pembagian data, dan transformasi tweet menjadi vektor. Tahap data mining menggunakan metode Long-Short Term Memory untuk membuat model klasifikasi emosi yang sebelum itu perlu dilakukan pemberian bobot pada kelas serta hyperparameter tuning menggunakan Keras Tuner. Tahap evaluation berisi proses untuk mengetahui performa model yang berupa accuration, recall, precision, dan f1-score. Hasil analisis dan interpretasi data akan dipaparkan secara rinci dalam Bab 4. Terakhir adalah pemaparan kesimpulan serta saran dari penelitian yang dilakukan.

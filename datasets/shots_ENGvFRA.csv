@@ -1,0 +1,25 @@
+minute,second,possession,duration,type_name,possession_team_name,play_pattern,play_pattern_name,team,team_name,player_name,position,position_name,shot_technique,shot_technique_name,shot_body_part,shot_body_part_name,shot_type,shot_type_name,shot_outcome,shot_outcome_name,shot_first_time,shot_open_goal,shot_one_on_one,shot_key_pass,shot_aerial_won,under_pressure,start_x,start_y,end_x,end_y
+3,17,11,0.059151,Shot,England,1,Regular Play,768,England,Philip Foden,21.0,Left Wing,91.0,Half Volley,38.0,Left Foot,87.0,Open Play,0.0,Blocked,0.0,0.0,0.0,1,0.0,0.0,100.2,40.0,101.6,40.1
+10,35,22,0.868394,Shot,France,1,Regular Play,771,France,Olivier Giroud,23.0,Center Forward,90.0,Diving Header,37.0,Head,87.0,Open Play,0.0,Saved,0.0,0.0,0.0,1,0.0,0.0,110.3,38.2,118.2,40.1
+16,22,44,1.14154,Shot,France,1,Regular Play,771,France,Aurélien Djani Tchouaméni,9.0,Right Defensive Midfield,93.0,Normal,40.0,Right Foot,87.0,Open Play,1.0,Goal,0.0,0.0,0.0,1,0.0,0.0,92.5,43.5,120.0,36.5
+20,8,46,0.814754,Shot,England,3,From Free Kick,768,England,Luke Shaw,6.0,Left Back,93.0,Normal,38.0,Left Foot,62.0,Free Kick,0.0,Saved,0.0,0.0,0.0,0,0.0,0.0,98.0,53.2,118.5,41.3
+21,29,53,0.12581,Shot,England,4,From Throw In,768,England,Harry Kane,23.0,Center Forward,93.0,Normal,40.0,Right Foot,87.0,Open Play,0.0,Saved,1.0,0.0,0.0,1,0.0,0.0,113.6,52.2,114.4,50.3
+21,33,53,0.039999,Shot,England,4,From Throw In,768,England,Jude Bellingham,15.0,Left Center Midfield,93.0,Normal,37.0,Head,87.0,Open Play,0.0,Blocked,0.0,0.0,0.0,1,1.0,1.0,117.3,35.7,118.1,36.1
+28,30,61,0.968944,Shot,England,4,From Throw In,768,England,Harry Kane,23.0,Center Forward,93.0,Normal,40.0,Right Foot,87.0,Open Play,0.0,Saved,0.0,0.0,0.0,1,0.0,0.0,96.7,57.1,119.6,43.2
+38,45,74,0.751028,Shot,France,3,From Free Kick,771,France,Kylian Mbappé Lottin,21.0,Left Wing,91.0,Half Volley,38.0,Left Foot,87.0,Open Play,0.0,Off T,1.0,0.0,0.0,1,0.0,0.0,107.9,32.9,120.0,40.1
+46,36,92,0.713787,Shot,England,2,From Corner,768,England,Jude Bellingham,15.0,Left Center Midfield,91.0,Half Volley,40.0,Right Foot,87.0,Open Play,0.0,Saved,1.0,0.0,0.0,1,0.0,0.0,101.1,48.0,118.5,42.0
+47,13,93,0.384707,Shot,England,2,From Corner,768,England,Harry Maguire,5.0,Left Center Back,93.0,Normal,37.0,Head,87.0,Open Play,0.0,Blocked,0.0,0.0,0.0,1,1.0,1.0,116.2,30.9,117.4,34.9
+51,1,97,0.450466,Shot,England,3,From Free Kick,768,England,Jordan Brian Henderson,13.0,Right Center Midfield,91.0,Half Volley,40.0,Right Foot,87.0,Open Play,0.0,Blocked,1.0,0.0,0.0,0,0.0,0.0,101.1,56.4,113.2,45.5
+53,27,100,0.536992,Shot,England,5,Other,768,England,Harry Kane,23.0,Center Forward,93.0,Normal,40.0,Right Foot,88.0,Penalty,1.0,Goal,0.0,0.0,0.0,0,0.0,0.0,108.1,40.1,120.0,36.4
+54,44,101,0.620194,Shot,France,9,From Kick Off,771,France,Adrien Rabiot,11.0,Left Defensive Midfield,91.0,Half Volley,38.0,Left Foot,87.0,Open Play,0.0,Saved,1.0,0.0,0.0,1,0.0,0.0,95.6,43.2,114.4,42.5
+59,35,111,0.775735,Shot,England,1,Regular Play,768,England,Bukayo Saka,17.0,Right Wing,93.0,Normal,40.0,Right Foot,87.0,Open Play,0.0,Saved,0.0,0.0,0.0,1,0.0,1.0,103.2,47.6,116.6,40.1
+60,8,113,0.43921,Shot,France,8,From Keeper,771,France,Ousmane Dembélé,17.0,Right Wing,93.0,Normal,38.0,Left Foot,87.0,Open Play,0.0,Blocked,0.0,0.0,0.0,1,0.0,0.0,99.5,53.8,107.9,46.7
+61,6,115,0.839383,Shot,England,1,Regular Play,768,England,Harry Kane,23.0,Center Forward,93.0,Normal,38.0,Left Foot,87.0,Open Play,0.0,Saved,0.0,0.0,0.0,1,0.0,0.0,99.1,53.8,117.9,43.9
+69,23,136,0.879877,Shot,England,3,From Free Kick,768,England,Harry Maguire,5.0,Left Center Back,93.0,Normal,37.0,Head,87.0,Open Play,0.0,Post,0.0,0.0,0.0,1,0.0,0.0,109.1,35.0,120.0,36.1
+70,31,140,0.08424,Shot,England,1,Regular Play,768,England,Luke Shaw,6.0,Left Back,93.0,Normal,38.0,Left Foot,87.0,Open Play,0.0,Blocked,0.0,0.0,0.0,1,0.0,0.0,108.4,21.7,108.8,22.3
+74,53,148,0.602144,Shot,France,1,Regular Play,771,France,Olivier Giroud,23.0,Center Forward,93.0,Normal,37.0,Head,87.0,Open Play,0.0,Off T,0.0,0.0,1.0,1,1.0,1.0,112.9,47.0,120.0,48.3
+76,23,150,0.410396,Shot,France,1,Regular Play,771,France,Olivier Giroud,23.0,Center Forward,95.0,Volley,38.0,Left Foot,87.0,Open Play,0.0,Saved,1.0,0.0,0.0,1,0.0,0.0,111.3,40.5,119.0,39.3
+77,10,151,0.328704,Shot,France,2,From Corner,771,France,Olivier Giroud,23.0,Center Forward,93.0,Normal,37.0,Head,87.0,Open Play,1.0,Goal,0.0,0.0,0.0,1,1.0,1.0,114.7,36.4,120.0,37.4
+83,35,154,0.563857,Shot,England,5,Other,768,England,Harry Kane,23.0,Center Forward,93.0,Normal,40.0,Right Foot,88.0,Penalty,0.0,Off T,0.0,0.0,1.0,0,0.0,0.0,108.1,40.1,120.0,38.7
+88,0,163,1.03097,Shot,England,1,Regular Play,768,England,Mason Mount,13.0,Right Center Midfield,93.0,Normal,40.0,Right Foot,87.0,Open Play,0.0,Off T,0.0,0.0,0.0,1,0.0,0.0,89.5,44.7,120.0,45.0
+100,5,180,0.920319,Shot,England,3,From Free Kick,768,England,Marcus Rashford,21.0,Left Wing,93.0,Normal,40.0,Right Foot,62.0,Free Kick,0.0,Off T,0.0,0.0,0.0,0,0.0,0.0,97.5,34.1,120.0,43.4

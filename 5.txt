@@ -1,0 +1,61 @@
+BAB 5 PENUTUP
+5.1 Kesimpulan
+paragraf 1:
+Penelitian ini.... (PENERAPAN LIGHT GRADIENT BOOSTING MACHINE (LGBM) UNTUK PERHITUNGAN METRIK EXPECTED GOALS (xG) DALAM ANALISIS SEPAK BOLA)
+
+poin list: (isi dengan jawaban dari pertanyaan ini)
+paragraf 2:
+a. Bagaimana penerapan algoritma LightGBM untuk meningkatkan akurasi dan efisiensi dalam perhitungan xG dalam analisis sepak bola?
+
+data dari statsbomb open-data
+
+menggunakan feature engineering ( distance_to_goal, angle_to_goal, type_before )
+
+menggunakan kalibrasi (CalibratedClassifierCV)
+
+parameter:
+Parameter	Nilai
+cv	3
+method	isotonic
+boosting_type	gbdt
+num_leaves	15
+max_depth	84
+min_child_samples	146
+min_child_weight	0.001
+min_split_gain	0.0
+colsample_bytree	1.0
+subsample	1.0
+subsample_for_bin	200000
+subsample_freq	0
+learning_rate	0.1
+n_estimators	100
+reg_alpha	0.513
+reg_lambda	0.971
+random_state	42
+importance_type	split
+
+
+paragraf 3:
+b. Bagaimana performa dari algoritma LightGBM dalam perhitungan xG dalam analisis sepak bola pada penilaian evaluasi nilai Area Under Curve (AUC) dan Brier Score?
+
+Brier score, Light GBM: 0.06635118834852105
+ROC AUC, Light GBM: 0.9134024103468548
+
+perbandingan dengan model lain hasil dari 4.5 Evaluation (baik)
+
+menjelaskan pada data real pertandingan seperti sudah dijelaskan di 4.6 Interpretasi hasil (baik)
+
+Berdasarkan hasil penelitian yang telah dilakukan, berikut beberapa saran
+yang dapat dijadikan dan dipertimbangkan untuk penelitian selanjutnya:
+a. Pada penelitian ini hanya menggunakan satu model deep learning yaitu
+LSTM karena memiliki keterbatasan waktu dan knowledge, sehingga untuk
+penelitian selanjutnya dapat menggunakan lebih dari satu model agar terdapat
+perbandingan.
+b. Pada penelitian ini data tiap kelas memiliki ketidakseimbangan karena adanya
+keterbatasan waktu dan biaya. Untuk penelitian selanjutnya dapat
+menggunakan dataset yang memiliki jumlah data yang sama pada setiap kelas
+emosi.
+
+ini adalah 5.2 Saran, dalam konteks penelitian saya
+
+buatkan saya dengan format dan tipe yang sama dengan contoh baik disana cukup bedakan konteks dan maksud dari saran nya kemana

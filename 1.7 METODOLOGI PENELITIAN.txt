@@ -1,0 +1,18 @@
+A. Metode Pengumpulan Data
+	1) Studi Literatur
+		Jelaskan tentang metode studi literatur
+	2) Data Exctraction
+		Jelaskan tentang pengertian umum singkat data extraction. sambungkan dengan pada penelitian ini yang menggunakan open-data StatsBomb yang tersedia di GitHub
+
+B. Metode Analisis Data
+menjelaskan bahwa penelitian ini menggunakan metode data mining KDD, yang dijelaskan sebagai:
+	1) Data Selection
+		jelaskan pengertian singkat yang umum data selection
+	2) Preprocessing
+		jelasakan pengertian umum nya secara singkat
+	3) Data Transformation
+		jelaskan singkat pengertian umum
+	4) Data Mining
+		jelaskan penggunaan algoritama machine learning LGBM
+	5) Evaluation
+		jelaskan melaksaan evaluasi dengan matrik evaluasi AUC dan Brier Score

@@ -1,0 +1,55 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.0.9 Chrome/128.0.6613.186 Electron/32.2.5 Safari/537.36" version="26.0.9">
+  <diagram name="Page-1" id="-3GfilGTaR90cYOSTtcZ">
+    <mxGraphModel dx="652" dy="388" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="saLwknA0GXNG7D1MmVOP-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="saLwknA0GXNG7D1MmVOP-1" target="saLwknA0GXNG7D1MmVOP-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-1" value="Identifikasi dan Perumusan Masalah" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="380" y="220" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-2" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="320" y="320" width="600" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-8" value="Data Selection" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="360" y="360" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-9" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="360" y="400" width="160" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-10" value="&lt;i&gt;Data Ingestion&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="370" y="410" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-11" value="Seleksi Kolom" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="370" y="460" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-15" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="560" y="360" width="320" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-13" value="&lt;i&gt;Preprocessing&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="saLwknA0GXNG7D1MmVOP-15">
+          <mxGeometry width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-14" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="saLwknA0GXNG7D1MmVOP-15">
+          <mxGeometry y="40" width="180" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-16" value="Filter data &amp;amp; hapus duplikat" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="saLwknA0GXNG7D1MmVOP-15">
+          <mxGeometry x="20" y="60" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-17" value="Data &lt;i&gt;mapping&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="saLwknA0GXNG7D1MmVOP-15">
+          <mxGeometry x="20" y="120" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-18" value="Imputasi Data" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="saLwknA0GXNG7D1MmVOP-15">
+          <mxGeometry x="20" y="180" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-19" value="&lt;i&gt;Type Conversion&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="saLwknA0GXNG7D1MmVOP-15">
+          <mxGeometry x="20" y="240" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="saLwknA0GXNG7D1MmVOP-20" value="Renaming Columns" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="saLwknA0GXNG7D1MmVOP-15">
+          <mxGeometry x="20" y="300" width="140" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

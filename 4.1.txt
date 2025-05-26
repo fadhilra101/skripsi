@@ -1,0 +1,8 @@
+sekarang kita menuju 4.1 Data Selection:
+1. GitHub statsbomb/open-data
+2. Download master.zip
+3. Gcolab Pyhton (aria2)
+4. ambil semua events menjadi dataframes dengan .csv
+
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks berikut:
+Penelitian ini menggunakan data dari media sosial Twitter yang diambil dengan teknik scraping menggunakan tools RStudio dengan bahasa pemrograman R. Untuk melakukan scraping data, diperlukan Twitter API agar memiliki akses untuk mendapatkan data dari Twitter tanpa harus menggunakan antarmuka Twitter secara langsung. Berikut tahapan yang dilakukan dalam proses pengumpulan data: 1. Pendaftaran developer account di Twitter dengan mengukuti langkah-langkah pendaftaran pada website Twitter Developer. 2. Persiapan Rstudio yaitu dengan menginstall aplikasi tersebut dan menginstall package dan library yang diperlukan. 3. Melakukan konfigurasi parameter scraping yang meliputi kata kunci, jumlah maksimum tweet, tipe tweet, dan bahasa yang diinginkan.  4. Melakukan otentikasi API Twitter pada Rstudio dengan memasukkan detail kerensial yang sudah didapatkan dari Twitter Developer.  5. Melakukan pengumpulan data atau scraping menggunakan fungsi ‘search_tweet()’. Data yang didapatkan dari proses ini berupa dataframe dengan kolom user_id, status_id, created_at, screen_name, text, source, display_text_width, reply_to_user_id, reply_to_screen_name, is_quote. is_retweet, favorite_count, retweet_count, hashtags, symbols, urls_url, urls_t.co, dan lain sebagainya. Dataframe dari hasil scraping memiliki beberapa kolom yang tidak relevan untuk penelitian ini sehingga perlu dilakukan seleksi kolom. 

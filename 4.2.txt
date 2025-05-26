@@ -1,0 +1,81 @@
+sekarang kita menuju 4.2 Data Preprocessing, kita akan menjelaskan tentang:
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks berikut:
+Tahap preprocessing adalah tahapan yang berisi proses untuk mengolah teks dan mempersiapkannya untuk analisa di tahapan selanjutnya sehingga memberikan hasil yang lebih baik. 
+
+sekarang kita menuju 4.2 Data Preprocessing, kita akan menjelaskan tentang:
+1. Pemilihan Variabel: kita akan memilih data yang kita inginkan, pada kasus ini kita butuh event dimana type = Shot, yang menunjukan data shot. kemudian kita akan memilih kolom yang baik yang akan diperlukan untuk model kita (play_pattern	position	shot_technique	shot_body_part	shot_type	shot_open_goal	shot_one_on_one	shot_aerial_won	start_x	start_y	end_x	end_y	shot_outcome)
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks berikut:
+1. Penghilangan Tweet Spam Dalam sosial media Twitter, salah satu tantangan yang sering dihadapi adalah adanya tweet spam. Tweet spam ini dapat merusak validitas untuk mendapatkan pemahaman tentang opini terkait Artificial Intelligence. Oleh karena itu tahapan ini akan menghilangkan data tweet yang dibuat oleh User ID yang sama di satu hari. Penghilangan tweet spam mengubah ukuran data sebanyak 17.570 baris menjadi 14.182 baris data. 
+
+2. Penanganan Nilai Hilang dan Outlier:
+# Penanganan Nilai Hilang
+# 1. Mengisi nilai hilang dengan 0 (untuk kolom numerik)
+numeric_cols = df.select_dtypes(include=np.number).columns
+df[numeric_cols] = df[numeric_cols].fillna(0)
+
+# 2. Mengisi nilai hilang dengan 'Unknown' (untuk kolom kategorikal)
+categorical_cols = df.select_dtypes(include=['object']).columns
+df[categorical_cols] = df[categorical_cols].fillna('Unknown')
+
+# Penanganan Outliers (contoh dengan IQR)
+def remove_outliers_iqr(data, column):
+    Q1 = data[column].quantile(0.25)
+    Q3 = data[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    return data[(data[column] >= lower_bound) & (data[column] <= upper_bound)]
+
+
+for col in numeric_cols:  # Hanya untuk kolom numerik
+    df = remove_outliers_iqr(df, col)
+
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks berikut:
+Tahapan ini adalah pengubahan huruf kapital menjadi huruf kecil untuk mengurangi variasi penulisan pada tweet. Tabel 4.1 menunjukkan contoh kalimat yang telah melalui tahapan case folding. 
+
+3. Penghapusan Duplikat:
+# Hapus duplikat berdasarkan semua kolom
+df = df.drop_duplicates()
+
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks berikut:
+Setelah data selesai melalui case folding kemudian data memasuki tahapan normalize. Tahapan ini bertujuan untuk mengubah kata-kata slang atau singkatan menjadi kata-kata standar.
+
+4. Label encoder:
+from sklearn.preprocessing import LabelEncoder
+
+# Assuming 'df' is your DataFrame and it contains the columns you mentioned
+# (play_pattern, position, shot_technique, etc.)
+
+# Select the categorical columns to be label encoded
+categorical_cols = ['play_pattern', 'position', 'shot_technique', 'shot_body_part', 
+                    'shot_type', 'shot_open_goal', 'shot_one_on_one', 'shot_aerial_won',
+                    'shot_outcome']  # Add all relevant columns here
+
+# Create a LabelEncoder object
+label_encoder = LabelEncoder()
+
+# Apply label encoding to each categorical column
+for col in categorical_cols:
+    if col in df.columns:  # Check if the column exists in the DataFrame
+        df[col] = label_encoder.fit_transform(df[col].astype(str)) #Encode the column and handle potential errors
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks berikut:
+Tahapan selanjutnya setelah melakukan normalize yaitu melakukan penghapusan simbol dan karakter yang tidak diperlukan. Bererapa komponen yang dihapus dalam tahapan ini meliputi tab, baris baru, karakter backslash, karakter non ASCII seperti emotikon, mention (@username), tautan, hastag, angka, tanda baca, spasi di awal dan akhir teks, spasi berlebih, dan karakter tunggal. Tabel 4.3 menunjukkan contoh kalimat yang telah melalui tahapan penghapusan simbol dan karakter. 
+
+
+5. Normalisasi data:
+from sklearn.preprocessing import StandardScaler
+
+# Pilih kolom numerik yang ingin dinormalisasi
+numeric_cols_to_scale = ['x', 'y', 'end_x', 'end_y'] # Ganti dengan kolom numerik yang sesuai
+
+# Buat objek StandardScaler
+scaler = StandardScaler()
+
+# Sesuaikan scaler dengan data numerik
+scaler.fit(df[numeric_cols_to_scale])
+
+# Transformasikan data numerik menggunakan scaler
+df[numeric_cols_to_scale] = scaler.transform(df[numeric_cols_to_scale])
+
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks berikut:
+Model yang dibuat dalam penelitian ini menggunakan metode LSTM sehingga data hasil pelabelan masih membutuhkan tahapan preprocessing lanjutan. Langkah pertama setelah data selesai diberi label yaitu tokenizing. Tahap ini berfungsi untuk memecah kalimat pada data menjadi kata. Hal ini dilakukan agar kode program pada tahapan selanjutnya menjadi lebih sederhana. Tabel 4.5 menunjukkan contoh kalimat yang telah melalui tahapan tokenizing. 

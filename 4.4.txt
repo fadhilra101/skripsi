@@ -1,0 +1,248 @@
+sekarang kita menuju 4.4 Data Mining, kita akan menjelaskan tentang:
+4.4.1 Perancangan Model
+a. Inisiasi Model
+# 1. Initialize LGBMClassifier
+seed = 42  # Set your random seed
+lgbm = LGBMClassifier(random_state=seed)
+
+lgbm_param_grid = {
+    'min_child_samples': sp_randint(20, 200),
+    'num_leaves': sp_randint(31, 300),
+    'reg_lambda': sp_uniform(0.0, 1.0),
+    'reg_alpha': sp_uniform(0.0, 1.0),
+    'max_depth': sp_randint(-1, 100)
+}
+
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks sebelumnya
+
+2. Definisikan fungsi penilaian:
+scoring = {
+    'roc_auc': 'roc_auc',
+    'brier': make_scorer(brier_score_loss, greater_is_better=False)
+}
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks sebelumnya
+
+3. Definisikan fungsi refit kustom & Inisialisasi RandomizedSearchCV & Fit model to find best parameters
+def custom_refit(cv_results):
+    # Ambil indeks model dengan nilai roc_auc tertinggi
+    best_roc_auc_index = cv_results['mean_test_roc_auc'].argmax()
+    # Ambil nilai brier dari model tersebut
+    brier_score = cv_results['mean_test_brier'][best_roc_auc_index]
+    # Jika brier_score memenuhi kriteria tertentu, pilih model tersebut
+    if brier_score < -0.1:  # Contoh kriteria
+        return best_roc_auc_index
+    else:
+        # Jika tidak, cari model dengan brier_score terbaik
+        return cv_results['mean_test_brier'].argmax()
+
+
+searchcv = RandomizedSearchCV(
+    estimator=lgbm,
+    param_distributions=lgbm_param_grid,
+    n_iter=100,
+    cv=5,
+    n_jobs=-1,
+    verbose=1,
+    scoring=scoring,
+    refit=custom_refit,
+    random_state=seed
+)
+
+searchcv.fit(X_train, y_train)
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks sebelumnya
+
+4. Get the best model from the search & Fit the calibrated model
+best_lgbm = searchcv.best_estimator_
+calibrated_lgbm = CalibratedClassifierCV(estimator=best_lgbm, method='isotonic', cv=3)
+calibrated_lgbm.fit(X_train, y_train)
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks sebelumnya
+
+5. Model ready to be used
+best_model = calibrated_lgbm
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks sebelumnya
+
+
+4.4.2 Permodelan LGBM
+CalibratedClassifierCV(cv=3,
+                       estimator=LGBMClassifier(max_depth=5,
+                                                min_child_samples=163,
+                                                num_leaves=142, random_state=42,
+                                                reg_alpha=np.float64(0.5552008115994623),
+                                                reg_lambda=np.float64(0.5296505783560065)),
+                       method='isotonic')
+{'cv': 3, 'ensemble': 'auto', 'estimator__boosting_type': 'gbdt', 'estimator__class_weight': None, 'estimator__colsample_bytree': 1.0, 'estimator__importance_type': 'split', 'estimator__learning_rate': 0.1, 'estimator__max_depth': 5, 'estimator__min_child_samples': 163, 'estimator__min_child_weight': 0.001, 'estimator__min_split_gain': 0.0, 'estimator__n_estimators': 100, 'estimator__n_jobs': None, 'estimator__num_leaves': 142, 'estimator__objective': None, 'estimator__random_state': 42, 'estimator__reg_alpha': np.float64(0.5552008115994623), 'estimator__reg_lambda': np.float64(0.5296505783560065), 'estimator__subsample': 1.0, 'estimator__subsample_for_bin': 200000, 'estimator__subsample_freq': 0, 'estimator': LGBMClassifier(max_depth=5, min_child_samples=163, num_leaves=142,
+               random_state=42, reg_alpha=np.float64(0.5552008115994623),
+               reg_lambda=np.float64(0.5296505783560065)), 'method': 'isotonic', 'n_jobs': None}
+
+dan penjelasan GOSS dan EFB pada model diatas.
+
+
+buat teks paragraf nya yang baik dengan format dan struktur yang semirip mungkin dengan teks sebelumnya:
+Setelah melakukan pencarian nilai dari hyperparameter terbaik menggunakan hyperparameter tuning, selanjutnya nilai tersebut akan dipakai pada tahap ini. Dalam tahap pemodelan, penelitian ini menggunakan arsitektur Long-Short Term Memory.  Lapisan pertama dari arsitektur ini yaitu lapisan Embedding dengan output dimensi vektor embedding senilai 256. Kemudian lapisan berikutnya adalah lapisan LSTM dengan 96 neuron untuk memproses sequence dari vektor kata yang dihasilkan oleh embedding. Setelah LSTM, lapisan berikutnya adalah Dense dengan unit sejumlah 208 dan fungsi aktivasi Relu. Fungsi aktivasi relu dapat memetakan semua input negatif menjadi 0 dan tidak merubah input positif. Selanjutnya terdapat lapisan Dropout yang dapat membantu untuk mencegah overfitting. Lapisan terakhir dari arsitektur tersebut adalah lapisan Output yang memiliki 6 neuron sesuai dengan jumlah kelas pada penelitian ini. Lapisan terakhir ini menggunakan fungsi aktivasi Softmax dimana sangat umum digunakan dalam model klasifikasi multiclass. Model dikompilasi dengan menggunakan loss function ‘sparse_categorical_crossentropy’ yang juga cocok digunakan untuk klasifikasi multiclass. 
+
+
+4.4 Data Mining
+4.4.3 Visualisasi
+
+-paragraf isi:
+paragraf 1:
+Salah satu langkah awal dalam evaluasi model adalah memahami distribusi nilai xG yang dihasilkan oleh model LGBM. Histogram dan plot distribusi digunakan untuk melihat sebaran nilai xG, mengidentifikasi adanya skewness, serta memahami apakah model cenderung memberikan prediksi yang konservatif atau agresif. gambar 4.9 Histogram Distribusi Nilai xG yang Diprediksi oleh Model LGBM
+
+paragraf 2: (menjelaskan gambar 4.9) ringkas ini:
+Analisis Ilmiah dan Detail Distribusi xG:
+
+Asimetri dan Skewness yang Kuat (Highly Skewed to the Right/Positively Skewed):
+
+Karakteristik paling mencolok dari distribusi ini adalah asimetri yang sangat kuat ke kanan (positif). Sebagian besar data (tembakan) terkonsentrasi pada nilai xG yang sangat rendah, mendekati 0.
+Ini tercermin dari batang histogram tertinggi yang berada di bin pertama (0.0 hingga sekitar 0.02) dan puncak kurva KDE yang sangat tinggi di dekat 0.0.
+Implikasi Ilmiah: Ini menunjukkan bahwa mayoritas tembakan dalam pertandingan sepak bola memiliki probabilitas yang sangat rendah untuk menghasilkan gol. Sebagian besar tembakan bukanlah peluang emas, melainkan tembakan spekulatif, tembakan dari jarak jauh, atau tembakan dari sudut yang sempit.
+Modus (Mode) Dekat Nol:
+
+Modus (nilai dengan frekuensi/kepadatan tertinggi) dari distribusi ini berada sangat dekat dengan 0.0. Ini mengkonfirmasi bahwa nilai xG yang paling sering diamati adalah nilai yang sangat rendah.
+Ekor Panjang ke Kanan (Long Tail to the Right):
+
+Meskipun sebagian besar data berada di sisi kiri, distribusi memiliki "ekor" yang panjang dan tipis yang membentang hingga nilai xG yang lebih tinggi (0.4, 0.6, bahkan mendekati 1.0).
+Implikasi Ilmiah: Ekor ini merepresentasikan tembakan-tembakan yang memiliki probabilitas gol yang lebih tinggi (peluang "emas"). Meskipun jarang, tembakan-tembakan ini secara signifikan lebih mungkin menjadi gol. Contohnya adalah penalti (xG ~0.76), tembakan satu lawan satu, atau tap-in dari jarak sangat dekat.
+Fenomena "Power Law" atau "Heavy-Tailed" Distribution (Potensial):
+
+Distribusi ini menunjukkan karakteristik yang mirip dengan distribusi "power law" atau "heavy-tailed" di mana sebagian kecil kejadian menyumbang sebagian besar "nilai" (dalam hal ini, gol). Ini adalah pola umum dalam banyak fenomena dunia nyata, termasuk data olahraga.
+Secara formal, ini berarti bahwa kejadian dengan nilai ekstrem (peluang gol tinggi) relatif lebih sering terjadi daripada yang diprediksi oleh distribusi normal atau eksponensial standar, meskipun tetap jarang.
+Peran KDE dalam Analisis:
+
+KDE membantu memvisualisasikan bentuk distribusi dasar yang mungkin tersembunyi oleh diskretisasi bin pada histogram. Kurva KDE memberikan estimasi yang lebih halus dari PDF.
+Puncak tinggi pada KDE di dekat 0.0 dan penurunan drastis setelahnya dengan ekor yang tipis memperkuat interpretasi skewness.
+Kehadiran "punuk" kecil atau variasi pada kurva KDE di nilai xG yang lebih tinggi (misalnya, di sekitar 0.15-0.2 atau 0.4) dapat mengindikasikan adanya sub-distribusi atau jenis peluang tertentu yang cenderung menghasilkan xG di sekitar nilai tersebut, meskipun kepadatan keseluruhannya rendah. Misalnya, sekelompok tembakan dengan tingkat kesulitan menengah.
+Interpretasi Statistik Probabilitas:
+
+Jika kita mengambil area di bawah kurva KDE antara dua nilai xG (misalnya, dari 0.05 hingga 0.1), area tersebut akan merepresentasikan probabilitas bahwa sebuah tembakan acak akan memiliki nilai xG dalam rentang tersebut.
+Sebagai contoh, area yang sangat besar di sekitar 0.0 menunjukkan bahwa P(0≤xG≤0.05) sangat tinggi.
+Mengapa Distribusi xG Seperti Ini? (Konteks Sepak Bola):
+
+Sifat Permainan: Sepak bola adalah olahraga dengan skor rendah di mana gol adalah kejadian yang relatif jarang. Banyak tembakan diambil karena alasan taktis (misalnya, untuk mencoba peruntungan, untuk mendapatkan rebound, atau untuk mengakhiri serangan) daripada karena memiliki probabilitas gol yang tinggi.
+Hierarki Peluang: Ada hierarki peluang yang jelas. Sebagian besar tembakan adalah "tembakan berisiko rendah," sementara hanya segelintir yang merupakan "peluang bersih." Model xG dirancang untuk menangkap hierarki ini.
+Pengambilan Keputusan Pemain: Pemain sering menembak dari posisi sulit atau jarak jauh, mengetahui bahwa probabilitasnya rendah, tetapi itu adalah satu-satunya opsi atau upaya untuk menekan lawan.
+
+paragraf 3:
+Peta tembakan (shot map) digunakan untuk memvisualisasikan lokasi-lokasi di lapangan tempat tembakan dilakukan, disertai dengan nilai xG yang diprediksi. Dengan menggunakan warna atau ukuran titik yang merepresentasikan nilai xG. gambar 4.10 Peta Sebaran dengan Nilai xG
+
+-paragraf 3:
+ Visualisasi Interpretasi Model dengan SHAP
+SHAP (SHapley Additive exPlanations) digunakan untuk memberikan interpretasi lokal dan global terhadap prediksi model LGBM. Gambar 4.11 Visualisasi SHAP untuk Interpretasi Model xG.
+
+kita bahas setiap fitur satu per satu secara shap global, dari atas ke bawah (berdasarkan dampak rata-rata):
+paragraf 4:
+distance_to_goal (Jarak ke Gawang):
+
+Pengaruh: Fitur ini memiliki dampak paling besar pada model.
+Distribusi SHAP:
+Ada konsentrasi titik-titik biru (nilai distance_to_goal rendah) yang memiliki SHAP value positif tinggi (mendorong prediksi ke arah "goal" atau output tinggi). Ini berarti, ketika pemain dekat dengan gawang, kemungkinan terjadinya gol meningkat secara signifikan.
+Ada juga konsentrasi titik-titik merah (nilai distance_to_goal tinggi) yang memiliki SHAP value negatif tinggi (mendorong prediksi ke arah "bukan goal" atau output rendah). Ini berarti, ketika pemain jauh dari gawang, kemungkinan terjadinya gol menurun secara signifikan.
+Interpretasi: Ini adalah fitur yang sangat intuitif. Semakin dekat pemain ke gawang, semakin besar kemungkinan gol terjadi. Model belajar hubungan invers ini dengan sangat kuat.
+
+start_x (Koordinat X Awal Tendangan):
+
+Pengaruh: Fitur dengan dampak terbesar kedua.
+Distribusi SHAP:
+Titik-titik merah (nilai start_x tinggi, biasanya berarti lebih dekat ke gawang lawan atau lebih ke depan lapangan) cenderung memiliki SHAP value positif. Ini menunjukkan bahwa tendangan yang dimulai dari posisi X yang lebih maju (mendekati gawang lawan) lebih mungkin menghasilkan gol.
+Titik-titik biru (nilai start_x rendah, biasanya berarti lebih jauh dari gawang lawan atau lebih ke belakang lapangan) cenderung memiliki SHAP value negatif. Ini menunjukkan bahwa tendangan yang dimulai dari posisi X yang lebih mundur (lebih jauh dari gawang lawan) kurang mungkin menghasilkan gol.
+Interpretasi: Secara umum, semakin maju posisi tendangan di lapangan (X yang lebih besar), semakin tinggi peluang gol.
+
+start_y (Koordinat Y Awal Tendangan):
+
+Pengaruh: Fitur dengan dampak signifikan.
+Distribusi SHAP:
+Titik-titik yang memiliki nilai start_y ekstrem (baik sangat rendah/dekat sisi lapangan kiri maupun sangat tinggi/dekat sisi lapangan kanan, biasanya direpresentasikan dengan warna merah dan biru) cenderung memiliki SHAP value negatif atau mendekati nol.
+Titik-titik yang memiliki nilai start_y di sekitar nilai tengah (misalnya, di tengah lapangan atau di area sekitar gawang yang strategis) cenderung memiliki SHAP value positif (atau memiliki beberapa titik biru/merah yang mengarah ke positif).
+Interpretasi: Ini menunjukkan bahwa tendangan yang diambil terlalu dekat ke sisi lapangan (nilai Y ekstrem) cenderung mengurangi probabilitas gol, sedangkan tendangan yang diambil dari posisi Y yang lebih sentral di lapangan (tidak terlalu pinggir) cenderung meningkatkan probabilitas gol. Ini masuk akal karena sudut tembak lebih sempit dari sisi lapangan.
+paragraf 5:
+shot_body_part (Bagian Tubuh yang Digunakan untuk Menendang):
+
+Pengaruh: Dampaknya cukup besar.
+Distribusi SHAP:
+Ada beberapa titik merah (nilai shot_body_part tinggi, mungkin mewakili kaki dominan atau kepala) yang memiliki SHAP value positif.
+Ada juga beberapa titik biru (nilai shot_body_part rendah, mungkin mewakili kaki non-dominan atau bagian tubuh lain) yang memiliki SHAP value negatif.
+Interpretasi: Model tampaknya mengidentifikasi bahwa tendangan dengan bagian tubuh tertentu (misalnya, kaki dominan atau sundulan) lebih efektif dalam menghasilkan gol dibandingkan bagian tubuh lainnya. Tanpa mengetahui pemetaan nilai ke bagian tubuh, sulit memberikan interpretasi lebih spesifik, tetapi umumnya, tendangan kaki atau sundulan yang kuat lebih sering menghasilkan gol.
+
+shot_technique (Teknik Tendangan):
+
+Pengaruh: Dampaknya cukup besar.
+Distribusi SHAP: Mirip dengan shot_body_part, ada perbedaan signifikan antara nilai-nilai teknik tendangan.
+Beberapa teknik (diwakili oleh titik merah/biru tertentu) cenderung memiliki SHAP value positif, menunjukkan bahwa teknik tersebut meningkatkan peluang gol.
+Teknik lainnya (diwakili oleh titik merah/biru lainnya) cenderung memiliki SHAP value negatif, menunjukkan bahwa teknik tersebut mengurangi peluang gol.
+Interpretasi: Model telah belajar bahwa beberapa teknik tendangan (misalnya, tendangan volleys, tendangan melengkung, atau tendangan datar yang kuat) lebih efektif daripada yang lain dalam menghasilkan gol.
+
+position (Posisi Pemain):
+
+Pengaruh: Dampaknya signifikan.
+Distribusi SHAP:
+Nilai posisi tertentu (titik merah/biru) dapat memiliki SHAP value positif, menunjukkan bahwa tendangan dari posisi tersebut sering menghasilkan gol (misalnya, striker, attacking midfielder).
+Nilai posisi lainnya (titik merah/biru) dapat memiliki SHAP value negatif, menunjukkan bahwa tendangan dari posisi tersebut jarang menghasilkan gol (misalnya, bek, kiper).
+Interpretasi: Ini mengindikasikan bahwa posisi pemain di lapangan saat menendang sangat mempengaruhi probabilitas gol. Striker dan pemain menyerang lainnya tentu lebih sering mencetak gol daripada pemain bertahan.
+
+shot_type (Tipe Tendangan):
+
+Pengaruh: Dampaknya cukup besar.
+Distribusi SHAP:
+Beberapa tipe tendangan (diwakili oleh titik merah/biru tertentu) memiliki SHAP value positif, misalnya, tendangan biasa yang kuat, penalti.
+Tipe tendangan lain mungkin memiliki SHAP value negatif, misalnya, tendangan spekulasi dari jauh, tendangan lob yang tidak akurat.
+Interpretasi: Model membedakan antara jenis tendangan yang lebih efektif (misalnya, tendangan biasa yang bertenaga, tendangan chip yang tepat) dan yang kurang efektif.
+
+angle_to_goal (Sudut ke Gawang):
+
+Pengaruh: Dampaknya moderat.
+Distribusi SHAP:
+Titik-titik merah (nilai angle_to_goal tinggi, artinya sudut tembak lebar, lebih langsung menghadap gawang) cenderung memiliki SHAP value positif.
+Titik-titik biru (nilai angle_to_goal rendah, artinya sudut tembak sempit, lebih menyamping dari gawang) cenderung memiliki SHAP value negatif.
+Interpretasi: Semakin besar (lebih "terbuka") sudut pemain ke gawang, semakin tinggi probabilitas gol. Ini sangat masuk akal, karena sudut tembak yang lebih luas memberikan lebih banyak target area gawang.
+paragraf 6:
+second (Detik):
+
+Pengaruh: Dampaknya lebih kecil dibandingkan fitur di atas.
+Distribusi SHAP: Titik-titik menyebar di sekitar nol, tetapi mungkin ada sedikit kecenderungan. Sulit untuk menarik kesimpulan kuat tanpa melihat lebih detail, tetapi mungkin ada pola yang sangat halus terkait detik-detik tertentu dalam permainan atau periode waktu yang sangat spesifik dalam serangan.
+Interpretasi: Ini mungkin menunjukkan bahwa waktu dalam hitungan detik (dalam satu menit) saat tendangan diambil memiliki pengaruh minimal atau sangat spesifik pada probabilitas gol.
+
+minute (Menit):
+
+Pengaruh: Dampaknya juga lebih kecil.
+Distribusi SHAP: Mirip dengan second, titik-titik tersebar di sekitar nol. Mungkin ada sedikit kecenderungan bahwa tendangan di menit-menit akhir babak atau pertandingan memiliki dampak sedikit berbeda (positif atau negatif), tetapi efeknya tidak dominan.
+Interpretasi: Waktu dalam hitungan menit dari pertandingan saat tendangan diambil tampaknya memiliki dampak yang kecil pada probabilitas gol. Mungkin ada sedikit peningkatan peluang gol di menit-menit krusial (misalnya, injury time) atau penurunan di menit-menit awal.
+
+under_pressure (Di Bawah Tekanan):
+
+Pengaruh: Dampaknya relatif kecil.
+Distribusi SHAP:
+Titik-titik merah (pemain di bawah tekanan) cenderung memiliki SHAP value negatif.
+Titik-titik biru (pemain tidak di bawah tekanan) cenderung memiliki SHAP value positif.
+Interpretasi: Ini sangat intuitif. Ketika seorang pemain menendang dalam situasi tertekan (misalnya, dibayangi lawan), peluang gol cenderung menurun. Sebaliknya, tanpa tekanan, peluang gol meningkat.
+
+shot_aerial_won (Kemenangan Duel Udara Sebelum Tendangan):
+
+Pengaruh: Dampaknya kecil.
+Distribusi SHAP:
+Titik merah (duel udara dimenangkan sebelum tendangan) mungkin memiliki SHAP value positif.
+Titik biru (duel udara tidak dimenangkan) mungkin memiliki SHAP value negatif.
+Interpretasi: Jika tendangan terjadi setelah pemain memenangkan duel udara (misalnya, sundulan dari umpan lambung), ada sedikit peningkatan probabilitas gol. Ini menunjukkan bahwa mendapatkan bola melalui duel udara yang dimenangkan adalah situasi yang sedikit lebih menguntungkan untuk tendangan.
+
+play_pattern (Pola Permainan):
+
+Pengaruh: Dampaknya kecil.
+Distribusi SHAP:
+Beberapa pola permainan (diwakili oleh titik merah/biru tertentu) mungkin memiliki SHAP value positif (misalnya, serangan balik cepat, set piece yang terencana).
+Pola permainan lain mungkin memiliki SHAP value negatif (misalnya, open play yang stagnan).
+Interpretasi: Model mengidentifikasi bahwa jenis pola permainan tertentu yang mengarah ke tendangan sedikit meningkatkan atau menurunkan peluang gol.
+paragraf 7:
+shot_one_on_one (Situasi Satu Lawan Satu):
+
+Pengaruh: Dampaknya kecil, tetapi konsisten.
+Distribusi SHAP:
+Titik merah (situasi satu lawan satu) cenderung memiliki SHAP value positif.
+Titik biru (bukan situasi satu lawan satu) cenderung memiliki SHAP value mendekati nol atau negatif.
+Interpretasi: Tendangan yang diambil dalam situasi satu lawan satu dengan kiper secara konsisten sedikit meningkatkan probabilitas gol, yang sesuai dengan intuisi sepak bola.
+
+shot_open_goal (Tendangan ke Gawang Kosong):
+
+Pengaruh: Dampak terkecil, tetapi sangat positif.
+Distribusi SHAP:
+Titik merah (tendangan ke gawang kosong) memiliki SHAP value yang sangat positif.
+Titik biru (bukan gawang kosong) memiliki SHAP value yang negatif.
+Interpretasi: Ini adalah fitur dengan dampak positif yang sangat jelas tetapi frekuensinya mungkin rendah (karena ada di paling bawah). Ketika ada kesempatan menembak ke gawang yang kosong, kemungkinan gol sangat tinggi. Model dengan jelas menangkap efek ini.

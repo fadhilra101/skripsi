@@ -1,0 +1,17 @@
+4.7 Keterbatasan penelitian
+paragraf 1:
+pertama, ..
+
+- data yang tidak lengkap, open-data StatsBomb hanya mencakup liga dan turnamen tertentu, seperti Liga Inggris, La Liga, dan Piala Dunia Wanita. Hal ini membatasi generalisasi model ke kompetisi lain atau level permainan yang berbeda
+
+- Meskipun data StatsBomb kaya akan detail, beberapa fitur penting mungkin tidak tersedia atau tidak lengkap, seperti informasi tentang tekanan dari pemain lawan atau posisi kiper saat tembakan dilakukan. Freeze Frame data yang hanya sedikit
+
+paragraf 2:
+kedua, ...
+
+-Model yang dilatih pada data dari satu liga atau kompetisi mungkin tidak bekerja dengan baik pada liga atau kompetisi lain karena perbedaan gaya permainan, kualitas pemain, dan faktor lainnya.
+
+paragraf 3:
+ketiga...
+
+-Tanpa domain knowledge (taktik, peran pemain), banyak fitur yang mungkin terlalu dangkal atau bahkan menyesatkan.

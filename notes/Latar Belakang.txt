@@ -1,0 +1,43 @@
+buat teks untuk bagian latar belakang, setiap nomor mengidentifikasi paragraf ke- , selalu gunakan body note dalam penggunaan kutipan ditengah atau diakhir paragraf (campur jangan selalu diakhir), 
+
+Latar Belakang:
+PENJELASAN SEPAKBOLA (UMUM) & TEKNOLOGI MACHINE LEARNING (TIDAK DITULIS DALAM JUDUL SUB BAB PENULISAN PARAGRAF)
+1. penjelasan sepak bola modern yang bersangkut paut dengan data science dan machine learning, dengan segala informasi bahwa sepakbola bukan hanya sports namun merupakan bagian dari bisnis dan lebih luas lagi, ambil referensi dari sini "The landscape of professional football is undergoing a profound transformation driven by advancements in information systems and data science. In this era of technological evolution, the integration of data analytics and specialized metrics has revolutionized decision-making processes within football management. Leveraging advanced wearable devices and state-of-the-art information systems, teams have access now to vast amounts of data, enabling more precise and informed decisions across various facets of the game, from match tactics to talent scouting and injury prevention." (Chatziparaskevas et al., 2024)
+
+2. Penjelasan xG dan mengapa penting dalam sepak bola modern , gunakan refensi ini dan silahkan kutip "metric is proposed which determines the quality of a scoring opportunity, i.e.
+the probability of a scoring opportunity to result in a goal. Aggregating this metric, called the
+Expected Goals, for matches leads to expected match results. It is shown that Expected Goals
+accurately represent the probability of a scoring opportunity resulting in a goal. Furthermore, it
+is shown that the Expected Goals leads to valuable insights into match results." (Eggels, 2016) gunakan awal kalimat dengan "Pada dunia analisis sepak bola modern" atau semacamnya (tulis menurut mu baik)
+
+3. Menjelaskan contoh matriks xG pada analisis sepak bola, menunjukan gambar 1.2 (contoh shot-map dengan data xG pada player Alexis Sanchez)
+
+4. Menjelaskan pertama kali penelitian terhadap xG. gunakan referensi ini: Lucey et. al. (2015) 9732 shots & 10 s of gameplay video before each shot from a professional league. dataset from Prozone (now Stats Perform), nama model: Expected Goal Value (EGV), penggunaan algoritma: Conditional Random Models based probabilistic model. "Quality Vs Quantity: Improved Shot Prediction in Soccer Using Strategic Features from Spatiotemporal Data"
+
+5. Menjelaskan penelitian lain yang sejenis. gunakan refernsi ini: Fairchild et. al. (2018) dataset: 1115 non-penalty shots from 99 games in the Major League Soccer (MLS — USA Football League) yang didapat dari/dengan : Manual. nama model : Expected Goal Model. algoritma yang digunakan : Logistic Regression. "Spatial analysis of shots in MLS: a model for expected goals and fractal dimensionality"
+
+6. menjelaskan penelitian lain. referensi: Tureen & Olthoff (2022) dataset: 580 Premier League & 326 Women’s Super League fixtures diambil dari/dengan: StatsBomb (penyedia yang sama dengan penelitian saya) nama model Estimated Player Impact (EPI) algoritma yang digunakan : Generalised Linear Mixed Models (GLMM). "“Estimated Player Impact”(EPI): Quantifying the effects of individual players on football (soccer) actions using hierarchical statistical models"
+
+7. menjelaskan kurangnya penggunaan maksimal pada model xg pada algoritma LGBM ini di penelitian sejenis berikut, Cavus & Biecek (2022) telah menggunakan berbagai model, termasuk LightGBM, melalui Forester AutoML. 315,430 shots over seven seasons for European Top 5 leagues Understat nama model: Explainable Expected Goals, algoritma : XGBoost, Random Forest, LightGBM, & CatBoost, best model: Random Forest
+
+8. menjelaskan masalah yang muncul dari penjelasan diatas mengapa implementasi lightGBM diperlukan dalam penelitian ini untuk mengembangkan Model xG yang mungkin lebih baik dan memiliki fungsi baik secara kualitas dan lain-lainnya (cari alasan dan penguat alasan penelitian ini)
+
+9. Menjelaskan perbandingan positif lightGBM dengan model lain (XGBoost & etc). gunakan referensi ini:
+LightGBM memberikan prediksi nilai variabel target dengan mean absolute percentage error (MAPE) yang lebih kecil, yaitu 2.45%. Ini menunjukkan bahwa LightGBM lebih akurat dalam memprediksi output daya termal dibandingkan dengan XGBoost. Martin Nemeth, Dmitrii Borkin, and German Michalconok, 2019 https://doi.org/10.1007/978-3-030-31362-3_21
+
+10. Menjelaskan keunggulan LGBM, gunakan referensi berikut "LightGBM is a fast, distributed, high-performance gradient boosting framework based on decision tree algorithm. Due to its powerful classification capabilities, LightGBM has been successfully applied to disease diagnosis and prediction of clinical outcomes" Nitzan Shalom Artzi,Smadar Shilo,Eran Hadar,Hagai Rossman,Shiri BarbashHazan,Avi Ben-Haroush,Ran D. Balicer,Becca Feldman,Arnon Wiznitzer,Eran Segal. Prediction of gestational diabetes based on nationwide electronic health records[J]. Nature Medicine,2020,26(Suppl 4).
+
+11. Menjelaskan LightGBM memungkinkan model xG belajar dari data historis dengan efisiensi tinggi. gunakan referensi ini "Light Gradient Boosting Machine (LightGBM) was developed to overcome the shortcomings of Gradient Boosting Decision Tree (GBDT) in handling big data by speeding up the training process up to 20 times without sacrificing almost the same accuracy" (Hartanto et al., 2023)
+
+12. menjelaskan penggunaan dataset untuk penelitian/skripsi ini menggunakan open-data dari StatsBomb yang oleh perusahaan tersebut dikeluarkan untuk encourage academic research and analysis (StatsBomb, 2022)
+
+13. menjelaskan perusahaan statsbomb , referensi "We’re a sports data business, created by analysts for analysts, with a talented, growing team that is tireless in its collection and analysis of the world’s most comprehensive sports data. Our unique platform was crafted from the ground up to guarantee we could gather and analyse more, and more relevant data than anyone else, and be flexible enough to respond to new needs, opportunities and challenges at a moment’s notice." (statsbomb, 2024) https://statsbomb.com/who-we-are/ tunjukan gambar 1.4 logo statsbomb
+
+PENJELASAN PENELITIAN SEJENIS
+
+
+
+
+15. paragraf kesimpulan yang menuju ke alasan mengangka judul penilitian berikut: Berdasarkan latar belakang serta pedoman penelitian sebelumnya, maka
+penulis melakukan penelitian berupa skripsi dengan judul "IMPLEMENTASI LIGHT GRADIENT BOOSTING MACHINE (LGBM) UNTUK MATRIKS EXPECTED GOALS (xG) DALAM ANALISIS SEPAK BOLA
+

@@ -1,0 +1,22 @@
+2.16 penelitan sejenis:
+
+buat kan saya tabel penelitian dari data ini yang saya butuhkan adalah: 
+- Sumber (biasanya nama jurnal)
+- Judul dan
+Penulis ( format nya = JUDUL (PENULIS, TAHUN)
+- Metode
+dan Tools (Algoritma nya apa, terus toolsnya apa)
+-Data Set dan
+Hasil (dataset nya dari mana, seberapa banyak data nya *kalau ada, hasil modelnya apa)
+-Kekurangan
+dan
+Kelebihan
+
+Méndez, M., Montero, C., & Núñez, M. (2023, July). Improving the expected goal value in football using multilayer perceptron networks. In Asian Conference on Intelligent Information and Database Systems (pp. 352-363). Cham: Springer Nature Switzerland.
+
+Lucey, P., Bialkowski, A., Monfort, M., Carr, P., & Matthews, I. (2015). quality vs quantity: Improved shot prediction in soccer using strategic features from spatiotemporal data. 9732 shots & 10 s of gameplay video before each shot from a professional league. dataset from Prozone (now Stats Perform), nama model: Expected Goal Value (EGV), penggunaan algoritma: Conditional Random Models based probabilistic model. "Quality Vs Quantity: Improved Shot Prediction in Soccer Using Strategic Features from Spatiotemporal Data"
+
+Fairchild, A., Pelechrinis, K., & Kokkodis, M. (2018). Spatial analysis of shots in MLS: a model for expected goals and fractal dimensionality. Journal of Sports Analytics, 4(3), 165-174. dataset: 1115 non-penalty shots from 99 games in the Major League Soccer (MLS — USA Football League) yang didapat dari/dengan : Manual. nama model : Expected Goal Model. algoritma yang digunakan : Logistic Regression.
+
+Tureen, T., & Olthof, S. B. H. (2022, September). “Estimated Player Impact”(EPI): Quantifying the effects of individual players on football (soccer) actions using hierarchical statistical models. In StatsBomb Conference Proceedings. StatsBomb. dataset: 580 Premier League & 326 Women’s Super League fixtures diambil dari/dengan: StatsBomb (penyedia yang sama dengan penelitian saya) nama model Estimated Player Impact (EPI) algoritma yang digunakan : Generalised Linear Mixed Models (GLMM). 
+

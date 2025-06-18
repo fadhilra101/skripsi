@@ -1,4 +1,4 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.2 Chrome/134.0.6998.205 Electron/35.3.0 Safari/537.36" version="27.0.2">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
   <diagram name="Page-1" id="fJQKvYSDg5BPfoZSww_d">
     <mxGraphModel dx="872" dy="529" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -19,7 +19,7 @@
         <mxCell id="E9fjUXzIlTnjdSZBnWGk-2" value="Data &lt;i&gt;Testing&lt;/i&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="380" y="480" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="E9fjUXzIlTnjdSZBnWGk-38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="E9fjUXzIlTnjdSZBnWGk-6" target="E9fjUXzIlTnjdSZBnWGk-36" edge="1">
+        <mxCell id="jkojhKU7U4NxMF52BaZX-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="E9fjUXzIlTnjdSZBnWGk-6" target="E9fjUXzIlTnjdSZBnWGk-35">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="E9fjUXzIlTnjdSZBnWGk-6" value="Evaluasi Model" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -34,31 +34,22 @@
         <mxCell id="E9fjUXzIlTnjdSZBnWGk-30" value="Hasil Model&amp;nbsp;&lt;div&gt;LGBM&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="540" y="480" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="-kSj5SMyIRkbDONV1sY4-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="E9fjUXzIlTnjdSZBnWGk-35" target="-kSj5SMyIRkbDONV1sY4-1">
+        <mxCell id="-kSj5SMyIRkbDONV1sY4-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="E9fjUXzIlTnjdSZBnWGk-35" target="-kSj5SMyIRkbDONV1sY4-1" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="E9fjUXzIlTnjdSZBnWGk-35" value="Hasil&amp;nbsp;&lt;div&gt;&lt;i&gt;Brier Score&lt;/i&gt;&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
-          <mxGeometry x="370" y="690" width="120" height="60" as="geometry" />
+        <mxCell id="E9fjUXzIlTnjdSZBnWGk-35" value="Hasil Metrik&amp;nbsp;&lt;div&gt;Evaluasi&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
+          <mxGeometry x="460" y="690" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="-kSj5SMyIRkbDONV1sY4-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="E9fjUXzIlTnjdSZBnWGk-36" target="-kSj5SMyIRkbDONV1sY4-1">
+        <mxCell id="-kSj5SMyIRkbDONV1sY4-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="-kSj5SMyIRkbDONV1sY4-1" target="-kSj5SMyIRkbDONV1sY4-6" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="E9fjUXzIlTnjdSZBnWGk-36" value="Hasil&lt;div&gt;ROC AUC&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
-          <mxGeometry x="540" y="690" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="E9fjUXzIlTnjdSZBnWGk-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.586;entryY=-0.036;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="E9fjUXzIlTnjdSZBnWGk-6" target="E9fjUXzIlTnjdSZBnWGk-35" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="-kSj5SMyIRkbDONV1sY4-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="-kSj5SMyIRkbDONV1sY4-1" target="-kSj5SMyIRkbDONV1sY4-6">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="-kSj5SMyIRkbDONV1sY4-1" value="Perbandingan dengan Model Literatur Lain" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="-kSj5SMyIRkbDONV1sY4-1" value="Perbandingan dengan Model Literatur Lain" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="460" y="800" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="-kSj5SMyIRkbDONV1sY4-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="-kSj5SMyIRkbDONV1sY4-6" target="E9fjUXzIlTnjdSZBnWGk-19">
+        <mxCell id="-kSj5SMyIRkbDONV1sY4-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="-kSj5SMyIRkbDONV1sY4-6" target="E9fjUXzIlTnjdSZBnWGk-19" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="-kSj5SMyIRkbDONV1sY4-6" value="Hasil Evaluasi" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+        <mxCell id="-kSj5SMyIRkbDONV1sY4-6" value="Hasil Evaluasi" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" parent="1" vertex="1">
           <mxGeometry x="460" y="900" width="120" height="60" as="geometry" />
         </mxCell>
       </root>

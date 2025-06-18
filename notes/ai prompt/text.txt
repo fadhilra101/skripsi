@@ -1,7 +1,0 @@
-Tahun	Sumber	Judul & Peneliti	Algoritma	Dataset
-1997	The Statistician	Measuring the effectiveness of playing strategies at soccer (Pollard & Reep)	Logistic Regression (LR)	22 match, ~6.000 possession, 489 tembakan
-2005	Conference Paper	Applications of Logistic Regression to Shots at Goal in Association Football (Ensum, Pollard, & Taylor)	LR	48 match, 1.099 tembakan
-2010	Eur. J. Sport Science	Measuring the effectiveness of offensive match-play in professional soccer (Tenga, Ronglan, & Bahr)	Multiple Logistic Regression (MLR)	163 match, 3.260 possession, 203 gol
-2012	OptaPro Blog	Assessing the Performance of Premier League Goalscorers (Green)	-	EPL 2011–12 (Opta)
-2016	Master’s Thesis / MLSA 2016	Expected Goals in Soccer Explaining Match Results Using Predictive Analytics (Eggels)	LR, Decision Tree (DT), Random Forest (RF), AdaBoost, Isotonic	>1.000 peluang, 5.020 match
-2025	Frontiers in Sports & Active Living	Toward Interpretable Expected Goals Modeling Using Bayesian Mixed Models (Iapteff et al., 2025)	Bayesian Generalized Linear Mixed Model  (GLMM) + Transfer Learning	StatsBomb 2003–22: 460 match, 63.177 tembakan

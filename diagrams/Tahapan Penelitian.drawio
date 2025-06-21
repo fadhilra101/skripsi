@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
   <diagram name="Page-1" id="-3GfilGTaR90cYOSTtcZ">
-    <mxGraphModel dx="872" dy="529" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="498" dy="302" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -10,11 +10,10 @@
         <mxCell id="fY_PDfn8Z0zGqyVEPL1E-4" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="360" y="590" width="160" height="310" as="geometry" />
         </mxCell>
-        <mxCell id="saLwknA0GXNG7D1MmVOP-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="saLwknA0GXNG7D1MmVOP-1" target="saLwknA0GXNG7D1MmVOP-8" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="saLwknA0GXNG7D1MmVOP-1" value="Identifikasi dan Perumusan Masalah" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
-          <mxGeometry x="380" y="260" width="120" height="60" as="geometry" />
+        <mxCell id="saLwknA0GXNG7D1MmVOP-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" target="saLwknA0GXNG7D1MmVOP-8" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="320" as="sourcePoint" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="fY_PDfn8Z0zGqyVEPL1E-1" value="Data&amp;nbsp;&lt;i&gt;Tranformation&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="360" y="550" width="160" height="40" as="geometry" />
@@ -60,8 +59,8 @@
         <mxCell id="fY_PDfn8Z0zGqyVEPL1E-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="fY_PDfn8Z0zGqyVEPL1E-17" target="fY_PDfn8Z0zGqyVEPL1E-24" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="380" y="1020" />
-              <mxPoint x="380" y="930" />
+              <mxPoint x="350" y="1020" />
+              <mxPoint x="350" y="900" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -101,10 +100,13 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="fY_PDfn8Z0zGqyVEPL1E-24" value="Interpretasi Hasil" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
-          <mxGeometry x="190" y="900" width="120" height="60" as="geometry" />
+          <mxGeometry x="190" y="870" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_rzOTB0SLPU54-YsaPOa-13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fY_PDfn8Z0zGqyVEPL1E-25" target="_rzOTB0SLPU54-YsaPOa-12">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="fY_PDfn8Z0zGqyVEPL1E-25" value="Kesimpulan dan saran" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
-          <mxGeometry x="190" y="990" width="120" height="60" as="geometry" />
+          <mxGeometry x="190" y="950" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="saLwknA0GXNG7D1MmVOP-13" value="&lt;i&gt;Preprocessing&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="560" y="360" width="180" height="40" as="geometry" />
@@ -144,6 +146,30 @@
             <mxPoint x="520" y="740" as="sourcePoint" />
             <mxPoint x="580" y="751" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="_rzOTB0SLPU54-YsaPOa-1" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="375" y="180" width="130" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="_rzOTB0SLPU54-YsaPOa-2" value="Studi Pendahuluan" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="_rzOTB0SLPU54-YsaPOa-1">
+          <mxGeometry width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_rzOTB0SLPU54-YsaPOa-3" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="_rzOTB0SLPU54-YsaPOa-1">
+          <mxGeometry y="30" width="130" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="_rzOTB0SLPU54-YsaPOa-4" value="Studi Literatur" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="_rzOTB0SLPU54-YsaPOa-1">
+          <mxGeometry x="8.125" y="40" width="113.75000000000001" height="26.25" as="geometry" />
+        </mxCell>
+        <mxCell id="_rzOTB0SLPU54-YsaPOa-5" value="&lt;div&gt;Identifikasi Masalah&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="_rzOTB0SLPU54-YsaPOa-1">
+          <mxGeometry x="8.125" y="72.75" width="113.75000000000001" height="24.5" as="geometry" />
+        </mxCell>
+        <mxCell id="_rzOTB0SLPU54-YsaPOa-11" value="Rumusan Masalah" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="_rzOTB0SLPU54-YsaPOa-1">
+          <mxGeometry x="8.125" y="105" width="113.75000000000001" height="24.5" as="geometry" />
+        </mxCell>
+        <mxCell id="_rzOTB0SLPU54-YsaPOa-12" value="Implikasi Penelitian" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="190" y="1030" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="_rzOTB0SLPU54-YsaPOa-14" value="KDD" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="690" y="1040" width="60" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

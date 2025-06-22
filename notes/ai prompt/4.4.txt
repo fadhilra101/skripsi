@@ -1,0 +1,49 @@
+4.4	Data Mining
+4.4.1	Perancangan Model
+Pada penelitian ini, algoritma yang digunakan untuk membangun model adalah LightGBM, yang dikenal memiliki efisiensi tinggi dan performa unggul pada data dengan dimensi besar. 
+a.	Inisiasi Model
+Langkah pertama dalam perancangan model adalah melakukan inisialisasi algoritma yang akan digunakan. Proses inisialisasi dilakukan dengan membuat objek LGBMClassifier dari library scikit-learn, dan parameter random_state diatur ke nilai 42 untuk memastikan hasil yang reprodusibel. Selanjutnya, ditentukan ruang pencarian hyperparameter yang akan digunakan dalam proses tuning, yang meliputi parameter min_child_samples, num_leaves, reg_lambda, reg_alpha, dan max_depth. Parameter-parameter ini diatur dalam bentuk distribusi acak menggunakan fungsi sp_randint dan sp_uniform dari scipy.stats, yang akan menjadi acuan dalam proses pemilihan kombinasi terbaik pada tahap pencarian hyperparameter berikutnya.
+b.	Definisi Fungsi Scoring
+Setelah inisiasi model dilakukan, langkah selanjutnya adalah mendefinisikan fungsi penilaian yang digunakan untuk mengevaluasi performa model selama proses hyperparameter tuning. Pada penelitian ini digunakan dua metrik evaluasi, yaitu ROC AUC dan Brier Score. Fungsi penilaian ini didefinisikan dalam bentuk dictionary dengan nama scoring, di mana ROC AUC dipanggil secara langsung dan Brier Score didefinisikan menggunakan make_scorer dari scikit-learn dengan argumen greater_is_better=False karena nilai Brier Score yang lebih kecil menunjukkan performa yang lebih baik.
+c.	Pelatihan Model
+Setelah fungsi penilaian ditentukan, tahap berikutnya adalah menginisialisasi proses hyperparameter tuning menggunakan RandomizedSearchCV. Teknik ini digunakan untuk mencari kombinasi parameter terbaik dari model LightGBM berdasarkan evaluasi dengan 5-fold cross-validation dan 100 iterasi pencarian. Tidak seperti proses tuning standar yang hanya mempertimbangkan satu metrik, dalam penelitian ini digunakan pendekatan refit kustom untuk menyeimbangkan antara akurasi klasifikasi dan kualitas kalibrasi probabilitas.
+Fungsi custom_refit yang digunakan bertujuan untuk memilih model dengan nilai ROC AUC tertinggi, tetapi juga mempertimbangkan Brier Score agar model yang terpilih tidak hanya mampu mengklasifikasi dengan baik, tetapi juga memberikan estimasi probabilitas yang kalibrasinya baik. Jika model dengan ROC AUC tertinggi memiliki Brier Score lebih kecil dari ambang batas tertentu (misalnya -0.1), maka model tersebut akan dipilih. Jika tidak, sistem akan memilih model dengan Brier Score terbaik. 
+Setelah objek RandomizedSearchCV dikonfigurasi dengan parameter, metrik penilaian, dan fungsi refit, proses pelatihan model dilakukan dengan memanggil fungsi fit pada data latih (X_train dan y_train). Gambar 4.9 menunjukkan waktu eksekusi proses pelatihan dan pencarian parameter optimal pada algoritma LightGBM, yang hanya memerlukan waktu sekitar 819,7 detik untuk menyelesaikan proses terhadap dataset berukuran besar, yaitu sebanyak 61.981 baris data. Hal ini memperkuat keunggulan efisiensi komputasi yang dimiliki oleh LightGBM, bahkan dalam konteks optimasi hyperparameter yang kompleks.
+ 
+Gambar 4.9 Waktu Training Model
+Parameter-parameter ini dipilih secara otomatis oleh algoritma pencarian (RandomizedSearchCV) berdasarkan kinerja terbaik dalam pelatihan. Setiap parameter memainkan peran penting dalam mengontrol struktur pohon, regularisasi, pembobotan, serta teknik pembelajaran untuk meningkatkan akurasi dan mencegah overfitting. Tabel 4.5 menunjukkan konfigurasi akhir model LightGBM setelah tuning.
+Tabel 4.5 Konfigurasi Akhir Model LightGBM Setelah Tuning
+Parameter	Nilai
+cv	3
+method	isotonic
+boosting_type	gbdt
+num_leaves	15
+max_depth	84
+min_child_samples	146
+min_child_weight	0.001
+min_split_gain	0.0
+colsample_bytree	1.0
+subsample	1.0
+subsample_for_bin	200000
+subsample_freq	0
+learning_rate	0.1
+n_estimators	100
+reg_alpha	0.513
+reg_lambda	0.971
+random_state	42
+importance_type	split
+
+d.	Pemilihan Model Terbaik dan Kalibrasi Probabilitas
+Setelah proses RandomizedSearchCV selesai, langkah selanjutnya adalah mengambil model terbaik yang diperoleh dari hasil pencarian hyperparameter. Model terbaik ini diakses melalui atribut best_estimator_ dan merupakan konfigurasi LightGBM dengan performa optimal berdasarkan kriteria custom refit yang telah ditentukan sebelumnya. Untuk meningkatkan akurasi estimasi probabilitas, dilakukan tahap kalibrasi menggunakan CalibratedClassifierCV dengan metode isotonic regression dan cross-validation sebanyak tiga lipatan. Kalibrasi ini bertujuan agar output probabilitas dari model lebih merefleksikan tingkat kepercayaan yang sebenarnya, terutama dalam konteks prediksi tembakan yang menghasilkan gol atau tidak. Proses pelatihan ulang dilakukan terhadap model yang telah dikalibrasi menggunakan data latih sebelum model digunakan dalam tahap evaluasi akhir.
+4.4.2	Pemodelan LGBM
+Setelah melakukan pencarian nilai hyperparameter terbaik melalui proses RandomizedSearchCV, nilai-nilai tersebut digunakan pada tahap permodelan akhir. Nilai-nilai parameter pada hyperparameter mencerminkan peran penting dari dua teknik inti dalam LightGBM, yaitu Gradient-based One-Side Sampling (GOSS) dan Exclusive Feature Bundling (EFB). 
+Teknik GOSS memungkinkan model untuk fokus pada instance dengan gradien tinggi, yang biasanya lebih informatif untuk proses pembelajaran, sehingga mempercepat pelatihan tanpa mengorbankan akurasi. Hal ini sangat relevan dengan parameter min_child_samples yang cukup besar (146), karena membantu menjaga kestabilan pembagian node meskipun jumlah data yang di sampling dikurangi oleh GOSS. Sementara itu, teknik EFB menggabungkan fitur-fitur eksklusif yang tidak aktif bersamaan, sehingga memungkinkan penggunaan jumlah num_leaves yang besar (15) tanpa meningkatkan kompleksitas model secara drastis.
+4.4.3	Visualisasi
+Salah satu langkah awal dalam proses evaluasi model prediktif adalah dengan memahami pola distribusi dari nilai xG yang dihasilkan. Dalam konteks ini, dilakukan visualisasi berupa histogram dan kurva distribusi (KDE plot) terhadap nilai-nilai prediksi dari model LGBM. Tujuan utama dari visualisasi ini adalah untuk mengidentifikasi karakteristik sebaran data, termasuk kecenderungan skewness, serta untuk memahami apakah model cenderung menghasilkan prediksi yang konservatif (nilai xG rendah) atau agresif (nilai xG tinggi). Gambar 4.9 menyajikan histogram distribusi nilai xG yang diprediksi oleh model LGBM, dilengkapi dengan estimasi kernel density estimation (KDE) untuk memberikan representasi yang lebih halus terhadap bentuk sebaran tersebut. 
+Gambar 4.10 Histogram Distribusi Nilai xG
+
+Distribusi nilai xG yang dihasilkan oleh model LGBM menunjukkan karakteristik positively skewed yang sangat kuat, dengan sebagian besar nilai terkonsentrasi mendekati 0.0, sebagaimana ditunjukkan oleh frekuensi tertinggi pada bin pertama (sekitar 0.0–0.02) dan puncak tajam kurva KDE di titik tersebut. Hal ini mencerminkan realitas bahwa mayoritas tembakan dalam sepak bola merupakan peluang berkualitas rendah misalnya, tembakan dari jarak jauh atau sudut sempit dengan probabilitas gol yang sangat kecil. Modus distribusi yang berada sangat dekat dengan nol memperkuat interpretasi ini. Di sisi lain, distribusi juga memiliki long tail ke kanan, yang membentang hingga nilai xG tinggi (seperti 0.4, 0.6, hingga mendekati 1.0), merepresentasikan peluang emas seperti penalti, tap-in, atau situasi satu lawan satu yang meskipun jarang terjadi, menyumbang proporsi signifikan terhadap total peluang gol. Pola ini mencerminkan distribusi heavy-tailed atau bahkan menyerupai power law, di mana sebagian kecil peristiwa ekstrem (tembakan berkualitas sangat tinggi) memberikan dampak besar terhadap akumulasi nilai xG total. Kurva KDE berperan penting dalam menghaluskan bentuk distribusi dan memperjelas pola yang tidak tampak secara eksplisit dalam histogram, termasuk punuk kecil di kisaran xG menengah (0.15–0.4) yang dapat menunjukkan keberadaan sub-kategori peluang dengan tingkat kesulitan sedang. 
+Area di bawah kurva KDE antara dua titik (misalnya 0.05–0.10) dapat diinterpretasikan sebagai probabilitas kumulatif kemunculan tembakan dalam rentang tersebut, dengan luas area yang sangat besar di dekat 0.0 menunjukkan bahwa probabilitas tembakan memiliki xG rendah (P(0 ≤ xG ≤ 0.05)) sangat tinggi. Secara keseluruhan, distribusi ini mencerminkan sifat permainan sepak bola yang berkarakter skor rendah, dengan dominasi tembakan risiko rendah dan hanya sebagian kecil peluang berkualitas tinggi, sehingga memperkuat validitas statistik serta kesesuaian konteks model dengan realitas permainan.
+Melanjutkan dari analisis distribusi numerik, pendekatan visual berbasis spasial juga digunakan untuk memperdalam interpretasi terhadap perilaku model dalam konteks pertandingan sebenarnya. Peta tembakan (shot map) disusun untuk memvisualisasikan lokasi-lokasi di lapangan tempat tembakan dilakukan, dengan setiap titik pada peta dilengkapi oleh nilai xG yang diprediksi oleh model. Representasi visual ini menggunakan variasi warna atau ukuran titik sebagai indikator kuantitatif nilai xG, sehingga memungkinkan identifikasi cepat terhadap tembakan-tembakan berisiko tinggi maupun rendah berdasarkan posisi geografisnya di dalam area permainan. Gambar 4.10 menyajikan peta sebaran tembakan tersebut, yang menjadi alat bantu penting dalam memahami dinamika spasial peluang dalam suatu pertandingan secara intuitif dan informatif.
+
+Gambar 4.11 Peta Sebaran dengan Nilai xG

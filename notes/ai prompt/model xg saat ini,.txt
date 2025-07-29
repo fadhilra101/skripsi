@@ -1,0 +1,6 @@
+model xg saat ini,
+
+EDA
+
+tunjukan data non linear (grafik)
+

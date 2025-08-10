@@ -49,6 +49,10 @@ venv.bak/
 # Logs
 *.log
 
+# Test files
+test_*.py
+*test*.py
+
 # OS
 .DS_Store
 Thumbs.db

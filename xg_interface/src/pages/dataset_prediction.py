@@ -7,19 +7,6 @@ import pandas as pd
 
 from ..utils.constants import REQUIRED_COLUMNS
 from ..utils.data_processing import validate_columns, preprocess_shot_data
-from ..utils.visualization import create_shot_map
-from ..models.model_manager import predict_xg
-
-
-"""
-Dataset prediction page for the xG prediction application.
-"""
-
-import streamlit as st
-import pandas as pd
-
-from ..utils.constants import REQUIRED_COLUMNS
-from ..utils.data_processing import validate_columns, preprocess_shot_data
 from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, get_visualization_options, create_visualization_by_type
 from ..utils.language import get_translation
 from ..models.model_manager import predict_xg
@@ -132,16 +119,34 @@ def render_dataset_prediction_page(model, lang="en"):
         if missing_cols:
             st.error(f"{get_translation('missing_columns', lang)} {', '.join(missing_cols)}")
         else:
+            # Process the uploaded data directly without session state storage
+            
             with st.spinner(get_translation('calculating_xg', lang)):
                 try:
                     # Apply preprocessing
                     processed_df = preprocess_shot_data(df)
                     
-                    # Predict probabilities
-                    predictions = predict_xg(model, processed_df)
+                    # Predict probabilities - now with safe handling and timing
+                    predictions, prediction_time = predict_xg(model, processed_df)
                     
+                    if predictions is None:
+                        # Model went missing during prediction
+                        st.session_state.model_missing_mid_work = True
+                        st.rerun()
+                        return
+                        
                     if predictions is not None:
                         processed_df['xG'] = predictions
+                        
+                        # Display model performance timing
+                        col_perf1, col_perf2, col_perf3 = st.columns(3)
+                        with col_perf1:
+                            st.metric(f"⚡ {get_translation('model_performance', lang)}", f"{prediction_time:.4f}s")
+                        with col_perf2:
+                            shots_per_second = len(processed_df) / prediction_time if prediction_time > 0 else 0
+                            st.metric("🏃‍♂️ Shots/Second", f"{shots_per_second:.1f}")
+                        with col_perf3:
+                            st.metric("📊 Total Shots", len(processed_df))
 
                         st.write(f"### {get_translation('results_predictions', lang)}")
                         

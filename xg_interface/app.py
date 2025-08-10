@@ -12,10 +12,10 @@ import os
 # Add src directory to Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
-from src.models.model_manager import create_dummy_model_if_not_exists, load_model
+from src.models.model_manager import create_dummy_model_if_not_exists, load_model, safe_load_model, show_model_missing_during_work
 from src.pages.dataset_prediction import render_dataset_prediction_page
 from src.pages.custom_shot import render_custom_shot_page
-from src.utils.language import LANGUAGES, get_translation
+from src.utils.language import LANGUAGES, TRANSLATIONS, get_translation
 
 
 def initialize_session_state():
@@ -107,6 +107,34 @@ def render_author_info():
     """, unsafe_allow_html=True)
 
 
+def render_model_missing_sidebar(lang):
+    """Render helpful sidebar information when model is missing."""
+    st.sidebar.markdown("---")
+    
+    # Model status
+    st.sidebar.error("🚫 " + get_translation("model_required", lang))
+    
+    # Quick help
+    with st.sidebar.expander("🆘 " + get_translation("quick_help", lang) if "quick_help" in TRANSLATIONS[lang] else "🆘 Quick Help"):
+        st.markdown(f"""
+        **{get_translation("steps_to_fix", lang) if "steps_to_fix" in TRANSLATIONS[lang] else "Steps to Fix:"}**
+        
+        1. 📁 {get_translation("locate_model", lang) if "locate_model" in TRANSLATIONS[lang] else "Locate your model file"}
+        2. 📋 {get_translation("copy_to_root", lang) if "copy_to_root" in TRANSLATIONS[lang] else "Copy to root directory"}
+        3. 🔄 {get_translation("restart_app", lang) if "restart_app" in TRANSLATIONS[lang] else "Restart application"}
+        """)
+    
+    # Features available after model setup
+    with st.sidebar.expander("⚽ " + get_translation("available_features", lang) if "available_features" in TRANSLATIONS[lang] else "⚽ Available Features"):
+        st.markdown(f"""
+        **{get_translation("after_model_setup", lang) if "after_model_setup" in TRANSLATIONS[lang] else "After model setup:"}**
+        
+        • 📊 {get_translation("predict_from_dataset", lang)}
+        • 🎯 {get_translation("simulate_custom_shot", lang)}
+        • 📈 {get_translation("advanced_visualizations", lang) if "advanced_visualizations" in TRANSLATIONS[lang] else "Advanced visualizations"}
+        """)
+
+
 def main():
     """Main application function."""
     # Initialize session state
@@ -122,21 +150,48 @@ def main():
         page_icon="⚽"
     )
     
-    # App title
-    st.title(get_translation("app_title", lang))
+    # App title with version
+    st.title(f"{get_translation('app_title', lang)} v0.0.1")
     
-    # Initialize model
-    create_dummy_model_if_not_exists()
-    model = load_model()
-    
-    if model is None:
-        st.error(get_translation("model_load_error", lang))
-        return
-    
-    # Sidebar navigation and language switcher
+    # Sidebar navigation title
     st.sidebar.title(get_translation("navigation", lang))
     
-    # Page selection
+    # Check if model exists first
+    model_available = create_dummy_model_if_not_exists(lang)
+    
+    # Check if we're in the middle of work and model went missing
+    if 'model_missing_mid_work' in st.session_state and st.session_state.model_missing_mid_work:
+        render_language_switcher()
+        render_author_info()
+        show_model_missing_during_work(lang)
+        return
+    
+    if not model_available:
+        # Model not found - show language switcher and help
+        render_language_switcher()
+        render_author_info()
+        render_model_missing_sidebar(lang)
+        return
+    
+    # Initialize model with safe loading
+    model = safe_load_model()
+    
+    if model is None:
+        # Model failed to load - might have been deleted during work
+        if 'custom_shot_data' in st.session_state:
+            # User has work in progress in custom shots
+            st.session_state.model_missing_mid_work = True
+            st.rerun()
+        else:
+            # No work in progress, show regular error
+            st.error(get_translation("model_load_error", lang))
+            render_language_switcher()
+            render_author_info()
+            st.sidebar.markdown("---")
+            st.sidebar.error(get_translation("model_load_error", lang))
+        return
+    
+    # Page selection (when model is available)
     page_options = [
         get_translation("predict_from_dataset", lang),
         get_translation("simulate_custom_shot", lang)
@@ -148,10 +203,8 @@ def main():
         label_visibility="collapsed"
     )
     
-    # Language switcher
+    # Language switcher and author info at bottom
     render_language_switcher()
-    
-    # Author information
     render_author_info()
     
     # Route to appropriate page

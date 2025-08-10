@@ -612,9 +612,9 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
         Tuple of (figure, axis) objects
     """
     if df.empty:
-        # Return professional empty plot if no data
+        # Return professional empty plot if no data with proper aspect ratio
         pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
-        fig, ax = pitch.draw(figsize=(16, 10))
+        fig, ax = pitch.draw(figsize=(15, 10))  # Better aspect ratio for pitch
         fig.patch.set_facecolor('#0d1117')
         ax.set_facecolor('#0d1117')
         ax.set_title("No custom shots to display", fontsize=22, color='#8b949e', fontweight='bold')
@@ -622,9 +622,9 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
                 ha='center', va='center', fontsize=14, color='#8b949e', style='italic')
         return fig, ax
     
-    # Create professional pitch styling
+    # Create professional pitch styling with proper aspect ratio
     pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
-    fig, ax = pitch.draw(figsize=(16, 10), constrained_layout=True, tight_layout=False)
+    fig, ax = pitch.draw(figsize=(15, 10))  # Proper 3:2 aspect ratio for football pitch
     
     # Set dark background for professional look
     fig.patch.set_facecolor('#0d1117')
@@ -641,38 +641,73 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
               '#ff3333', '#ff4d4d', '#ff6666', '#ff8080', '#ff9999', '#ffb3b3', '#ffcccc', '#ffffff']
     custom_cmap = LinearSegmentedColormap.from_list('smooth_red', colors, N=256)
     
-    # Create higher resolution grid for smoother heat map
-    x_grid = np.linspace(0, 120, 200)
-    y_grid = np.linspace(0, 80, 134)
+    # Create higher resolution grid for smoother heat map with proper aspect ratio
+    x_grid = np.linspace(0, 120, 240)  # Maintain 120:80 ratio in grid resolution
+    y_grid = np.linspace(0, 80, 160)   # Proper aspect ratio for football pitch
     X, Y = np.meshgrid(x_grid, y_grid)
     
     # Create positions array
     positions = np.column_stack([df.start_x.values, df.start_y.values])
     
     if len(positions) > 1:
-        # Create KDE with optimal bandwidth for smooth coverage
-        kde = gaussian_kde(positions.T)
-        kde.set_bandwidth(bw_method=0.4)  # Larger bandwidth for smoother, more connected areas
-        
-        # Evaluate KDE on grid
-        Z = kde(np.vstack([X.ravel(), Y.ravel()])).reshape(X.shape)
-        
-        # Normalize Z to a good range for visualization
-        Z_normalized = (Z - Z.min()) / (Z.max() - Z.min())
-        
-        # Apply power transformation for better visual contrast
-        Z_enhanced = np.power(Z_normalized, 0.7)
-        
-        # Create smooth heat map with many levels for smoothness
-        levels = np.linspace(0.05, 1.0, 50)  # Start from 0.05 to avoid showing noise
-        im = ax.contourf(X, Y, Z_enhanced, levels=levels, cmap=custom_cmap, alpha=0.85, extend='max')
-        
-        # Add very subtle contour lines for definition
-        contour_levels = np.linspace(0.2, 1.0, 8)
-        ax.contour(X, Y, Z_enhanced, levels=contour_levels, colors='white', alpha=0.15, linewidths=0.5)
-        
+        try:
+            # Check if we have enough unique points for KDE
+            unique_positions = np.unique(positions, axis=0)
+            
+            if len(unique_positions) > 1:
+                # Check for sufficient variance in the data
+                x_var = np.var(positions[:, 0])
+                y_var = np.var(positions[:, 1])
+                
+                if x_var > 1e-6 and y_var > 1e-6:  # Sufficient variance threshold
+                    # Create KDE with optimal bandwidth for smooth coverage
+                    kde = gaussian_kde(positions.T)
+                    kde.set_bandwidth(bw_method=0.4)  # Larger bandwidth for smoother, more connected areas
+                    
+                    # Evaluate KDE on grid
+                    Z = kde(np.vstack([X.ravel(), Y.ravel()])).reshape(X.shape)
+                    
+                    # Normalize Z to a good range for visualization
+                    Z_normalized = (Z - Z.min()) / (Z.max() - Z.min())
+                    
+                    # Apply power transformation for better visual contrast
+                    Z_enhanced = np.power(Z_normalized, 0.7)
+                    
+                    # Create smooth heat map with many levels for smoothness
+                    levels = np.linspace(0.05, 1.0, 50)  # Start from 0.05 to avoid showing noise
+                    im = ax.contourf(X, Y, Z_enhanced, levels=levels, cmap=custom_cmap, alpha=0.85, extend='max')
+                    
+                    # Add very subtle contour lines for definition
+                    contour_levels = np.linspace(0.2, 1.0, 8)
+                    ax.contour(X, Y, Z_enhanced, levels=contour_levels, colors='white', alpha=0.15, linewidths=0.5)
+                    
+                else:
+                    # Fallback: Points too concentrated, use manual kernel method
+                    raise np.linalg.LinAlgError("Insufficient variance for KDE")
+            else:
+                # Fallback: Not enough unique points, use manual kernel method
+                raise np.linalg.LinAlgError("Insufficient unique points for KDE")
+                
+        except (np.linalg.LinAlgError, ValueError):
+            # Fallback method: Create manual heat map using individual point kernels
+            Z_manual = np.zeros_like(X)
+            
+            for i, (x_pos, y_pos) in enumerate(positions):
+                # Create Gaussian kernel around each point
+                distance = np.sqrt((X - x_pos)**2 + (Y - y_pos)**2)
+                kernel = np.exp(-distance**2 / (2 * 6**2))  # Gaussian with sigma=6
+                Z_manual += kernel
+            
+            # Normalize the manual heat map
+            if Z_manual.max() > 0:
+                Z_manual = Z_manual / Z_manual.max()
+            
+            # Create smooth heat map
+            levels = np.linspace(0.05, 1.0, 30)
+            im = ax.contourf(X, Y, Z_manual, levels=levels, cmap=custom_cmap, alpha=0.85, extend='max')
+            
     else:
-        # Fallback for single point - create a smooth gradient around it
+        # Single point fallback - create a smooth gradient around it
         x_center, y_center = df.start_x.iloc[0], df.start_y.iloc[0]
         
         # Create circular gradient around the point

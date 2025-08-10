@@ -474,25 +474,39 @@ def render_custom_shot_page(model, lang="en"):
     if st.button(get_translation("calculate_xg", lang), use_container_width=True):
         # Store shot data in session state for persistence
         st.session_state.current_shot_data = shot_data
+        st.session_state.custom_shot_data = shot_data  # For work preservation check
         
         # Convert to DataFrame and preprocess
         shot_df = pd.DataFrame([shot_data])
         shot_df = preprocess_shot_data(shot_df)
         
-        # Predict
+        # Predict with safe handling and timing
         try:
-            predictions = predict_xg(model, shot_df)
+            predictions, prediction_time = predict_xg(model, shot_df)
+            
+            if predictions is None:
+                # Model went missing during prediction
+                st.session_state.model_missing_mid_work = True
+                st.rerun()
+                return
             
             if predictions is not None:
                 xg_value = predictions[0]
                 st.session_state.current_xg_value = xg_value
                 st.session_state.current_shot_df = shot_df
 
-                # Display results
-                st.metric(
-                    label=get_translation("predicted_xg", lang), 
-                    value=f"{xg_value:.3f}"
-                )
+                # Display results with model performance timing
+                col_xg, col_perf = st.columns([2, 1])
+                with col_xg:
+                    st.metric(
+                        label=get_translation("predicted_xg", lang), 
+                        value=f"{xg_value:.3f}"
+                    )
+                with col_perf:
+                    st.metric(
+                        label=f"⚡ {get_translation('model_performance', lang)}", 
+                        value=f"{prediction_time:.4f}s"
+                    )
 
                 # Visualize the single shot
                 fig, ax = create_single_shot_visualization(

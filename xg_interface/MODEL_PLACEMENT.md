@@ -1,13 +1,13 @@
-# Panduan Penempatan Model File
+# Model File Placement Guide
 
-## 📁 Lokasi Model File
+## 📁 Model File Location
 
-Model file **xG** harus ditempatkan di direktori **root** (folder utama) dari aplikasi ini.
+The **xG model file** must be placed in the **root directory** of this application.
 
-### Nama File dan Lokasi yang Diharapkan:
+### Expected File Name and Location:
 ```
 xg_interface/
-├── xg_model.joblib    ← LETAKKAN MODEL FILE DI SINI
+├── xg_model.joblib    ← PLACE YOUR MODEL FILE HERE
 ├── app.py
 ├── requirements.txt
 ├── setup.bat
@@ -16,17 +16,18 @@ xg_interface/
     └── ...
 ```
 
-## 🔧 Cara Menempatkan Model
+## 🔧 How to Place Your Model
 
-1. **Jika Anda sudah memiliki model trained (.joblib file):**
-   - Copy file model Anda ke folder `xg_interface/`
-   - Rename file tersebut menjadi `xg_model.joblib`
-   - Pastikan file berada di level yang sama dengan `app.py`
+1. **If you have a trained model (.joblib file):**
+   - Copy your model file to the `xg_interface/` folder
+   - Rename the file to `xg_model.joblib` (exact name required)
+   - Ensure the file is at the same level as `app.py`
 
-2. **Jika Anda belum memiliki model:**
-   - Aplikasi akan otomatis membuat dummy model untuk demonstrasi
-   - Dummy model akan disimpan sebagai `xg_model.joblib` di folder root
-   - Anda bisa mengganti dummy model ini dengan model yang sudah di-train
+2. **If you don't have a model yet:**
+   - The application will show clear instructions on where to place your model
+   - Train your model using your shot data
+   - Save it as: `joblib.dump(model, 'xg_model.joblib')`
+   - Place it in the root directory
 
 ## 📋 Format Model yang Didukung
 

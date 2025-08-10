@@ -219,12 +219,7 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         showlegend=False,
         width=800,
         height=500,
-        margin=dict(l=10, r=10, t=50, b=10),
-        title=dict(
-            text=f"Shot Location: X={current_x} (0=Left Goal, 120=Right Goal), Y={current_y} (0=Bottom, 80=Top)",
-            font=dict(color="white", size=14, family="Arial Black"),
-            x=0.5
-        ),
+        margin=dict(l=10, r=10, t=10, b=10),
         xaxis=dict(
             range=[-5, 125],
             showgrid=True,
@@ -342,8 +337,21 @@ def render_custom_shot_page(model, lang="en"):
         shot_key_pass = st.checkbox(get_translation("shot_key_pass", lang), value=False)
 
         st.subheader(get_translation("time_of_shot", lang))
-        minute = st.slider(get_translation("minute", lang), 0, 120, 45)
-        second = st.slider(get_translation("second", lang), 0, 59, 30)
+        
+        # Time input with both sliders and number inputs
+        col_time1, col_time2 = st.columns(2)
+        
+        with col_time1:
+            minute_slider = st.slider(get_translation("minute", lang), 0, 120, 45, key="minute_slider")
+            minute_input = st.number_input("", min_value=0, max_value=120, value=minute_slider, key="minute_input")
+            # Use the input value if it's different from slider, otherwise use slider
+            minute = minute_input if minute_input != minute_slider else minute_slider
+            
+        with col_time2:
+            second_slider = st.slider(get_translation("second", lang), 0, 59, 30, key="second_slider")
+            second_input = st.number_input("", min_value=0, max_value=59, value=second_slider, key="second_input")
+            # Use the input value if it's different from slider, otherwise use slider
+            second = second_input if second_input != second_slider else second_slider
 
     # Shot location section - moved below the other inputs
     st.subheader(get_translation("shot_location_xy", lang))

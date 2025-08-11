@@ -68,26 +68,56 @@ def show_model_not_found_message(lang='en'):
                 st.rerun()
         
         st.markdown("---")
-        with st.expander("ℹ️ **Model File Requirements**"):
-            st.markdown("""
-            - **File name:** Must be exactly `xg_model.joblib`
-            - **Format:** Joblib-serialized scikit-learn pipeline
-            - **Features:** Must support the required input features
-            - **Size:** Typically 1-50 MB depending on model complexity
+        with st.expander(f"ℹ️ **{get_translation('model_file_requirements', lang)}**"):
+            st.markdown(f"""
+            - **{get_translation('model_file_name', lang)}**
+            - **{get_translation('model_file_format', lang)}**
+            - **{get_translation('model_file_size', lang)}**
             """)
+            
+            st.markdown(f"### {get_translation('model_features_title', lang)}")
+            st.markdown(get_translation('model_features_desc', lang))
+            
+            # Create detailed feature list
+            feature_descriptions = {
+                'minute': 'Menit pertandingan (0-120)' if lang == 'id' else 'Match minute (0-120)',
+                'second': 'Detik dalam menit (0-59)' if lang == 'id' else 'Second within minute (0-59)',
+                'period': 'ID periode pertandingan' if lang == 'id' else 'Match period ID',
+                'play_pattern': 'ID pola permainan' if lang == 'id' else 'Play pattern ID',
+                'position': 'ID posisi pemain' if lang == 'id' else 'Player position ID',
+                'shot_technique': 'ID teknik tembakan' if lang == 'id' else 'Shot technique ID',
+                'shot_body_part': 'ID bagian tubuh' if lang == 'id' else 'Body part ID',
+                'shot_type': 'ID tipe tembakan' if lang == 'id' else 'Shot type ID',
+                'shot_open_goal': 'Gawang kosong (0/1)' if lang == 'id' else 'Open goal (0/1)',
+                'shot_one_on_one': 'Situasi 1v1 (0/1)' if lang == 'id' else 'One-on-one situation (0/1)',
+                'shot_aerial_won': 'Duel udara dimenangkan (0/1)' if lang == 'id' else 'Aerial duel won (0/1)',
+                'shot_first_time': 'Tembakan langsung (0/1)' if lang == 'id' else 'First-time shot (0/1)',
+                'shot_key_pass': 'Dari key pass (0/1)' if lang == 'id' else 'From key pass (0/1)',
+                'under_pressure': 'Di bawah tekanan (0/1)' if lang == 'id' else 'Under pressure (0/1)',
+                'start_x': 'Koordinat X tembakan' if lang == 'id' else 'Shot X coordinate',
+                'start_y': 'Koordinat Y tembakan' if lang == 'id' else 'Shot Y coordinate',
+                'type_before': 'ID event sebelum tembakan' if lang == 'id' else 'Event before shot ID',
+                'distance_to_goal': 'Jarak ke gawang (dihitung otomatis)' if lang == 'id' else 'Distance to goal (calculated)',
+                'angle_to_goal': 'Sudut ke gawang (dihitung otomatis)' if lang == 'id' else 'Angle to goal (calculated)'
+            }
+            
+            st.markdown("**" + ("Fitur Input (19 total):" if lang == 'id' else "Input Features (19 total):") + "**")
+            for i, (feature, desc) in enumerate(feature_descriptions.items(), 1):
+                st.markdown(f"{i:2d}. `{feature}` - {desc}")
+        
         
         # Troubleshooting
-        with st.expander("🆘 **Troubleshooting**"):
+        with st.expander(f"🆘 **{get_translation('troubleshooting', lang)}**"):
             st.markdown(f"""
-            **If you don't have a model file:**
-            - Train a model using your data
-            - Save it as: `joblib.dump(model, 'xg_model.joblib')`
-            - Place it in: `{os.path.dirname(full_path)}`
+            **{get_translation('no_model_file', lang)}**
+            - {get_translation('train_model', lang)}
+            - {get_translation('save_model', lang)}
+            - {get_translation('place_model', lang)} `{os.path.dirname(full_path)}`
             
-            **If the file exists but not loading:**
-            - Check file permissions
-            - Ensure it's a valid joblib file
-            - Verify the model is compatible
+            **{get_translation('file_not_loading', lang)}**
+            - {get_translation('check_permissions', lang)}
+            - {get_translation('valid_joblib', lang)}
+            - {get_translation('verify_compatibility', lang)}
             """)
         
         return False

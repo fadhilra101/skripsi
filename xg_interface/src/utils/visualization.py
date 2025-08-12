@@ -1,9 +1,10 @@
 """
 Visualization utilities for the xG prediction application.
+All visualizations use vertical pitch orientation via mplsoccer VerticalPitch.
 """
 
 import matplotlib.pyplot as plt
-from mplsoccer import Pitch
+from mplsoccer import Pitch, VerticalPitch
 import pandas as pd
 import numpy as np
 import io
@@ -14,137 +15,9 @@ import plotly.express as px
 from scipy.stats import gaussian_kde
 
 
-def create_interactive_pitch(current_x=108, current_y=40):
-    """
-    Create an interactive pitch where users can click to select shot location.
-    
-    Args:
-        current_x: Current x coordinate (default: 108)
-        current_y: Current y coordinate (default: 40)
-        
-    Returns:
-        Plotly figure object for interactive pitch
-    """
-    # Create pitch boundaries using StatsBomb dimensions (120x80)
-    fig = go.Figure()
-    
-    # Pitch outline
-    fig.add_shape(
-        type="rect",
-        x0=0, y0=0, x1=120, y1=80,
-        line=dict(color="white", width=2),
-        fillcolor="rgba(34, 49, 43, 0.8)"  # Dark green
-    )
-    
-    # Center circle
-    fig.add_shape(
-        type="circle",
-        x0=50, y0=30, x1=70, y1=50,
-        line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
-    )
-    
-    # Center line
-    fig.add_shape(
-        type="line",
-        x0=60, y0=0, x1=60, y1=80,
-        line=dict(color="white", width=2)
-    )
-    
-    # Left penalty area
-    fig.add_shape(
-        type="rect",
-        x0=0, y0=22, x1=18, y1=58,
-        line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
-    )
-    
-    # Right penalty area
-    fig.add_shape(
-        type="rect",
-        x0=102, y0=22, x1=120, y1=58,
-        line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
-    )
-    
-    # Left 6-yard box
-    fig.add_shape(
-        type="rect",
-        x0=0, y0=30, x1=6, y1=50,
-        line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
-    )
-    
-    # Right 6-yard box
-    fig.add_shape(
-        type="rect",
-        x0=114, y0=30, x1=120, y1=50,
-        line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
-    )
-    
-    # Left goal
-    fig.add_shape(
-        type="rect",
-        x0=-2, y0=36, x1=0, y1=44,
-        line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
-    )
-    
-    # Right goal
-    fig.add_shape(
-        type="rect",
-        x0=120, y0=36, x1=122, y1=44,
-        line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
-    )
-    
-    # Add current shot location marker
-    fig.add_trace(go.Scatter(
-        x=[current_x],
-        y=[current_y],
-        mode='markers',
-        marker=dict(size=12, color='red', symbol='circle', 
-                   line=dict(width=2, color='white')),
-        name='Shot Location',
-        hovertemplate=f'X: {current_x}<br>Y: {current_y}<extra></extra>'
-    ))
-    
-    # Update layout
-    fig.update_layout(
-        plot_bgcolor='rgba(34, 49, 43, 1)',  # Dark green background
-        paper_bgcolor='rgba(34, 49, 43, 1)',
-        showlegend=False,
-        width=600,
-        height=400,
-        margin=dict(l=20, r=20, t=40, b=20),
-        title=dict(
-            text="Click on the pitch to select shot location",
-            font=dict(color="white", size=14),
-            x=0.5
-        ),
-        xaxis=dict(
-            range=[-5, 125],
-            showgrid=False,
-            showticklabels=False,
-            zeroline=False
-        ),
-        yaxis=dict(
-            range=[-5, 85],
-            showgrid=False,
-            showticklabels=False,
-            zeroline=False,
-            scaleanchor="x",
-            scaleratio=1
-        )
-    )
-    
-    return fig
-
-
 def create_shot_map(df: pd.DataFrame, title: str = "Shot Map with xG") -> tuple:
     """
-    Create a professional shot map visualization showing shots colored by xG value.
+    Create a professional vertical shot map visualization showing shots colored by xG value.
     
     Args:
         df: DataFrame containing shot data with 'start_x', 'start_y', and 'xG' columns
@@ -153,20 +26,21 @@ def create_shot_map(df: pd.DataFrame, title: str = "Shot Map with xG") -> tuple:
     Returns:
         Tuple of (figure, axis) objects
     """
-    # Create the pitch with professional styling
-    pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
-    fig, ax = pitch.draw(figsize=(16, 10), constrained_layout=True, tight_layout=False)
+    # Create the vertical pitch with professional styling
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
+                          linewidth=2)
+    fig, ax = pitch.draw(figsize=(10, 16), constrained_layout=True, tight_layout=False)
     
     # Set dark background for professional look
     fig.patch.set_facecolor('#0d1117')
     ax.set_facecolor('#0d1117')
 
-    # Plot the shots with professional styling
+    # Plot the shots with professional styling - VerticalPitch handles coordinate transformation
     # Normalize xG for size to make visualization clearer
     size = df['xG'] * 800 + 100  # Ensure good visibility
     sc = pitch.scatter(df.start_x, df.start_y,
                        s=size,
-                       c=df.xG,
+                       c=df['xG'],
                        cmap='plasma',  # Professional colormap
                        ax=ax,
                        edgecolors='white',
@@ -190,7 +64,7 @@ def create_shot_map(df: pd.DataFrame, title: str = "Shot Map with xG") -> tuple:
 
 def create_half_pitch_shot_map(df: pd.DataFrame, title: str = "Half Pitch Shot Map") -> tuple:
     """
-    Create a professional half-pitch shot map visualization with goal at the top.
+    Create a professional vertical half-pitch shot map visualization with goal at the top.
     
     Args:
         df: DataFrame containing shot data with 'start_x', 'start_y', and 'xG' columns
@@ -199,21 +73,21 @@ def create_half_pitch_shot_map(df: pd.DataFrame, title: str = "Half Pitch Shot M
     Returns:
         Tuple of (figure, axis) objects
     """
-    # Create half pitch with professional styling
-    pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
-                  linewidth=2, half=True)
+    # Create vertical half pitch with professional styling
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
+                          linewidth=2, half=True)
     fig, ax = pitch.draw(figsize=(12, 12), constrained_layout=True, tight_layout=False)
     
     # Set dark background for professional look
     fig.patch.set_facecolor('#0d1117')
     ax.set_facecolor('#0d1117')
 
-    # Plot the shots with professional styling
+    # Plot the shots with professional styling - VerticalPitch handles coordinate transformation
     # Normalize xG for size to make visualization clearer
     size = df['xG'] * 800 + 100  # Ensure good visibility
     sc = pitch.scatter(df.start_x, df.start_y,
                        s=size,
-                       c=df.xG,
+                       c=df['xG'],
                        cmap='viridis',  # Professional colormap
                        ax=ax,
                        edgecolors='white',
@@ -243,7 +117,7 @@ def create_half_pitch_shot_map(df: pd.DataFrame, title: str = "Half Pitch Shot M
 def create_single_shot_visualization(x: float, y: float, xg_value: float, 
                                    title: str = "Shot Location Preview") -> tuple:
     """
-    Create a professional visualization for a single shot location.
+    Create a professional vertical visualization for a single shot location.
     
     Args:
         x: X coordinate of the shot
@@ -254,9 +128,10 @@ def create_single_shot_visualization(x: float, y: float, xg_value: float,
     Returns:
         Tuple of (figure, axis) objects
     """
-    # Create professional pitch styling
-    pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
-    fig, ax = pitch.draw(figsize=(14, 9), constrained_layout=True, tight_layout=False)
+    # Create professional vertical pitch styling
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
+                          linewidth=2)
+    fig, ax = pitch.draw(figsize=(9, 14), constrained_layout=True, tight_layout=False)
     
     # Set dark background for professional look
     fig.patch.set_facecolor('#0d1117')
@@ -264,6 +139,7 @@ def create_single_shot_visualization(x: float, y: float, xg_value: float,
     
     size = xg_value * 1200 + 200  # Ensure even low xG is visible, larger for single shot
     
+    # Plot using original coordinates - VerticalPitch handles coordinate transformation
     sc = pitch.scatter(x, y,
                        s=size,
                        c=xg_value,
@@ -274,7 +150,7 @@ def create_single_shot_visualization(x: float, y: float, xg_value: float,
                        linewidths=3,
                        alpha=0.9)
     
-    # Add professional annotation with xG value
+    # Add professional annotation with xG value using original coordinates
     pitch.annotate(f"xG: {xg_value:.3f}", 
                    xy=(x, y), 
                    ax=ax, xytext=(10, -20), textcoords='offset points', 
@@ -302,8 +178,8 @@ def create_preview_pitch(x: float, y: float) -> tuple:
     Returns:
         Tuple of (figure, axis) objects
     """
-    pitch = Pitch(pitch_type='statsbomb', pitch_color='#f4f4f4', line_color='grey')
-    fig, ax = pitch.draw(figsize=(8, 6))
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#f4f4f4', line_color='grey')
+    fig, ax = pitch.draw(figsize=(6, 9))
     pitch.scatter(x, y, ax=ax, s=150, color='red', edgecolors='black', zorder=2)
     ax.set_title("Shot Location Preview")
     
@@ -359,7 +235,7 @@ def prepare_csv_download(df: pd.DataFrame) -> str:
 
 def create_custom_shots_visualization(df: pd.DataFrame, title: str = "Custom Shots Analysis") -> tuple:
     """
-    Create a professional visualization for multiple custom shots.
+    Create a professional vertical visualization for multiple custom shots.
     
     Args:
         df: DataFrame containing custom shots with 'start_x', 'start_y', and 'xg_value' columns
@@ -370,8 +246,9 @@ def create_custom_shots_visualization(df: pd.DataFrame, title: str = "Custom Sho
     """
     if df.empty:
         # Return professional empty plot if no data
-        pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
-        fig, ax = pitch.draw(figsize=(16, 10))
+        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
+                      linewidth=2)
+        fig, ax = pitch.draw(figsize=(10, 16))
         fig.patch.set_facecolor('#0d1117')
         ax.set_facecolor('#0d1117')
         ax.set_title("No custom shots to display", fontsize=22, color='#8b949e', fontweight='bold')
@@ -379,20 +256,21 @@ def create_custom_shots_visualization(df: pd.DataFrame, title: str = "Custom Sho
                 ha='center', va='center', fontsize=14, color='#8b949e', style='italic')
         return fig, ax
     
-    # Create professional pitch styling
-    pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
-    fig, ax = pitch.draw(figsize=(16, 10), constrained_layout=True, tight_layout=False)
+    # Create professional vertical pitch styling
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
+                  linewidth=2)
+    fig, ax = pitch.draw(figsize=(10, 16), constrained_layout=True, tight_layout=False)
     
     # Set dark background for professional look
     fig.patch.set_facecolor('#0d1117')
     ax.set_facecolor('#0d1117')
 
-    # Plot the shots with professional styling based on xG value
+    # Plot the shots with professional styling based on xG value - mplsoccer handles vertical orientation
     size = df['xg_value'] * 900 + 150  # Size based on xG value, larger for visibility
     
     sc = pitch.scatter(df.start_x, df.start_y,
                        s=size,
-                       c=df.xg_value,
+                       c=df['xg_value'],
                        cmap='magma',  # Professional colormap for custom shots
                        ax=ax,
                        edgecolors='white',
@@ -408,7 +286,7 @@ def create_custom_shots_visualization(df: pd.DataFrame, title: str = "Custom Sho
     cbar.outline.set_edgecolor('white')
     cbar.outline.set_linewidth(1)
 
-    # Add shot labels if there are few shots (professional styling)
+    # Add shot labels if there are few shots (professional styling) using original coordinates
     if len(df) <= 8:  # Reduced number for clarity
         for _, shot in df.iterrows():
             pitch.annotate(
@@ -443,8 +321,8 @@ def create_shot_heat_map(df: pd.DataFrame, title: str = "Shot Heat Map") -> tupl
         Tuple of (figure, axis) objects
     """
     # Create the pitch with professional styling
-    pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
-    fig, ax = pitch.draw(figsize=(16, 10), constrained_layout=True, tight_layout=False)
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
+    fig, ax = pitch.draw(figsize=(10, 16), constrained_layout=True, tight_layout=False)
     
     # Set dark background for professional look
     fig.patch.set_facecolor('#0d1117')
@@ -461,13 +339,19 @@ def create_shot_heat_map(df: pd.DataFrame, title: str = "Shot Heat Map") -> tupl
               '#ff3333', '#ff4d4d', '#ff6666', '#ff8080', '#ff9999', '#ffb3b3', '#ffcccc', '#ffffff']
     custom_cmap = LinearSegmentedColormap.from_list('smooth_red', colors, N=256)
     
-    # Create higher resolution grid for smoother heat map
-    x_grid = np.linspace(0, 120, 200)
-    y_grid = np.linspace(0, 80, 134)
+    # Create higher resolution grid for smoother heat map (adjusted for vertical pitch)
+    x_grid = np.linspace(0, 80, 134)  # Width of vertical pitch
+    y_grid = np.linspace(0, 120, 200)  # Height of vertical pitch
     X, Y = np.meshgrid(x_grid, y_grid)
     
-    # Create positions array
-    positions = np.column_stack([df.start_x.values, df.start_y.values])
+    # Transform coordinates for vertical pitch display
+    # For VerticalPitch: horizontal x becomes vertical y, horizontal y becomes vertical x
+    df_transformed = df.copy()
+    df_transformed['start_x_vertical'] = df['start_y']  # horizontal y becomes vertical x
+    df_transformed['start_y_vertical'] = df['start_x']  # horizontal x becomes vertical y (NO inversion)
+    
+    # Create positions array with transformed coordinates
+    positions = np.column_stack([df_transformed.start_x_vertical.values, df_transformed.start_y_vertical.values])
     
     if len(positions) > 1:
         # Create KDE with optimal bandwidth for smooth coverage
@@ -492,8 +376,8 @@ def create_shot_heat_map(df: pd.DataFrame, title: str = "Shot Heat Map") -> tupl
         ax.contour(X, Y, Z_enhanced, levels=contour_levels, colors='white', alpha=0.15, linewidths=0.5)
         
     else:
-        # Fallback for single point - create a smooth gradient around it
-        x_center, y_center = df.start_x.iloc[0], df.start_y.iloc[0]
+        # Fallback for single point - create a smooth gradient around it (use transformed coordinates)
+        x_center, y_center = df_transformed.start_x_vertical.iloc[0], df_transformed.start_y_vertical.iloc[0]
         
         # Create circular gradient around the point
         distance = np.sqrt((X - x_center)**2 + (Y - y_center)**2)
@@ -527,9 +411,9 @@ def create_half_pitch_heat_map(df: pd.DataFrame, title: str = "Half Pitch Heat M
         Tuple of (figure, axis) objects
     """
     # Create half pitch with professional styling
-    pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
                   linewidth=2, half=True)
-    fig, ax = pitch.draw(figsize=(12, 12), constrained_layout=True, tight_layout=False)
+    fig, ax = pitch.draw(figsize=(10, 8), constrained_layout=True, tight_layout=False)
     
     # Set dark background for professional look
     fig.patch.set_facecolor('#0d1117')
@@ -546,13 +430,19 @@ def create_half_pitch_heat_map(df: pd.DataFrame, title: str = "Half Pitch Heat M
               '#ff3333', '#ff4d4d', '#ff6666', '#ff8080', '#ff9999', '#ffb3b3', '#ffcccc', '#ffffff']
     custom_cmap = LinearSegmentedColormap.from_list('smooth_red', colors, N=256)
     
-    # Create grid for smooth heat map (half pitch)
-    x_grid = np.linspace(60, 120, 120)
-    y_grid = np.linspace(0, 80, 134)
+    # Create grid for smooth heat map (half pitch - adjusted for vertical)
+    x_grid = np.linspace(0, 80, 134)  # Width of vertical pitch
+    y_grid = np.linspace(60, 120, 120)  # Upper half of vertical pitch (attacking half)
     X, Y = np.meshgrid(x_grid, y_grid)
     
-    # Create positions array
-    positions = np.column_stack([df.start_x.values, df.start_y.values])
+    # Transform coordinates for vertical pitch display
+    # For VerticalPitch: horizontal x becomes vertical y, horizontal y becomes vertical x
+    df_transformed = df.copy()
+    df_transformed['start_x_vertical'] = df['start_y']  # horizontal y becomes vertical x
+    df_transformed['start_y_vertical'] = df['start_x']  # horizontal x becomes vertical y (NO inversion)
+    
+    # Create positions array with transformed coordinates
+    positions = np.column_stack([df_transformed.start_x_vertical.values, df_transformed.start_y_vertical.values])
     
     if len(positions) > 1:
         # Create KDE with optimal bandwidth for smooth coverage
@@ -577,8 +467,8 @@ def create_half_pitch_heat_map(df: pd.DataFrame, title: str = "Half Pitch Heat M
         ax.contour(X, Y, Z_enhanced, levels=contour_levels, colors='white', alpha=0.15, linewidths=0.5)
         
     else:
-        # Fallback for single point - create a smooth gradient around it
-        x_center, y_center = df.start_x.iloc[0], df.start_y.iloc[0]
+        # Fallback for single point - create a smooth gradient around it (use transformed coordinates)
+        x_center, y_center = df_transformed.start_x_vertical.iloc[0], df_transformed.start_y_vertical.iloc[0]
         
         # Create circular gradient around the point
         distance = np.sqrt((X - x_center)**2 + (Y - y_center)**2)
@@ -613,8 +503,8 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
     """
     if df.empty:
         # Return professional empty plot if no data with proper aspect ratio
-        pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
-        fig, ax = pitch.draw(figsize=(15, 10))  # Better aspect ratio for pitch
+        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
+        fig, ax = pitch.draw(figsize=(10, 16))  # Proper aspect ratio for vertical pitch
         fig.patch.set_facecolor('#0d1117')
         ax.set_facecolor('#0d1117')
         ax.set_title("No custom shots to display", fontsize=22, color='#8b949e', fontweight='bold')
@@ -623,8 +513,8 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
         return fig, ax
     
     # Create professional pitch styling with proper aspect ratio
-    pitch = Pitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
-    fig, ax = pitch.draw(figsize=(15, 10))  # Proper 3:2 aspect ratio for football pitch
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
+    fig, ax = pitch.draw(figsize=(10, 16))  # Proper aspect ratio for vertical pitch
     
     # Set dark background for professional look
     fig.patch.set_facecolor('#0d1117')
@@ -641,13 +531,19 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
               '#ff3333', '#ff4d4d', '#ff6666', '#ff8080', '#ff9999', '#ffb3b3', '#ffcccc', '#ffffff']
     custom_cmap = LinearSegmentedColormap.from_list('smooth_red', colors, N=256)
     
-    # Create higher resolution grid for smoother heat map with proper aspect ratio
-    x_grid = np.linspace(0, 120, 240)  # Maintain 120:80 ratio in grid resolution
-    y_grid = np.linspace(0, 80, 160)   # Proper aspect ratio for football pitch
+    # Create higher resolution grid for smoother heat map (adjusted for vertical pitch)
+    x_grid = np.linspace(0, 80, 160)   # Width of vertical pitch
+    y_grid = np.linspace(0, 120, 240)  # Height of vertical pitch
     X, Y = np.meshgrid(x_grid, y_grid)
     
-    # Create positions array
-    positions = np.column_stack([df.start_x.values, df.start_y.values])
+    # Transform coordinates for vertical pitch display
+    # For VerticalPitch: horizontal x becomes vertical y, horizontal y becomes vertical x
+    df_transformed = df.copy()
+    df_transformed['start_x_vertical'] = df['start_y']  # horizontal y becomes vertical x
+    df_transformed['start_y_vertical'] = df['start_x']  # horizontal x becomes vertical y (NO inversion)
+    
+    # Create positions array with transformed coordinates
+    positions = np.column_stack([df_transformed.start_x_vertical.values, df_transformed.start_y_vertical.values])
     
     if len(positions) > 1:
         try:
@@ -660,26 +556,37 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
                 y_var = np.var(positions[:, 1])
                 
                 if x_var > 1e-6 and y_var > 1e-6:  # Sufficient variance threshold
-                    # Create KDE with optimal bandwidth for smooth coverage
+                    # Create KDE with adaptive bandwidth based on data distribution
                     kde = gaussian_kde(positions.T)
-                    kde.set_bandwidth(bw_method=0.4)  # Larger bandwidth for smoother, more connected areas
+                    
+                    # Calculate adaptive bandwidth to prevent overly stretched heat maps
+                    n_points = len(positions)
+                    if n_points > 10:
+                        bw_factor = 0.3  # Smaller bandwidth for many points
+                    elif n_points > 5:
+                        bw_factor = 0.4  # Medium bandwidth
+                    else:
+                        bw_factor = 0.5  # Larger bandwidth for few points
+                    
+                    kde.set_bandwidth(bw_method=bw_factor)
                     
                     # Evaluate KDE on grid
                     Z = kde(np.vstack([X.ravel(), Y.ravel()])).reshape(X.shape)
                     
-                    # Normalize Z to a good range for visualization
-                    Z_normalized = (Z - Z.min()) / (Z.max() - Z.min())
+                    # Apply square root scaling to prevent extreme stretching
+                    Z_sqrt = np.sqrt(Z)
+                    Z_normalized = (Z_sqrt - Z_sqrt.min()) / (Z_sqrt.max() - Z_sqrt.min())
                     
-                    # Apply power transformation for better visual contrast
-                    Z_enhanced = np.power(Z_normalized, 0.7)
+                    # Apply mild power transformation
+                    Z_enhanced = np.power(Z_normalized, 0.6)
                     
-                    # Create smooth heat map with many levels for smoothness
-                    levels = np.linspace(0.05, 1.0, 50)  # Start from 0.05 to avoid showing noise
+                    # Create heat map with circular-friendly levels
+                    levels = np.linspace(0.05, 1.0, 45)
                     im = ax.contourf(X, Y, Z_enhanced, levels=levels, cmap=custom_cmap, alpha=0.85, extend='max')
                     
-                    # Add very subtle contour lines for definition
-                    contour_levels = np.linspace(0.2, 1.0, 8)
-                    ax.contour(X, Y, Z_enhanced, levels=contour_levels, colors='white', alpha=0.15, linewidths=0.5)
+                    # Add subtle contour lines
+                    contour_levels = np.linspace(0.15, 0.9, 5)
+                    ax.contour(X, Y, Z_enhanced, levels=contour_levels, colors='white', alpha=0.25, linewidths=0.6)
                     
                 else:
                     # Fallback: Points too concentrated, use manual kernel method
@@ -692,29 +599,41 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
             # Fallback method: Create manual heat map using individual point kernels
             Z_manual = np.zeros_like(X)
             
+            # Adaptive sigma based on number of points
+            n_points = len(positions)
+            if n_points > 5:
+                sigma = 6  # Smaller kernel for many points
+            else:
+                sigma = 8  # Larger kernel for few points
+            
             for i, (x_pos, y_pos) in enumerate(positions):
-                # Create Gaussian kernel around each point
+                # Create circular Gaussian kernel around each point
                 distance = np.sqrt((X - x_pos)**2 + (Y - y_pos)**2)
-                kernel = np.exp(-distance**2 / (2 * 6**2))  # Gaussian with sigma=6
+                kernel = np.exp(-distance**2 / (2 * sigma**2))
                 Z_manual += kernel
             
-            # Normalize the manual heat map
-            if Z_manual.max() > 0:
-                Z_manual = Z_manual / Z_manual.max()
+            # Apply square root scaling to prevent stretching
+            Z_manual_sqrt = np.sqrt(Z_manual)
+            if Z_manual_sqrt.max() > 0:
+                Z_manual_normalized = Z_manual_sqrt / Z_manual_sqrt.max()
+            else:
+                Z_manual_normalized = Z_manual_sqrt
             
-            # Create smooth heat map
-            levels = np.linspace(0.05, 1.0, 30)
-            im = ax.contourf(X, Y, Z_manual, levels=levels, cmap=custom_cmap, alpha=0.85, extend='max')
+            # Create circular heat map with appropriate levels
+            levels = np.linspace(0.05, 1.0, 35)
+            im = ax.contourf(X, Y, Z_manual_normalized, levels=levels, cmap=custom_cmap, alpha=0.85, extend='max')
             
     else:
-        # Single point fallback - create a smooth gradient around it
-        x_center, y_center = df.start_x.iloc[0], df.start_y.iloc[0]
+        # Single point fallback - create a circular gradient (use transformed coordinates)
+        x_center, y_center = df_transformed.start_x_vertical.iloc[0], df_transformed.start_y_vertical.iloc[0]
         
         # Create circular gradient around the point
         distance = np.sqrt((X - x_center)**2 + (Y - y_center)**2)
-        Z_single = np.exp(-distance**2 / (2 * 8**2))  # Gaussian with sigma=8
+        Z_single = np.exp(-distance**2 / (2 * 8**2))  # Circular sigma=8
         
-        im = ax.contourf(X, Y, Z_single, levels=30, cmap=custom_cmap, alpha=0.85, extend='max')
+        # Create circular heat map
+        levels = np.linspace(0.05, 1.0, 30)
+        im = ax.contourf(X, Y, Z_single, levels=levels, cmap=custom_cmap, alpha=0.85, extend='max')
 
     # Professional colorbar styling
     cbar = fig.colorbar(im, ax=ax, shrink=0.8, aspect=20, pad=0.02)

@@ -6,6 +6,7 @@ Constants and mappings used throughout the xG prediction application.
 MODEL_FILE = 'xg_model.joblib'
 
 # Goal coordinates for distance and angle calculations
+# Keep horizontal coordinates for model compatibility
 GOAL_COORDS = (120, 40)
 
 # Mappings for UI (User-friendly Label: StatsBomb ID)

@@ -19,230 +19,117 @@ from ..models.model_manager import predict_xg
 
 def create_interactive_pitch_simple(current_x=108, current_y=40):
     """
-    Create a simple interactive pitch using Plotly with clear coordinate display.
+    Create a simple interactive vertical pitch using Plotly.
+    Takes horizontal coordinates but displays as vertical pitch.
     
     Args:
-        current_x: Current x coordinate
-        current_y: Current y coordinate
+        current_x: Current x coordinate (horizontal system)
+        current_y: Current y coordinate (horizontal system)
         
     Returns:
         Plotly figure object
     """
     fig = go.Figure()
     
-    # Pitch outline - main field
+    # Transform coordinates for vertical display
+    display_x = current_y  # horizontal Y becomes vertical X
+    display_y = current_x  # horizontal X becomes vertical Y (NO inversion)
+    
+    # Vertical pitch outline (80x120)
     fig.add_shape(
         type="rect",
-        x0=0, y0=0, x1=120, y1=80,
+        x0=0, y0=0, x1=80, y1=120,
         line=dict(color="white", width=3),
         fillcolor="rgba(34, 100, 34, 0.8)"  # Green field
     )
     
-    # Center circle
+    # Center circle (adjusted for vertical)
     fig.add_shape(
         type="circle",
-        x0=50, y0=30, x1=70, y1=50,
+        x0=30, y0=50, x1=50, y1=70,
         line=dict(color="white", width=2),
         fillcolor="rgba(0,0,0,0)"
     )
     
-    # Center line
+    # Center line (horizontal for vertical pitch)
     fig.add_shape(
         type="line",
-        x0=60, y0=0, x1=60, y1=80,
+        x0=0, y0=60, x1=80, y1=60,
         line=dict(color="white", width=2)
     )
     
     # Center spot
     fig.add_shape(
         type="circle",
-        x0=59, y0=39, x1=61, y1=41,
+        x0=39, y0=59, x1=41, y1=61,
         line=dict(color="white", width=1),
         fillcolor="white"
     )
     
-    # Left penalty area
+    # Top penalty area (attacking goal)
     fig.add_shape(
         type="rect",
-        x0=0, y0=22, x1=18, y1=58,
+        x0=22, y0=102, x1=58, y1=120,
         line=dict(color="white", width=2),
         fillcolor="rgba(0,0,0,0)"
     )
     
-    # Right penalty area  
+    # Bottom penalty area  
     fig.add_shape(
         type="rect",
-        x0=102, y0=22, x1=120, y1=58,
+        x0=22, y0=0, x1=58, y1=18,
         line=dict(color="white", width=2),
         fillcolor="rgba(0,0,0,0)"
     )
     
-    # Left 6-yard box
+    # Top 6-yard box
     fig.add_shape(
         type="rect",
-        x0=0, y0=30, x1=6, y1=50,
+        x0=30, y0=114, x1=50, y1=120,
         line=dict(color="white", width=2),
         fillcolor="rgba(0,0,0,0)"
     )
     
-    # Right 6-yard box
+    # Bottom 6-yard box
     fig.add_shape(
         type="rect",
-        x0=114, y0=30, x1=120, y1=50,
+        x0=30, y0=0, x1=50, y1=6,
         line=dict(color="white", width=2),
         fillcolor="rgba(0,0,0,0)"
     )
     
-    # Penalty spots
-    fig.add_shape(
-        type="circle",
-        x0=11, y0=39, x1=13, y1=41,
-        line=dict(color="white", width=1),
-        fillcolor="white"
-    )
-    
-    fig.add_shape(
-        type="circle",
-        x0=107, y0=39, x1=109, y1=41,
-        line=dict(color="white", width=1),
-        fillcolor="white"
-    )
-    
-    # Goals
-    fig.add_shape(
-        type="rect",
-        x0=-2, y0=36, x1=0, y1=44,
-        line=dict(color="white", width=3),
-        fillcolor="rgba(255,255,255,0.3)"
-    )
-    
-    fig.add_shape(
-        type="rect",
-        x0=120, y0=36, x1=122, y1=44,
-        line=dict(color="white", width=3),
-        fillcolor="rgba(255,255,255,0.3)"
-    )
-    
-    # Corner arcs
-    # Add corner arcs for visual completeness
-    fig.add_shape(
-        type="circle",
-        x0=-1, y0=-1, x1=1, y1=1,
-        line=dict(color="white", width=1)
-    )
-    fig.add_shape(
-        type="circle",
-        x0=119, y0=-1, x1=121, y1=1,
-        line=dict(color="white", width=1)
-    )
-    fig.add_shape(
-        type="circle",
-        x0=-1, y0=79, x1=1, y1=81,
-        line=dict(color="white", width=1)
-    )
-    fig.add_shape(
-        type="circle",
-        x0=119, y0=79, x1=121, y1=81,
-        line=dict(color="white", width=1)
-    )
-    
-    # Add current shot location - LARGE RED DOT
+    # Add current shot location marker (using transformed coordinates)
     fig.add_trace(go.Scatter(
-        x=[current_x],
-        y=[current_y],
-        mode='markers+text',
-        marker=dict(
-            size=20,  # Large marker
-            color='red',
-            symbol='circle',
-            line=dict(width=3, color='white')
-        ),
-        text=[f'⚽ ({current_x}, {current_y})'],
-        textposition="top center",
-        textfont=dict(size=14, color='white'),
+        x=[display_x],
+        y=[display_y],
+        mode='markers',
+        marker=dict(size=15, color='red', symbol='circle', 
+                   line=dict(width=2, color='white')),
         name='Shot Location',
-        hovertemplate=f'<b>Shot Location</b><br>X: {current_x}<br>Y: {current_y}<extra></extra>'
+        hovertemplate=f'<b>Shot Location</b><br>Original: ({current_x}, {current_y})<br>Display: ({display_x:.1f}, {display_y:.1f})<extra></extra>'
     ))
     
-    # Add grid lines for better coordinate reference (subtle)
-    for x in range(0, 121, 20):
-        fig.add_shape(
-            type="line",
-            x0=x, y0=0, x1=x, y1=80,
-            line=dict(color="rgba(255,255,255,0.1)", width=1)
-        )
-    
-    for y in range(0, 81, 20):
-        fig.add_shape(
-            type="line",
-            x0=0, y0=y, x1=120, y1=y,
-            line=dict(color="rgba(255,255,255,0.1)", width=1)
-        )
-    
-    # Add coordinate labels for reference
-    fig.add_annotation(
-        x=5, y=5,
-        text="(0,0)<br>Bottom Left",
-        showarrow=False,
-        font=dict(color="white", size=10),
-        bgcolor="rgba(0,0,0,0.5)"
-    )
-    
-    fig.add_annotation(
-        x=5, y=75,
-        text="(0,80)<br>Top Left", 
-        showarrow=False,
-        font=dict(color="white", size=10),
-        bgcolor="rgba(0,0,0,0.5)"
-    )
-    
-    fig.add_annotation(
-        x=115, y=75,
-        text="(120,80)<br>Top Right",
-        showarrow=False,
-        font=dict(color="white", size=10),
-        bgcolor="rgba(0,0,0,0.5)"
-    )
-    
-    fig.add_annotation(
-        x=115, y=5,
-        text="(120,0)<br>Bottom Right",
-        showarrow=False,
-        font=dict(color="white", size=10),
-        bgcolor="rgba(0,0,0,0.5)"
-    )
-    
-    # Update layout
+    # Update layout for vertical pitch
     fig.update_layout(
-        plot_bgcolor='rgba(34, 100, 34, 1)',  # Green background
-        paper_bgcolor='rgba(34, 100, 34, 1)',
+        plot_bgcolor='rgba(34, 49, 43, 1)',
+        paper_bgcolor='rgba(34, 49, 43, 1)',
         showlegend=False,
-        width=800,
-        height=500,
+        width=400,  # Narrower for vertical
+        height=600,  # Taller for vertical
         margin=dict(l=10, r=10, t=10, b=10),
         xaxis=dict(
-            range=[-5, 125],
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(255,255,255,0.2)',
-            showticklabels=True,
-            tickfont=dict(color='white', size=10),
-            title=dict(text="X Coordinate", font=dict(color='white')),
-            zeroline=False,
-            fixedrange=True
+            range=[-5, 85],
+            showgrid=False,
+            showticklabels=False,
+            zeroline=False
         ),
         yaxis=dict(
-            range=[85, -5],  # Reversed range to match StatsBomb coordinates
-            showgrid=True,
-            gridwidth=1,
-            gridcolor='rgba(255,255,255,0.2)',
-            showticklabels=True,
-            tickfont=dict(color='white', size=10),
-            title=dict(text="Y Coordinate", font=dict(color='white')),
-            scaleanchor="x",
-            scaleratio=1,
+            range=[-5, 125],
+            showgrid=False,
+            showticklabels=False,
             zeroline=False,
-            fixedrange=True
+            scaleanchor="x",
+            scaleratio=1
         )
     )
     
@@ -266,11 +153,11 @@ def render_custom_shot_page(model, lang="en"):
     # Get localized options
     options = get_language_options(lang)
 
-    # Initialize shot coordinates in session state
+    # Initialize shot coordinates in session state (horizontal coordinates)
     if 'shot_x' not in st.session_state:
-        st.session_state.shot_x = 108
+        st.session_state.shot_x = 108  # Near goal in horizontal coordinates
     if 'shot_y' not in st.session_state:
-        st.session_state.shot_y = 40
+        st.session_state.shot_y = 40  # Center width in horizontal coordinates
 
     col1, col2 = st.columns((1, 1))
 
@@ -353,13 +240,46 @@ def render_custom_shot_page(model, lang="en"):
             # Use the input value if it's different from slider, otherwise use slider
             second = second_input if second_input != second_slider else second_slider
 
-    # Shot location section - moved below the other inputs
-    st.subheader(get_translation("shot_location_xy", lang))
+    # Shot location section with enhanced UI
+    st.subheader("🎯 " + get_translation("shot_location_xy", lang))
     
-    # Instructions for interactive pitch
-    st.markdown(get_translation("click_instruction", lang))
+    # Add coordinate guide
+    with st.expander("📏 Coordinate Guide", expanded=False):
+        guide_col1, guide_col2 = st.columns(2)
+        with guide_col1:
+            st.markdown("""
+            **🏃 X-Axis (Distance from Goal)**
+            - 0-30: 🔵 Defensive Third
+            - 31-90: 🟡 Middle Third  
+            - 91-120: 🔴 Attacking Third
+            - 120: 🥅 Opponent Goal Line
+            """)
+        with guide_col2:
+            st.markdown("""
+            **⬅️➡️ Y-Axis (Side Position)**
+            - 0-25: ⬅️ Left Wing
+            - 26-54: 🎯 Central Area
+            - 55-80: ➡️ Right Wing
+            - Goal: Y 36-44 (8m wide)
+            """)
+        
+        st.info("💡 **Tip**: Lower X values = further from goal. Center Y values (35-45) = better shooting angles!")
     
-    # Create coordinate selection using slider-based approach
+    # Current position status
+    distance_to_goal = 120 - st.session_state.shot_x
+    if 36 <= st.session_state.shot_y <= 44:
+        position_quality = "🎯 Excellent angle"
+    elif 30 <= st.session_state.shot_y <= 50:
+        position_quality = "👍 Good angle"
+    else:
+        position_quality = "⚠️ Wide angle"
+    
+    st.markdown(f"**📍 Current Position Analysis:** Distance to goal: **{distance_to_goal}m** • {position_quality}")
+    
+    # Instructions for coordinate selection
+    st.info("🔧 Use the controls below to set your shot coordinates. The pitch will update in real-time!")
+    
+    # Create coordinate selection layout
     col_left, col_right = st.columns([2, 1])
     
     with col_left:
@@ -368,27 +288,106 @@ def render_custom_shot_page(model, lang="en"):
         st.plotly_chart(fig, use_container_width=True, key="pitch_display")
     
     with col_right:
-        st.markdown("### " + get_translation('current_coordinates', lang))
-        st.markdown(f"**X:** {st.session_state.shot_x}")
-        st.markdown(f"**Y:** {st.session_state.shot_y}")
+        # Professional coordinate input panel
+        st.markdown("### 🎯 " + get_translation('current_coordinates', lang))
         
-        st.markdown("### Manual Input")
-        # Use sliders for easier coordinate selection
+        # Current coordinates display with styling
+        coord_col1, coord_col2 = st.columns(2)
+        with coord_col1:
+            st.metric(
+                label="📍 X Position", 
+                value=f"{st.session_state.shot_x}",
+                help="0 = Own goal, 120 = Attacking goal"
+            )
+        with coord_col2:
+            st.metric(
+                label="📍 Y Position", 
+                value=f"{st.session_state.shot_y}",
+                help="0 = Left side, 80 = Right side"
+            )
+        
+        st.markdown("---")
+        st.markdown("### ⚙️ Manual Input")
+        
+        # Enhanced sliders with better styling and visual feedback
+        st.markdown("**� Distance from Goal (X-Axis)**")
         new_x = st.slider(
-            get_translation("start_x", lang) + " (0-120)", 
+            label="X Coordinate",
             min_value=0, max_value=120, 
             value=st.session_state.shot_x, 
             step=1,
-            key="slider_x"
+            key="slider_x",
+            help="🥅 0 = Own goal line • 120 = Opponent goal line",
+            label_visibility="collapsed"
         )
+        
+        # Visual indicator for X position with distance info
+        distance_to_goal = 120 - new_x
+        if new_x <= 30:
+            x_zone = "🔵 Defensive Third"
+            zone_color = "blue"
+        elif new_x <= 90:
+            x_zone = "🟡 Middle Third"
+            zone_color = "orange"
+        else:
+            x_zone = "🔴 Attacking Third"
+            zone_color = "red"
+        
+        st.markdown(f"<span style='color: {zone_color}; font-weight: bold;'>{x_zone}</span> • Distance to goal: **{distance_to_goal}m**", unsafe_allow_html=True)
+        
+        st.markdown("**⬅️➡️ Side Position (Y-Axis)**")
         new_y = st.slider(
-            get_translation("start_y", lang) + " (0-80)", 
+            label="Y Coordinate",
             min_value=0, max_value=80, 
             value=st.session_state.shot_y, 
             step=1,
             key="slider_y",
-            help="0 = Bottom of pitch, 80 = Top of pitch (StatsBomb coordinates)"
+            help="⬅️ 0 = Left touchline • 80 = Right touchline",
+            label_visibility="collapsed"
         )
+        
+        # Visual indicator for Y position with angle info
+        if new_y <= 25:
+            y_zone = "⬅️ Left Wing"
+            angle_desc = "Wide angle"
+        elif new_y <= 55:
+            y_zone = "🎯 Central"
+            angle_desc = "Good angle"
+        else:
+            y_zone = "➡️ Right Wing"
+            angle_desc = "Wide angle"
+        
+        st.markdown(f"**{y_zone}** • {angle_desc}")
+        
+        # Quick position summary
+        st.markdown("---")
+        st.markdown("**📊 Position Summary**")
+        
+        # Calculate shot difficulty
+        if new_x >= 105 and 30 <= new_y <= 50:
+            difficulty = "🟢 Easy"
+        elif new_x >= 90 and 20 <= new_y <= 60:
+            difficulty = "🟡 Medium"
+        elif new_x >= 75:
+            difficulty = "🟠 Hard"
+        else:
+            difficulty = "🔴 Very Hard"
+        
+        summary_col1, summary_col2 = st.columns(2)
+        with summary_col1:
+            st.metric("Distance", f"{distance_to_goal}m", delta=None)
+        with summary_col2:
+            st.markdown(f"**Difficulty:** {difficulty}")
+        
+        st.caption(f"Position: {new_x}, {new_y} • Angle: {angle_desc}")
+        
+        # Visual indicator for Y position
+        if new_y <= 25:
+            y_zone = "⬅️ Left Wing"
+        elif new_y <= 55:
+            y_zone = "🎯 Central"
+        else:
+            y_zone = "➡️ Right Wing"
         
         # Auto-update when sliders change
         if new_x != st.session_state.shot_x or new_y != st.session_state.shot_y:
@@ -396,34 +395,108 @@ def render_custom_shot_page(model, lang="en"):
             st.session_state.shot_y = new_y
             st.rerun()
     
-    # Create a grid-based click system
+    # Enhanced pitch area selection
     st.markdown("---")
-    st.markdown("### " + ("Klik area untuk memilih lokasi:" if lang == "id" else "Click area to select location:"))
+    st.markdown("### 🗺️ " + ("Quick Area Selection" if lang == "en" else "Pilihan Cepat Area"))
+    st.caption("Click any area below to instantly set coordinates")
     
-    # Create a visual grid system - coordinates adjusted for StatsBomb system
-    pitch_areas = [
-        # Format: (name_id, name_en, x, y, description)
-        ("area_penalty", "Penalty Area", 108, 40, "Area Penalti"),
-        ("area_six_yard", "Six-yard Box", 116, 40, "Kotak 6 Yard"),
-        ("area_left_wing", "Left Wing", 100, 15, "Sayap Kiri"),  # Swapped Y coordinates
-        ("area_right_wing", "Right Wing", 100, 65, "Sayap Kanan"),  # Swapped Y coordinates
-        ("area_outside_box", "Outside Box", 85, 40, "Luar Kotak Penalti"),
-        ("area_far_post", "Far Post", 115, 30, "Dekat Tiang Jauh"),  # Swapped Y coordinates
-        ("area_near_post", "Near Post", 115, 50, "Dekat Tiang Dekat"),  # Swapped Y coordinates
-        ("area_center", "Center", 60, 40, "Tengah Lapangan"),
-        ("area_left_flank", "Left Flank", 90, 10, "Sisi Kiri"),  # Swapped Y coordinates
-        ("area_right_flank", "Right Flank", 90, 70, "Sisi Kanan")  # Swapped Y coordinates
+    # Organize areas by tactical zones
+    attacking_areas = [
+        ("area_penalty", "Penalty Area ⚽", 108, 40, "Area Penalti ⚽"),
+        ("area_six_yard", "Six-yard Box 🥅", 116, 40, "Kotak 6 Yard 🥅"),
+        ("area_far_post", "Far Post 🎯", 115, 30, "Tiang Jauh 🎯"),
+        ("area_near_post", "Near Post 🎯", 115, 50, "Tiang Dekat 🎯"),
     ]
     
-    # Create grid layout for area buttons
-    cols = st.columns(5)
-    for i, (area_id, name_en, x, y, name_id) in enumerate(pitch_areas):
-        with cols[i % 5]:
+    midfield_areas = [
+        ("area_outside_box", "Outside Box 📦", 85, 40, "Luar Kotak Penalti 📦"),
+        ("area_center", "Center Circle ⭕", 60, 40, "Lingkaran Tengah ⭕"),
+    ]
+    
+    wing_areas = [
+        ("area_left_wing", "Left Wing ⬅️", 100, 15, "Sayap Kiri ⬅️"),
+        ("area_right_wing", "Right Wing ➡️", 100, 65, "Sayap Kanan ➡️"),
+        ("area_left_flank", "Left Flank ⬅️", 90, 10, "Sisi Kiri ⬅️"),
+        ("area_right_flank", "Right Flank ➡️", 90, 70, "Sisi Kanan ➡️")
+    ]
+    
+    # Attacking third
+    st.markdown("**🔴 Attacking Third**")
+    cols = st.columns(4)
+    for i, (area_id, name_en, x, y, name_id) in enumerate(attacking_areas):
+        with cols[i]:
             area_name = name_id if lang == "id" else name_en
-            if st.button(f"📍 {area_name}", key=area_id, help=f"X: {x}, Y: {y}"):
+            if st.button(area_name, key=area_id, help=f"Coordinates: ({x}, {y})", use_container_width=True):
                 st.session_state.shot_x = x
                 st.session_state.shot_y = y
+                st.success(f"✅ Position set to ({x}, {y})")
                 st.rerun()
+    
+    # Middle third
+    st.markdown("**🟡 Middle Third**")
+    cols = st.columns(2)
+    for i, (area_id, name_en, x, y, name_id) in enumerate(midfield_areas):
+        with cols[i]:
+            area_name = name_id if lang == "id" else name_en
+            if st.button(area_name, key=area_id, help=f"Coordinates: ({x}, {y})", use_container_width=True):
+                st.session_state.shot_x = x
+                st.session_state.shot_y = y
+                st.success(f"✅ Position set to ({x}, {y})")
+                st.rerun()
+    
+    # Wing areas
+    st.markdown("**⬅️➡️ Wing Areas**")
+    cols = st.columns(3)
+    for i, (area_id, name_en, x, y, name_id) in enumerate(wing_areas):
+        with cols[i % 3]:
+            area_name = name_id if lang == "id" else name_en
+            if st.button(area_name, key=area_id, help=f"Coordinates: ({x}, {y})", use_container_width=True):
+                st.session_state.shot_x = x
+                st.session_state.shot_y = y
+                st.success(f"✅ Position set to ({x}, {y})")
+                st.rerun()
+
+    # Add custom preset coordinates
+    st.markdown("---")
+    st.markdown("**🎖️ Famous Shot Locations**")
+    
+    famous_shots = [
+        ("penalty_spot", "Penalty Spot 🎯", 108, 40, "Titik Penalti 🎯"),
+        ("edge_of_box", "Edge of Box 📦", 102, 40, "Pinggir Kotak 📦"),
+        ("top_corner", "Top Corner 📐", 108, 35, "Sudut Atas 📐"),
+        ("bottom_corner", "Bottom Corner 📐", 108, 45, "Sudut Bawah 📐"),
+    ]
+    
+    cols = st.columns(4)
+    for i, (shot_id, name_en, x, y, name_id) in enumerate(famous_shots):
+        with cols[i]:
+            shot_name = name_id if lang == "id" else name_en
+            if st.button(shot_name, key=shot_id, help=f"Classic position: ({x}, {y})", use_container_width=True):
+                st.session_state.shot_x = x
+                st.session_state.shot_y = y
+                st.success(f"🌟 Classic position set!")
+                st.rerun()
+    
+    # Random coordinate generator for testing
+    st.markdown("---")
+    random_col1, random_col2 = st.columns(2)
+    
+    with random_col1:
+        if st.button("🎲 Random Attacking Position", help="Generate random coordinates in attacking third", use_container_width=True):
+            import random
+            random_x = random.randint(90, 118)
+            random_y = random.randint(10, 70)
+            st.session_state.shot_x = random_x
+            st.session_state.shot_y = random_y
+            st.success(f"🎲 Random position: ({random_x}, {random_y})")
+            st.rerun()
+    
+    with random_col2:
+        if st.button("🏠 Reset to Default", help="Reset to penalty spot", use_container_width=True):
+            st.session_state.shot_x = 108
+            st.session_state.shot_y = 40
+            st.success("↩️ Reset to penalty spot!")
+            st.rerun()
 
     # Use session state coordinates for calculation
     start_x = st.session_state.shot_x

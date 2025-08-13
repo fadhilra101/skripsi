@@ -7,7 +7,7 @@ import pandas as pd
 
 from ..utils.constants import REQUIRED_COLUMNS
 from ..utils.data_processing import validate_columns, preprocess_shot_data
-from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, get_visualization_options, create_visualization_by_type
+from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes
 from ..utils.language import get_translation
 from ..models.model_manager import predict_xg
 
@@ -279,24 +279,36 @@ def render_dataset_prediction_page(model, lang="en"):
                         
                         selected_viz_type = viz_options[viz_type]
                         
-                        # Create the full pitch visualization
+                        # Create the interactive full pitch visualization
                         fig_full, ax_full = create_visualization_by_type(
                             processed_df, 
                             selected_viz_type, 
                             get_translation('shot_map', lang),
-                            half_pitch=False
+                            half_pitch=False,
+                            interactive=True
                         )
-                        st.pyplot(fig_full)
                         
-                        # Create half pitch visualization
+                        # Display interactive visualization using plotly_chart
+                        if ax_full is None:  # This is a Plotly figure
+                            st.plotly_chart(fig_full, use_container_width=True)
+                        else:  # This is a matplotlib figure (fallback)
+                            st.pyplot(fig_full)
+                        
+                        # Create half pitch visualization  
                         st.write(f"### {get_translation('half_pitch_map', lang)}")
                         fig_half, ax_half = create_visualization_by_type(
                             processed_df, 
                             selected_viz_type, 
                             get_translation('half_pitch_map', lang),
-                            half_pitch=True
+                            half_pitch=True,
+                            interactive=True
                         )
-                        st.pyplot(fig_half)
+                        
+                        # Display interactive half pitch
+                        if ax_half is None:  # This is a Plotly figure
+                            st.plotly_chart(fig_half, use_container_width=True)
+                        else:  # This is a matplotlib figure (fallback)
+                            st.pyplot(fig_half)
                         
                         # Download section
                         st.write(f"### {get_translation('download_section', lang)}")
@@ -317,7 +329,11 @@ def render_dataset_prediction_page(model, lang="en"):
                         
                         with col_d2:
                             # Full pitch visualization download
-                            img_data_full = save_figure_to_bytes(fig_full, 'png', 300)
+                            if ax_full is None:  # Plotly figure
+                                img_data_full = save_plotly_figure_to_bytes(fig_full, 'png', 300)
+                            else:  # Matplotlib figure
+                                img_data_full = save_figure_to_bytes(fig_full, 'png', 300)
+                            
                             st.download_button(
                                 label=get_translation("download_full_pitch", lang),
                                 data=img_data_full,
@@ -329,7 +345,11 @@ def render_dataset_prediction_page(model, lang="en"):
                         
                         with col_d3:
                             # Half pitch visualization download
-                            img_data_half = save_figure_to_bytes(fig_half, 'png', 300)
+                            if ax_half is None:  # Plotly figure
+                                img_data_half = save_plotly_figure_to_bytes(fig_half, 'png', 300)
+                            else:  # Matplotlib figure
+                                img_data_half = save_figure_to_bytes(fig_half, 'png', 300)
+                            
                             st.download_button(
                                 label=get_translation("download_half_pitch", lang),
                                 data=img_data_half,

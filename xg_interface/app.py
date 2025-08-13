@@ -191,10 +191,10 @@ def main():
             st.sidebar.error(get_translation("model_load_error", lang))
         return
     
-    # Page selection (when model is available)
+    # Page selection (when model is available) - Custom Shot as main page
     page_options = [
-        get_translation("predict_from_dataset", lang),
-        get_translation("simulate_custom_shot", lang)
+        get_translation("simulate_custom_shot", lang),
+        get_translation("predict_from_dataset", lang)
     ]
     
     page = st.sidebar.radio(
@@ -207,11 +207,11 @@ def main():
     render_language_switcher()
     render_author_info()
     
-    # Route to appropriate page
-    if page == get_translation("predict_from_dataset", lang):
-        render_dataset_prediction_page(model, lang)
-    elif page == get_translation("simulate_custom_shot", lang):
+    # Route to appropriate page - Custom Shot first
+    if page == get_translation("simulate_custom_shot", lang):
         render_custom_shot_page(model, lang)
+    elif page == get_translation("predict_from_dataset", lang):
+        render_dataset_prediction_page(model, lang)
 
 
 if __name__ == "__main__":

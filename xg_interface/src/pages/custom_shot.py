@@ -7,7 +7,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from ..utils.data_processing import preprocess_shot_data
-from ..utils.visualization import create_single_shot_visualization, save_figure_to_bytes, create_download_filename, create_custom_shots_visualization, get_visualization_options, create_visualization_by_type
+from ..utils.visualization import create_single_shot_visualization, save_figure_to_bytes, create_download_filename, create_custom_shots_visualization, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes
 from ..utils.language import get_translation, get_language_options
 from ..utils.custom_shot_manager import (
     initialize_custom_shots_session, add_custom_shot, get_custom_shots_dataframe,
@@ -40,7 +40,8 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         type="rect",
         x0=0, y0=0, x1=80, y1=120,
         line=dict(color="white", width=3),
-        fillcolor="rgba(34, 100, 34, 0.8)"  # Green field
+        fillcolor="rgba(34, 100, 34, 0.8)",
+        layer='below'
     )
     
     # Center circle (adjusted for vertical)
@@ -48,14 +49,16 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         type="circle",
         x0=30, y0=50, x1=50, y1=70,
         line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
+        fillcolor="rgba(0,0,0,0)",
+        layer='below'
     )
     
     # Center line (horizontal for vertical pitch)
     fig.add_shape(
         type="line",
         x0=0, y0=60, x1=80, y1=60,
-        line=dict(color="white", width=2)
+        line=dict(color="white", width=2),
+        layer='below'
     )
     
     # Center spot
@@ -63,7 +66,8 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         type="circle",
         x0=39, y0=59, x1=41, y1=61,
         line=dict(color="white", width=1),
-        fillcolor="white"
+        fillcolor="white",
+        layer='below'
     )
     
     # Top penalty area (attacking goal)
@@ -71,7 +75,8 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         type="rect",
         x0=22, y0=102, x1=58, y1=120,
         line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
+        fillcolor="rgba(0,0,0,0)",
+        layer='below'
     )
     
     # Bottom penalty area  
@@ -79,7 +84,8 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         type="rect",
         x0=22, y0=0, x1=58, y1=18,
         line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
+        fillcolor="rgba(0,0,0,0)",
+        layer='below'
     )
     
     # Top 6-yard box
@@ -87,7 +93,8 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         type="rect",
         x0=30, y0=114, x1=50, y1=120,
         line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
+        fillcolor="rgba(0,0,0,0)",
+        layer='below'
     )
     
     # Bottom 6-yard box
@@ -95,7 +102,8 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         type="rect",
         x0=30, y0=0, x1=50, y1=6,
         line=dict(color="white", width=2),
-        fillcolor="rgba(0,0,0,0)"
+        fillcolor="rgba(0,0,0,0)",
+        layer='below'
     )
     
     # Add current shot location marker (using transformed coordinates)
@@ -106,7 +114,7 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         marker=dict(size=15, color='red', symbol='circle', 
                    line=dict(width=2, color='white')),
         name='Shot Location',
-        hovertemplate=f'<b>Shot Location</b><br>Original: ({current_x}, {current_y})<br>Display: ({display_x:.1f}, {display_y:.1f})<extra></extra>'
+        hovertemplate=f"<b>Shot Location</b><br>x: {current_x:.1f}, y: {current_y:.1f}<extra></extra>"
     ))
     
     # Update layout for vertical pitch
@@ -242,28 +250,6 @@ def render_custom_shot_page(model, lang="en"):
 
     # Shot location section with enhanced UI
     st.subheader("🎯 " + get_translation("shot_location_xy", lang))
-    
-    # Add coordinate guide
-    with st.expander("📏 Coordinate Guide", expanded=False):
-        guide_col1, guide_col2 = st.columns(2)
-        with guide_col1:
-            st.markdown("""
-            **🏃 X-Axis (Distance from Goal)**
-            - 0-30: 🔵 Defensive Third
-            - 31-90: 🟡 Middle Third  
-            - 91-120: 🔴 Attacking Third
-            - 120: 🥅 Opponent Goal Line
-            """)
-        with guide_col2:
-            st.markdown("""
-            **⬅️➡️ Y-Axis (Side Position)**
-            - 0-25: ⬅️ Left Wing
-            - 26-54: 🎯 Central Area
-            - 55-80: ➡️ Right Wing
-            - Goal: Y 36-44 (8m wide)
-            """)
-        
-        st.info("💡 **Tip**: Lower X values = further from goal. Center Y values (35-45) = better shooting angles!")
     
     # Current position status
     distance_to_goal = 120 - st.session_state.shot_x
@@ -589,15 +575,65 @@ def render_custom_shot_page(model, lang="en"):
                         value=f"{prediction_time:.4f}s"
                     )
 
-                # Visualize the single shot
-                fig, ax = create_single_shot_visualization(
-                    shot_df.start_x.iloc[0], 
-                    shot_df.start_y.iloc[0], 
-                    xg_value,
-                    get_translation("simulated_shot_xg", lang)
+                # Unified visualization for the current single shot (interactive + hover)
+                # Build a one-row DataFrame compatible with the factory
+                single_vis_df = pd.DataFrame([
+                    {
+                        'start_x': shot_df.start_x.iloc[0],
+                        'start_y': shot_df.start_y.iloc[0],
+                        'xG': xg_value,
+                        'shot_name': (shot_name.strip() if shot_name else 'Current Shot')
+                    }
+                ])
+
+                st.markdown("---")
+                st.subheader(get_translation("shot_map", lang))
+
+                # Visualization type selector (same as dataset page)
+                viz_options = get_visualization_options(lang)
+                col_viz_sel, col_viz_sp = st.columns([1, 2])
+                with col_viz_sel:
+                    single_viz_type = st.selectbox(
+                        get_translation("visualization_type", lang),
+                        options=list(viz_options.keys()),
+                        index=0,
+                        key="single_shot_viz_type"
+                    )
+                selected_single_viz = viz_options[single_viz_type]
+
+                # Full pitch visualization
+                fig_single_full, ax_single_full = create_visualization_by_type(
+                    single_vis_df,
+                    selected_single_viz,
+                    get_translation('shot_map', lang),
+                    half_pitch=False,
+                    interactive=True,
+                    custom_shots=False
                 )
-                st.session_state.current_fig = fig
-                st.pyplot(fig)
+
+                if ax_single_full is None:
+                    st.plotly_chart(fig_single_full, use_container_width=True)
+                    st.session_state.current_fig = fig_single_full
+                    st.session_state.current_plotly = True
+                else:
+                    st.pyplot(fig_single_full)
+                    st.session_state.current_fig = fig_single_full
+                    st.session_state.current_plotly = False
+
+                # Half pitch visualization
+                st.subheader(get_translation("half_pitch_map", lang))
+                fig_single_half, ax_single_half = create_visualization_by_type(
+                    single_vis_df,
+                    selected_single_viz,
+                    get_translation('half_pitch_map', lang),
+                    half_pitch=True,
+                    interactive=True,
+                    custom_shots=False
+                )
+                if ax_single_half is None:
+                    st.plotly_chart(fig_single_half, use_container_width=True)
+                else:
+                    st.pyplot(fig_single_half)
                 
                 # Automatically add to collection - use default name if empty
                 final_shot_name = shot_name.strip() if shot_name and shot_name.strip() else f"Shot {get_custom_shots_count() + 1}"
@@ -625,11 +661,14 @@ def render_custom_shot_page(model, lang="en"):
     if hasattr(st.session_state, 'current_fig') and st.session_state.current_fig is not None:
         st.markdown("---")
         st.subheader("📥 " + ("Unduh Visualisasi" if lang == "id" else "Download Visualization"))
-        img_data = save_figure_to_bytes(st.session_state.current_fig, 'png', 300)
+        if getattr(st.session_state, 'current_plotly', False):
+            img_data = save_plotly_figure_to_bytes(st.session_state.current_fig, 'png', 300)
+        else:
+            img_data = save_figure_to_bytes(st.session_state.current_fig, 'png', 300)
         st.download_button(
             label=f"📥 {get_translation('download_viz_desc', lang).split(' sebagai')[0] if lang == 'id' else 'Download Visualization'}",
             data=img_data,
-            file_name=create_download_filename("custom_shot_xg", "png"),
+            file_name=create_download_filename("custom_shot_visualization", "png"),
             mime="image/png",
             help=get_translation("download_viz_desc", lang),
             use_container_width=True
@@ -696,15 +735,21 @@ def render_custom_shot_page(model, lang="en"):
         
         selected_custom_viz_type = viz_options[custom_viz_type]
         
-        # Create visualization for custom shots
+        # Create interactive visualization for custom shots
         fig_custom, ax_custom = create_visualization_by_type(
             df_custom, 
             selected_custom_viz_type,
             get_translation("custom_shots_visualization", lang),
             half_pitch=False,
-            custom_shots=True
+            custom_shots=True,
+            interactive=True
         )
-        st.pyplot(fig_custom)
+        
+        # Display interactive visualization
+        if ax_custom is None:  # This is a Plotly figure
+            st.plotly_chart(fig_custom, use_container_width=True)
+        else:  # This is a matplotlib figure (fallback)
+            st.pyplot(fig_custom)
         
         # Download options
         col_download, col_action = st.columns(2)
@@ -723,7 +768,11 @@ def render_custom_shot_page(model, lang="en"):
                 st.info(f"Need at least 3 shots for CSV download (current: {shots_count})")
             
             # Download visualization
-            img_custom_data = save_figure_to_bytes(fig_custom, 'png', 300)
+            if ax_custom is None:  # Plotly figure
+                img_custom_data = save_plotly_figure_to_bytes(fig_custom, 'png', 300)
+            else:  # Matplotlib figure
+                img_custom_data = save_figure_to_bytes(fig_custom, 'png', 300)
+            
             st.download_button(
                 label=f"📥 Download Visualization",
                 data=img_custom_data,

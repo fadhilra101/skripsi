@@ -2,8 +2,12 @@
 Constants and mappings used throughout the xG prediction application.
 """
 
-# Model file path
-MODEL_FILE = 'xg_model.joblib'
+import os
+
+# Model file path (absolute, relative to this src/utils/ location)
+# This resolves to: <project_root>/xg_interface/xg_model.joblib on Streamlit
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+MODEL_FILE = os.path.join(BASE_DIR, 'xg_model.joblib')
 
 # Goal coordinates for distance and angle calculations
 # Keep horizontal coordinates for model compatibility

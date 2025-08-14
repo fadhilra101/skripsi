@@ -397,8 +397,8 @@ def save_plotly_figure_to_bytes(fig, format_type: str = 'png', dpi: int = 300) -
         return img_bytes
     except Exception as e:
         # Kaleido/engine may be unavailable on some platforms (e.g., Streamlit Cloud)
-        # Raise a clear error to let callers provide a fallback (HTML export)
-        print(f"WARNING: Plotly static image export failed: {e}")
+        # Silence warnings; let caller choose fallback
+        # print(f"WARNING: Plotly static image export failed: {e}")
         raise
 
 

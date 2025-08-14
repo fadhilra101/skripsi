@@ -7,7 +7,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from ..utils.data_processing import preprocess_shot_data
-from ..utils.visualization import create_single_shot_visualization, save_figure_to_bytes, create_download_filename, create_custom_shots_visualization, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes, save_plotly_figure_to_html_bytes, create_shot_map
+from ..utils.visualization import create_single_shot_visualization, save_figure_to_bytes, create_download_filename, create_custom_shots_visualization, get_visualization_options, create_visualization_by_type, create_shot_map
 from ..utils.language import get_translation, get_language_options
 from ..utils.custom_shot_manager import (
     initialize_custom_shots_session, add_custom_shot, get_custom_shots_dataframe,
@@ -529,12 +529,6 @@ def render_custom_shot_page(model, lang="en"):
             key="shot_name_input",
             help="Akan menggunakan nama default jika dikosongkan" if lang == "id" else "Will use default name if left empty"
         )
-    # with col_help:
-    #     st.write("")  # Spacing
-    #     if st.button("�️ " + ("Gunakan Default" if lang == "id" else "Use Default"), help="Clear input to use default name"):
-    #         if 'shot_name_input' in st.session_state:
-    #             del st.session_state.shot_name_input
-    #         st.rerun()
     with col_help:
         st.write("")  # Spacing
         st.info("💡 " + ("Semua tembakan akan otomatis disimpan ke koleksi" if lang == "id" else "All shots will be automatically saved to collection"))
@@ -666,38 +660,21 @@ def render_custom_shot_page(model, lang="en"):
             png = fig_to_png_bytes_plotly(st.session_state.current_fig)
             if png is not None:
                 img_data = png
-                ext = 'png'
-                mime = 'image/png'
-                label = f"📥 {get_translation('download_viz_desc', lang).split(' sebagai')[0] if lang == 'id' else 'Download Visualization'}"
             else:
-                # Prefer HTML interaktif
-                try:
-                    img_data = save_plotly_figure_to_html_bytes(st.session_state.current_fig)
-                    ext = 'html'
-                    mime = 'text/html'
-                    label = ("📥 Unduh (HTML Interaktif)" if lang == 'id' else "📥 Download (Interactive HTML)")
-                    st.info("Plotly static export not available; using interactive HTML.")
-                except Exception:
-                    # Terakhir: render ulang dengan Matplotlib untuk PNG
-                    mfig, _ = create_shot_map(pd.DataFrame([{
-                        'start_x': st.session_state.shot_x,
-                        'start_y': st.session_state.shot_y,
-                        'xG': st.session_state.current_xg_value if 'current_xg_value' in st.session_state else 0.05
-                    }]), title=get_translation('shot_map', lang))
-                    img_data = save_figure_to_bytes(mfig, 'png', 220)
-                    ext = 'png'
-                    mime = 'image/png'
-                    label = f"📥 {get_translation('download_viz_desc', lang).split(' sebagai')[0] if lang == 'id' else 'Download Visualization'} (PNG fallback)"
+                # Re-render with Matplotlib for PNG fallback
+                mfig, _ = create_shot_map(pd.DataFrame([{
+                    'start_x': st.session_state.shot_x,
+                    'start_y': st.session_state.shot_y,
+                    'xG': st.session_state.current_xg_value if 'current_xg_value' in st.session_state else 0.05
+                }]), title=get_translation('shot_map', lang))
+                img_data = save_figure_to_bytes(mfig, 'png', 220)
         else:
             img_data = save_figure_to_bytes(st.session_state.current_fig, 'png', 300)
-            ext = 'png'
-            mime = 'image/png'
-            label = f"📥 {get_translation('download_viz_desc', lang).split(' sebagai')[0] if lang == 'id' else 'Download Visualization'}"
         st.download_button(
-            label=label,
+            label=("📥 Unduh PNG" if lang == 'id' else "📥 Download PNG"),
             data=img_data,
-            file_name=create_download_filename("custom_shot_visualization", ext),
-            mime=mime,
+            file_name=create_download_filename("custom_shot_visualization", 'png'),
+            mime='image/png',
             help=get_translation("download_viz_desc", lang),
             use_container_width=True
         )
@@ -795,38 +772,22 @@ def render_custom_shot_page(model, lang="en"):
             else:
                 st.info(f"Need at least 3 shots for CSV download (current: {shots_count})")
             
-            # Download visualization
+            # Download visualization (PNG only)
             if ax_custom is None:  # Plotly figure
                 png = fig_to_png_bytes_plotly(fig_custom)
                 if png is not None:
                     img_custom_data = png
-                    ext = 'png'
-                    mime = 'image/png'
-                    label = f"📥 Download Visualization"
                 else:
-                    try:
-                        img_custom_data = save_plotly_figure_to_html_bytes(fig_custom)
-                        ext = 'html'
-                        mime = 'text/html'
-                        label = f"📥 Download Visualization (HTML)"
-                        st.info("Plotly static export not available; using interactive HTML.")
-                    except Exception:
-                        mfig, _ = create_custom_shots_visualization(df_custom, title=get_translation("custom_shots_visualization", lang))
-                        img_custom_data = save_figure_to_bytes(mfig, 'png', 220)
-                        ext = 'png'
-                        mime = 'image/png'
-                        label = f"📥 Download Visualization (PNG fallback)"
+                    mfig, _ = create_custom_shots_visualization(df_custom, title=get_translation("custom_shots_visualization", lang))
+                    img_custom_data = save_figure_to_bytes(mfig, 'png', 220)
             else:  # Matplotlib figure
                 img_custom_data = save_figure_to_bytes(fig_custom, 'png', 300)
-                ext = 'png'
-                mime = 'image/png'
-                label = f"📥 Download Visualization"
             
             st.download_button(
-                label=label,
+                label=("📥 Unduh PNG" if lang == 'id' else "📥 Download PNG"),
                 data=img_custom_data,
-                file_name=create_download_filename("custom_shots_visualization", ext),
-                mime=mime,
+                file_name=create_download_filename("custom_shots_visualization", 'png'),
+                mime='image/png',
                 use_container_width=True
             )
         

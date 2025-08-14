@@ -46,9 +46,8 @@ def ensure_plotly_chrome() -> bool:
             os.environ["PLOTLY_CHROME_PATH"] = found
             return True
 
-    # Try installing a portable Chrome via module, if present
+    # Try installing a portable Chrome via module, if present (best-effort)
     try:
-        # This works only if the module is installed; if not, it's harmless to fail
         subprocess.run([sys.executable, "-m", "plotly_get_chrome", "-y"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         chrome_path = _default_chrome_path()
         if chrome_path and Path(chrome_path).exists():
@@ -62,7 +61,7 @@ def ensure_plotly_chrome() -> bool:
 
 def fig_to_png_bytes_plotly(fig, *, width: int = 1200, height: int = 1800, scale: int = 2) -> Optional[bytes]:
     """Attempt to export a Plotly figure to PNG bytes.
-    Returns bytes on success, or None on failure (so callers can fallback).
+    Returns bytes on success, or None on failure (so callers can fallback) without printing warnings to the UI/logs.
     """
     if pio is None:
         return None
@@ -70,10 +69,6 @@ def fig_to_png_bytes_plotly(fig, *, width: int = 1200, height: int = 1800, scale
         # Ensure Chrome first (best effort)
         ensure_plotly_chrome()
         return pio.to_image(fig, format="png", width=width, height=height, scale=scale)
-    except Exception as e:  # pragma: no cover
-        # Log to stdout/stderr for Streamlit logs
-        try:
-            print(f"WARNING: Plotly PNG export failed: {e}")
-        except Exception:
-            pass
+    except Exception:
+        # Do not print noisy Kaleido/Chrome warnings; simply signal failure
         return None

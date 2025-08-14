@@ -7,7 +7,7 @@ import pandas as pd
 
 from ..utils.constants import REQUIRED_COLUMNS
 from ..utils.data_processing import validate_columns, preprocess_shot_data
-from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes, save_plotly_figure_to_html_bytes
+from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, get_visualization_options, create_visualization_by_type, create_shot_heat_map, create_half_pitch_heat_map
 from ..utils.language import get_translation
 from ..models.model_manager import predict_xg
 from ..utils.plotly_export import fig_to_png_bytes_plotly
@@ -329,81 +329,52 @@ def render_dataset_prediction_page(model, lang="en"):
                             )
                         
                         with col_d2:
-                            # Full pitch visualization download (prefer PNG)
-                            if ax_full is None:  # Plotly figure
+                            # Full pitch visualization download (PNG only)
+                            if ax_full is None:  # Plotly figure shown
                                 png_bytes = fig_to_png_bytes_plotly(fig_full)
                                 if png_bytes is not None:
                                     img_data_full = png_bytes
-                                    full_ext = 'png'
-                                    full_mime = 'image/png'
-                                    full_label = get_translation("download_full_pitch", lang)
                                 else:
-                                    # Fallback to HTML first (keeps interactivity)
-                                    try:
-                                        img_data_full = save_plotly_figure_to_html_bytes(fig_full)
-                                        full_ext = 'html'
-                                        full_mime = 'text/html'
-                                        full_label = get_translation("download_full_pitch", lang) + " (HTML)"
-                                        st.info("Plotly static export not available; using interactive HTML.")
-                                    except Exception:
-                                        # Last resort: recreate with Matplotlib for PNG
+                                    # Rebuild Matplotlib equivalent for PNG
+                                    if selected_viz_type == 'heat_map':
+                                        mfig, _ = create_shot_heat_map(processed_df, title=get_translation('shot_map', lang))
+                                    else:
                                         mfig, _ = create_shot_map(processed_df, title=get_translation('shot_map', lang))
-                                        img_data_full = save_figure_to_bytes(mfig, 'png', 220)
-                                        full_ext = 'png'
-                                        full_mime = 'image/png'
-                                        full_label = get_translation("download_full_pitch", lang) + " (PNG fallback)"
+                                    img_data_full = save_figure_to_bytes(mfig, 'png', 220)
                             else:  # Matplotlib figure
                                 img_data_full = save_figure_to_bytes(fig_full, 'png', 300)
-                                full_ext = 'png'
-                                full_mime = 'image/png'
-                                full_label = get_translation("download_full_pitch", lang)
-                            
+
                             st.download_button(
-                                label=full_label,
+                                label=("📥 Unduh PNG" if lang == 'id' else "📥 Download PNG"),
                                 data=img_data_full,
-                                file_name=create_download_filename("shot_map_full", full_ext),
-                                mime=full_mime,
-                                help=get_translation("download_viz_desc", lang),
+                                file_name=create_download_filename("shot_map_full", 'png'),
+                                mime='image/png',
                                 use_container_width=True
                             )
-                        
+
                         with col_d3:
-                            # Half pitch visualization download (prefer PNG)
-                            if ax_half is None:  # Plotly figure
-                                png_bytes = fig_to_png_bytes_plotly(fig_half)
-                                if png_bytes is not None:
-                                    img_data_half = png_bytes
-                                    half_ext = 'png'
-                                    half_mime = 'image/png'
-                                    half_label = get_translation("download_half_pitch", lang)
+                            # Half pitch visualization download (PNG only)
+                            if ax_half is None:  # Plotly figure shown
+                                png_bytes_half = fig_to_png_bytes_plotly(fig_half)
+                                if png_bytes_half is not None:
+                                    img_data_half = png_bytes_half
                                 else:
-                                    try:
-                                        img_data_half = save_plotly_figure_to_html_bytes(fig_half)
-                                        half_ext = 'html'
-                                        half_mime = 'text/html'
-                                        half_label = get_translation("download_half_pitch", lang) + " (HTML)"
-                                        st.info("Plotly static export not available; using interactive HTML.")
-                                    except Exception:
-                                        mfig, _ = create_half_pitch_shot_map(processed_df, title=get_translation('half_pitch_map', lang))
-                                        img_data_half = save_figure_to_bytes(mfig, 'png', 220)
-                                        half_ext = 'png'
-                                        half_mime = 'image/png'
-                                        half_label = get_translation("download_half_pitch", lang) + " (PNG fallback)"
+                                    # Rebuild Matplotlib equivalent for PNG (half pitch)
+                                    if selected_viz_type == 'heat_map':
+                                        mfig_h, _ = create_half_pitch_heat_map(processed_df, title=get_translation('half_pitch_map', lang))
+                                    else:
+                                        mfig_h, _ = create_half_pitch_shot_map(processed_df, title=get_translation('half_pitch_map', lang))
+                                    img_data_half = save_figure_to_bytes(mfig_h, 'png', 220)
                             else:  # Matplotlib figure
                                 img_data_half = save_figure_to_bytes(fig_half, 'png', 300)
-                                half_ext = 'png'
-                                half_mime = 'image/png'
-                                half_label = get_translation("download_half_pitch", lang)
-                            
+
                             st.download_button(
-                                label=half_label,
+                                label=("📥 Unduh PNG (Half)" if lang == 'id' else "📥 Download PNG (Half)"),
                                 data=img_data_half,
-                                file_name=create_download_filename("shot_map_half", half_ext),
-                                mime=half_mime,
-                                help=get_translation("download_viz_desc", lang),
+                                file_name=create_download_filename("shot_map_half", 'png'),
+                                mime='image/png',
                                 use_container_width=True
                             )
-                        
                 except Exception as e:
                     st.error(f"{get_translation('prediction_error', lang)} {e}")
-                    st.info(get_translation("data_mismatch", lang))
+                    st.info(get_translation('data_mismatch', lang))

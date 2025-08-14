@@ -7,7 +7,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from ..utils.data_processing import preprocess_shot_data
-from ..utils.visualization import create_single_shot_visualization, save_figure_to_bytes, create_download_filename, create_custom_shots_visualization, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes, save_plotly_figure_to_html_bytes
+from ..utils.visualization import create_single_shot_visualization, save_figure_to_bytes, create_download_filename, create_custom_shots_visualization, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes, save_plotly_figure_to_html_bytes, create_shot_map
 from ..utils.language import get_translation, get_language_options
 from ..utils.custom_shot_manager import (
     initialize_custom_shots_session, add_custom_shot, get_custom_shots_dataframe,
@@ -15,6 +15,7 @@ from ..utils.custom_shot_manager import (
     clear_all_custom_shots, remove_custom_shot, validate_shot_name
 )
 from ..models.model_manager import predict_xg
+from ..utils.plotly_export import fig_to_png_bytes_plotly
 
 
 def create_interactive_pitch_simple(current_x=108, current_y=40):
@@ -662,17 +663,31 @@ def render_custom_shot_page(model, lang="en"):
         st.markdown("---")
         st.subheader("📥 " + ("Unduh Visualisasi" if lang == "id" else "Download Visualization"))
         if getattr(st.session_state, 'current_plotly', False):
-            try:
-                img_data = save_plotly_figure_to_bytes(st.session_state.current_fig, 'png', 300)
+            png = fig_to_png_bytes_plotly(st.session_state.current_fig)
+            if png is not None:
+                img_data = png
                 ext = 'png'
                 mime = 'image/png'
                 label = f"📥 {get_translation('download_viz_desc', lang).split(' sebagai')[0] if lang == 'id' else 'Download Visualization'}"
-            except Exception:
-                img_data = save_plotly_figure_to_html_bytes(st.session_state.current_fig)
-                ext = 'html'
-                mime = 'text/html'
-                label = ("📥 Unduh (HTML Interaktif)" if lang == 'id' else "📥 Download (Interactive HTML)")
-                st.info("Plotly static image export is unavailable on this platform. Providing HTML download instead.")
+            else:
+                # Prefer HTML interaktif
+                try:
+                    img_data = save_plotly_figure_to_html_bytes(st.session_state.current_fig)
+                    ext = 'html'
+                    mime = 'text/html'
+                    label = ("📥 Unduh (HTML Interaktif)" if lang == 'id' else "📥 Download (Interactive HTML)")
+                    st.info("Plotly static export not available; using interactive HTML.")
+                except Exception:
+                    # Terakhir: render ulang dengan Matplotlib untuk PNG
+                    mfig, _ = create_shot_map(pd.DataFrame([{
+                        'start_x': st.session_state.shot_x,
+                        'start_y': st.session_state.shot_y,
+                        'xG': st.session_state.current_xg_value if 'current_xg_value' in st.session_state else 0.05
+                    }]), title=get_translation('shot_map', lang))
+                    img_data = save_figure_to_bytes(mfig, 'png', 220)
+                    ext = 'png'
+                    mime = 'image/png'
+                    label = f"📥 {get_translation('download_viz_desc', lang).split(' sebagai')[0] if lang == 'id' else 'Download Visualization'} (PNG fallback)"
         else:
             img_data = save_figure_to_bytes(st.session_state.current_fig, 'png', 300)
             ext = 'png'
@@ -782,17 +797,25 @@ def render_custom_shot_page(model, lang="en"):
             
             # Download visualization
             if ax_custom is None:  # Plotly figure
-                try:
-                    img_custom_data = save_plotly_figure_to_bytes(fig_custom, 'png', 300)
+                png = fig_to_png_bytes_plotly(fig_custom)
+                if png is not None:
+                    img_custom_data = png
                     ext = 'png'
                     mime = 'image/png'
                     label = f"📥 Download Visualization"
-                except Exception:
-                    img_custom_data = save_plotly_figure_to_html_bytes(fig_custom)
-                    ext = 'html'
-                    mime = 'text/html'
-                    label = f"📥 Download Visualization (HTML)"
-                    st.info("Plotly static image export is unavailable on this platform. Providing HTML download instead.")
+                else:
+                    try:
+                        img_custom_data = save_plotly_figure_to_html_bytes(fig_custom)
+                        ext = 'html'
+                        mime = 'text/html'
+                        label = f"📥 Download Visualization (HTML)"
+                        st.info("Plotly static export not available; using interactive HTML.")
+                    except Exception:
+                        mfig, _ = create_custom_shots_visualization(df_custom, title=get_translation("custom_shots_visualization", lang))
+                        img_custom_data = save_figure_to_bytes(mfig, 'png', 220)
+                        ext = 'png'
+                        mime = 'image/png'
+                        label = f"📥 Download Visualization (PNG fallback)"
             else:  # Matplotlib figure
                 img_custom_data = save_figure_to_bytes(fig_custom, 'png', 300)
                 ext = 'png'

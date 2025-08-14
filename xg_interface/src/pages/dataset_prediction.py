@@ -10,6 +10,7 @@ from ..utils.data_processing import validate_columns, preprocess_shot_data
 from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes, save_plotly_figure_to_html_bytes
 from ..utils.language import get_translation
 from ..models.model_manager import predict_xg
+from ..utils.plotly_export import fig_to_png_bytes_plotly
 
 
 def render_dataset_prediction_page(model, lang="en"):
@@ -328,20 +329,29 @@ def render_dataset_prediction_page(model, lang="en"):
                             )
                         
                         with col_d2:
-                            # Full pitch visualization download
+                            # Full pitch visualization download (prefer PNG)
                             if ax_full is None:  # Plotly figure
-                                try:
-                                    img_data_full = save_plotly_figure_to_bytes(fig_full, 'png', 300)
+                                png_bytes = fig_to_png_bytes_plotly(fig_full)
+                                if png_bytes is not None:
+                                    img_data_full = png_bytes
                                     full_ext = 'png'
                                     full_mime = 'image/png'
                                     full_label = get_translation("download_full_pitch", lang)
-                                except Exception:
-                                    # Fallback to interactive HTML when static export fails
-                                    img_data_full = save_plotly_figure_to_html_bytes(fig_full)
-                                    full_ext = 'html'
-                                    full_mime = 'text/html'
-                                    full_label = get_translation("download_full_pitch", lang) + " (HTML)"
-                                    st.info("Plotly static image export is unavailable on this platform. Providing HTML download instead.")
+                                else:
+                                    # Fallback to HTML first (keeps interactivity)
+                                    try:
+                                        img_data_full = save_plotly_figure_to_html_bytes(fig_full)
+                                        full_ext = 'html'
+                                        full_mime = 'text/html'
+                                        full_label = get_translation("download_full_pitch", lang) + " (HTML)"
+                                        st.info("Plotly static export not available; using interactive HTML.")
+                                    except Exception:
+                                        # Last resort: recreate with Matplotlib for PNG
+                                        mfig, _ = create_shot_map(processed_df, title=get_translation('shot_map', lang))
+                                        img_data_full = save_figure_to_bytes(mfig, 'png', 220)
+                                        full_ext = 'png'
+                                        full_mime = 'image/png'
+                                        full_label = get_translation("download_full_pitch", lang) + " (PNG fallback)"
                             else:  # Matplotlib figure
                                 img_data_full = save_figure_to_bytes(fig_full, 'png', 300)
                                 full_ext = 'png'
@@ -358,19 +368,27 @@ def render_dataset_prediction_page(model, lang="en"):
                             )
                         
                         with col_d3:
-                            # Half pitch visualization download
+                            # Half pitch visualization download (prefer PNG)
                             if ax_half is None:  # Plotly figure
-                                try:
-                                    img_data_half = save_plotly_figure_to_bytes(fig_half, 'png', 300)
+                                png_bytes = fig_to_png_bytes_plotly(fig_half)
+                                if png_bytes is not None:
+                                    img_data_half = png_bytes
                                     half_ext = 'png'
                                     half_mime = 'image/png'
                                     half_label = get_translation("download_half_pitch", lang)
-                                except Exception:
-                                    img_data_half = save_plotly_figure_to_html_bytes(fig_half)
-                                    half_ext = 'html'
-                                    half_mime = 'text/html'
-                                    half_label = get_translation("download_half_pitch", lang) + " (HTML)"
-                                    st.info("Plotly static image export is unavailable on this platform. Providing HTML download instead.")
+                                else:
+                                    try:
+                                        img_data_half = save_plotly_figure_to_html_bytes(fig_half)
+                                        half_ext = 'html'
+                                        half_mime = 'text/html'
+                                        half_label = get_translation("download_half_pitch", lang) + " (HTML)"
+                                        st.info("Plotly static export not available; using interactive HTML.")
+                                    except Exception:
+                                        mfig, _ = create_half_pitch_shot_map(processed_df, title=get_translation('half_pitch_map', lang))
+                                        img_data_half = save_figure_to_bytes(mfig, 'png', 220)
+                                        half_ext = 'png'
+                                        half_mime = 'image/png'
+                                        half_label = get_translation("download_half_pitch", lang) + " (PNG fallback)"
                             else:  # Matplotlib figure
                                 img_data_half = save_figure_to_bytes(fig_half, 'png', 300)
                                 half_ext = 'png'

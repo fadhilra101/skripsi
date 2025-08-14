@@ -383,18 +383,31 @@ def save_plotly_figure_to_bytes(fig, format_type: str = 'png', dpi: int = 300) -
         Bytes data of the saved figure
     """
     import plotly.io as pio
-    
-    if format_type.lower() in ['png', 'jpg', 'jpeg']:
-        img_bytes = pio.to_image(fig, format=format_type, width=1200, height=1800, scale=2)
-    elif format_type.lower() == 'pdf':
-        img_bytes = pio.to_image(fig, format='pdf', width=1200, height=1800)
-    elif format_type.lower() == 'svg':
-        img_bytes = pio.to_image(fig, format='svg', width=1200, height=1800)
-    else:
-        # Default to PNG
-        img_bytes = pio.to_image(fig, format='png', width=1200, height=1800, scale=2)
-    
-    return img_bytes
+    try:
+        if format_type.lower() in ['png', 'jpg', 'jpeg']:
+            # Use scale to emulate DPI; width/height chosen for vertical pitch
+            img_bytes = pio.to_image(fig, format=format_type, width=1200, height=1800, scale=2)
+        elif format_type.lower() == 'pdf':
+            img_bytes = pio.to_image(fig, format='pdf', width=1200, height=1800)
+        elif format_type.lower() == 'svg':
+            img_bytes = pio.to_image(fig, format='svg', width=1200, height=1800)
+        else:
+            # Default to PNG
+            img_bytes = pio.to_image(fig, format='png', width=1200, height=1800, scale=2)
+        return img_bytes
+    except Exception as e:
+        # Kaleido/engine may be unavailable on some platforms (e.g., Streamlit Cloud)
+        # Raise a clear error to let callers provide a fallback (HTML export)
+        print(f"WARNING: Plotly static image export failed: {e}")
+        raise
+
+
+def save_plotly_figure_to_html_bytes(fig) -> bytes:
+    """Return an interactive HTML (standalone) representation as bytes for download.
+    Useful fallback when Kaleido/static export is unavailable.
+    """
+    html = fig.to_html(full_html=False, include_plotlyjs='cdn')
+    return html.encode('utf-8')
 
 
 def create_download_filename(prefix, extension):
@@ -761,7 +774,7 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
                         bw_factor = 0.4  # Medium bandwidth
                     else:
                         bw_factor = 0.5  # Larger bandwidth for few points
-                    
+                        
                     kde.set_bandwidth(bw_method=bw_factor)
                     
                     # Evaluate KDE on grid

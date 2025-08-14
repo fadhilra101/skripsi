@@ -7,7 +7,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from ..utils.data_processing import preprocess_shot_data
-from ..utils.visualization import create_single_shot_visualization, save_figure_to_bytes, create_download_filename, create_custom_shots_visualization, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes
+from ..utils.visualization import create_single_shot_visualization, save_figure_to_bytes, create_download_filename, create_custom_shots_visualization, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes, save_plotly_figure_to_html_bytes
 from ..utils.language import get_translation, get_language_options
 from ..utils.custom_shot_manager import (
     initialize_custom_shots_session, add_custom_shot, get_custom_shots_dataframe,
@@ -662,14 +662,27 @@ def render_custom_shot_page(model, lang="en"):
         st.markdown("---")
         st.subheader("📥 " + ("Unduh Visualisasi" if lang == "id" else "Download Visualization"))
         if getattr(st.session_state, 'current_plotly', False):
-            img_data = save_plotly_figure_to_bytes(st.session_state.current_fig, 'png', 300)
+            try:
+                img_data = save_plotly_figure_to_bytes(st.session_state.current_fig, 'png', 300)
+                ext = 'png'
+                mime = 'image/png'
+                label = f"📥 {get_translation('download_viz_desc', lang).split(' sebagai')[0] if lang == 'id' else 'Download Visualization'}"
+            except Exception:
+                img_data = save_plotly_figure_to_html_bytes(st.session_state.current_fig)
+                ext = 'html'
+                mime = 'text/html'
+                label = ("📥 Unduh (HTML Interaktif)" if lang == 'id' else "📥 Download (Interactive HTML)")
+                st.info("Plotly static image export is unavailable on this platform. Providing HTML download instead.")
         else:
             img_data = save_figure_to_bytes(st.session_state.current_fig, 'png', 300)
+            ext = 'png'
+            mime = 'image/png'
+            label = f"📥 {get_translation('download_viz_desc', lang).split(' sebagai')[0] if lang == 'id' else 'Download Visualization'}"
         st.download_button(
-            label=f"📥 {get_translation('download_viz_desc', lang).split(' sebagai')[0] if lang == 'id' else 'Download Visualization'}",
+            label=label,
             data=img_data,
-            file_name=create_download_filename("custom_shot_visualization", "png"),
-            mime="image/png",
+            file_name=create_download_filename("custom_shot_visualization", ext),
+            mime=mime,
             help=get_translation("download_viz_desc", lang),
             use_container_width=True
         )
@@ -769,15 +782,28 @@ def render_custom_shot_page(model, lang="en"):
             
             # Download visualization
             if ax_custom is None:  # Plotly figure
-                img_custom_data = save_plotly_figure_to_bytes(fig_custom, 'png', 300)
+                try:
+                    img_custom_data = save_plotly_figure_to_bytes(fig_custom, 'png', 300)
+                    ext = 'png'
+                    mime = 'image/png'
+                    label = f"📥 Download Visualization"
+                except Exception:
+                    img_custom_data = save_plotly_figure_to_html_bytes(fig_custom)
+                    ext = 'html'
+                    mime = 'text/html'
+                    label = f"📥 Download Visualization (HTML)"
+                    st.info("Plotly static image export is unavailable on this platform. Providing HTML download instead.")
             else:  # Matplotlib figure
                 img_custom_data = save_figure_to_bytes(fig_custom, 'png', 300)
+                ext = 'png'
+                mime = 'image/png'
+                label = f"📥 Download Visualization"
             
             st.download_button(
-                label=f"📥 Download Visualization",
+                label=label,
                 data=img_custom_data,
-                file_name=create_download_filename("custom_shots_visualization", "png"),
-                mime="image/png",
+                file_name=create_download_filename("custom_shots_visualization", ext),
+                mime=mime,
                 use_container_width=True
             )
         

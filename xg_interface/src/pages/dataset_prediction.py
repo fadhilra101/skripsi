@@ -7,7 +7,7 @@ import pandas as pd
 
 from ..utils.constants import REQUIRED_COLUMNS
 from ..utils.data_processing import validate_columns, preprocess_shot_data
-from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes
+from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, get_visualization_options, create_visualization_by_type, save_plotly_figure_to_bytes, save_plotly_figure_to_html_bytes
 from ..utils.language import get_translation
 from ..models.model_manager import predict_xg
 
@@ -330,15 +330,29 @@ def render_dataset_prediction_page(model, lang="en"):
                         with col_d2:
                             # Full pitch visualization download
                             if ax_full is None:  # Plotly figure
-                                img_data_full = save_plotly_figure_to_bytes(fig_full, 'png', 300)
+                                try:
+                                    img_data_full = save_plotly_figure_to_bytes(fig_full, 'png', 300)
+                                    full_ext = 'png'
+                                    full_mime = 'image/png'
+                                    full_label = get_translation("download_full_pitch", lang)
+                                except Exception:
+                                    # Fallback to interactive HTML when static export fails
+                                    img_data_full = save_plotly_figure_to_html_bytes(fig_full)
+                                    full_ext = 'html'
+                                    full_mime = 'text/html'
+                                    full_label = get_translation("download_full_pitch", lang) + " (HTML)"
+                                    st.info("Plotly static image export is unavailable on this platform. Providing HTML download instead.")
                             else:  # Matplotlib figure
                                 img_data_full = save_figure_to_bytes(fig_full, 'png', 300)
+                                full_ext = 'png'
+                                full_mime = 'image/png'
+                                full_label = get_translation("download_full_pitch", lang)
                             
                             st.download_button(
-                                label=get_translation("download_full_pitch", lang),
+                                label=full_label,
                                 data=img_data_full,
-                                file_name=create_download_filename("shot_map_full", "png"),
-                                mime="image/png",
+                                file_name=create_download_filename("shot_map_full", full_ext),
+                                mime=full_mime,
                                 help=get_translation("download_viz_desc", lang),
                                 use_container_width=True
                             )
@@ -346,15 +360,28 @@ def render_dataset_prediction_page(model, lang="en"):
                         with col_d3:
                             # Half pitch visualization download
                             if ax_half is None:  # Plotly figure
-                                img_data_half = save_plotly_figure_to_bytes(fig_half, 'png', 300)
+                                try:
+                                    img_data_half = save_plotly_figure_to_bytes(fig_half, 'png', 300)
+                                    half_ext = 'png'
+                                    half_mime = 'image/png'
+                                    half_label = get_translation("download_half_pitch", lang)
+                                except Exception:
+                                    img_data_half = save_plotly_figure_to_html_bytes(fig_half)
+                                    half_ext = 'html'
+                                    half_mime = 'text/html'
+                                    half_label = get_translation("download_half_pitch", lang) + " (HTML)"
+                                    st.info("Plotly static image export is unavailable on this platform. Providing HTML download instead.")
                             else:  # Matplotlib figure
                                 img_data_half = save_figure_to_bytes(fig_half, 'png', 300)
+                                half_ext = 'png'
+                                half_mime = 'image/png'
+                                half_label = get_translation("download_half_pitch", lang)
                             
                             st.download_button(
-                                label=get_translation("download_half_pitch", lang),
+                                label=half_label,
                                 data=img_data_half,
-                                file_name=create_download_filename("shot_map_half", "png"),
-                                mime="image/png",
+                                file_name=create_download_filename("shot_map_half", half_ext),
+                                mime=half_mime,
                                 help=get_translation("download_viz_desc", lang),
                                 use_container_width=True
                             )

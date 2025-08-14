@@ -40,6 +40,7 @@ venv.bak/
 *.joblib
 *.pkl
 *.pickle
+!xg_model.joblib
 
 # Data files
 *.csv

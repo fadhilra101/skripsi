@@ -1,176 +1,100 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal enableextensions enabledelayedexpansion
+
+rem ========================================
+rem xG Prediction Interface - Setup Script
+rem ========================================
+
+rem Always run from this script's folder
+cd /d "%~dp0"
 
 echo ========================================
-echo xG Prediction Interface - Setup Script
+echo xG Prediction Interface - Setup
 echo ========================================
 echo.
 echo This script will:
-echo - Check and install Python if needed
-echo - Check and install/update pip
-echo - Install all required packages
-echo - Verify installation
+echo  - Check Python installation
+echo  - Optionally create a virtual environment (recommended)
+echo  - Install required Python packages
+echo  - Verify installation
 echo.
 
-REM Check if running as administrator
-net session >nul 2>&1
-set "ADMIN_RIGHTS=%errorlevel%"
-
-echo [1/5] Checking Python installation...
+echo [1/4] Checking Python...
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo Python not found in PATH. Checking common locations...
-    
-    REM Check common Python installation paths
-    for %%P in (
-        "C:\Python3*\python.exe"
-        "C:\Python\python.exe" 
-        "%LOCALAPPDATA%\Programs\Python\Python3*\python.exe"
-        "%PROGRAMFILES%\Python3*\python.exe"
-        "%PROGRAMFILES(X86)%\Python3*\python.exe"
-    ) do (
-        if exist "%%P" (
-            set "PYTHON_PATH=%%P"
-            echo Found Python at: !PYTHON_PATH!
-            goto :python_found
+    echo ERROR: Python is not installed or not in PATH.
+    echo Please install Python 3.8+ from https://www.python.org/downloads/windows/
+    echo Make sure to check "Add Python to PATH" during installation.
+    pause
+    exit /b 1
+)
+for /f "tokens=*" %%v in ('python --version') do set PYVER=%%v
+echo Found %PYVER%
+
+echo.
+echo [2/4] Virtual environment (recommended)
+if exist "venv\Scripts\python.exe" (
+    echo Existing virtual environment detected.
+) else (
+    choice /m "Create a virtual environment now?"
+    if errorlevel 2 (
+        echo Skipping virtual environment creation.
+    ) else (
+        echo Creating virtual environment...
+        python -m venv venv
+        if errorlevel 1 (
+            echo ERROR: Failed to create virtual environment.
+            echo You can install packages to the user site instead.
+        ) else (
+            echo Virtual environment created.
         )
     )
-    
-    echo WARNING: Python not found!
-    echo.
-    echo Please install Python 3.8 or newer from:
-    echo https://www.python.org/downloads/windows/
-    echo.
-    echo Make sure to check "Add Python to PATH" during installation
-    echo.
-    set /p "choice=Continue anyway? (y/N): "
-    if /i not "!choice!"=="y" (
-        pause
-        exit /b 1
-    )
-    set "PYTHON_CMD=python"
-) else (
-    :python_found
-    if defined PYTHON_PATH (
-        set "PYTHON_CMD=!PYTHON_PATH!"
-    ) else (
-        set "PYTHON_CMD=python"
-    )
-    echo Python found!
-    !PYTHON_CMD! --version
 )
 
+set "PY=python"
+if exist "venv\Scripts\python.exe" set "PY=venv\Scripts\python.exe"
+echo Using Python: %PY%
+
 echo.
-echo [2/5] Checking and updating pip...
-!PYTHON_CMD! -m pip --version >nul 2>&1
+echo [3/4] Upgrading pip and installing requirements...
+%PY% -m pip install --upgrade pip
 if errorlevel 1 (
-    echo pip not found. Installing pip...
-    !PYTHON_CMD! -m ensurepip --upgrade
-    if errorlevel 1 (
-        echo Failed to install pip automatically.
-        echo Please install pip manually from: https://pip.pypa.io/en/stable/installation/
-        pause
-        exit /b 1
-    )
+    echo WARNING: Failed to upgrade pip. Continuing...
+)
+
+if "%PY%"=="python" (
+    echo Installing to user site (no admin required)...
+    %PY% -m pip install --user --no-warn-script-location -r requirements.txt
 ) else (
-    echo pip found! Updating to latest version...
-    !PYTHON_CMD! -m pip install --upgrade pip --user
+    echo Installing into virtual environment...
+    %PY% -m pip install -r requirements.txt
 )
-
-echo.
-echo [3/5] Checking system architecture and Python version...
-!PYTHON_CMD! -c "import sys, platform; print(f'Python {sys.version[:5]} on {platform.machine()}')"
-
-echo.
-echo [4/5] Installing requirements...
-echo Installing Python packages from requirements.txt...
-echo This may take a few minutes, especially for LightGBM...
-echo.
-
-REM Try different installation methods
-set "INSTALL_SUCCESS=0"
-
-REM Method 1: Standard user install
-echo Trying standard user installation...
-!PYTHON_CMD! -m pip install --user --no-warn-script-location -r requirements.txt
-if not errorlevel 1 (
-    set "INSTALL_SUCCESS=1"
-    goto :install_complete
-)
-
-REM Method 2: With --break-system-packages (for some Python distributions)
-echo Trying with --break-system-packages...
-!PYTHON_CMD! -m pip install --user --break-system-packages --no-warn-script-location -r requirements.txt
-if not errorlevel 1 (
-    set "INSTALL_SUCCESS=1"
-    goto :install_complete
-)
-
-REM Method 3: Global install (if admin rights)
-if !ADMIN_RIGHTS! equ 0 (
-    echo Trying global installation (Administrator mode)...
-    !PYTHON_CMD! -m pip install --no-warn-script-location -r requirements.txt
-    if not errorlevel 1 (
-        set "INSTALL_SUCCESS=1"
-        goto :install_complete
-    )
-)
-
-REM Method 4: Force reinstall
-echo Trying force reinstall...
-!PYTHON_CMD! -m pip install --user --force-reinstall --no-warn-script-location -r requirements.txt
-if not errorlevel 1 (
-    set "INSTALL_SUCCESS=1"
-    goto :install_complete
-)
-
-:install_complete
-if !INSTALL_SUCCESS! equ 0 (
-    echo.
-    echo ERROR: Failed to install requirements with all methods
-    echo.
-    echo Troubleshooting suggestions:
-    echo 1. Run this script as Administrator
-    echo 2. Use virtual environment: setup_venv.bat
-    echo 3. Install packages manually: python -m pip install streamlit pandas lightgbm
-    echo 4. Check your internet connection
-    echo.
+if errorlevel 1 (
+    echo ERROR: Failed to install requirements.
+    echo Try running again, or use the alternative script setup_venv.bat.
     pause
     exit /b 1
 )
 
 echo.
-echo [5/5] Verifying installation...
-echo Checking core packages...
+echo [4/4] Verifying installation...
+set FAIL=0
+call :checkpkg streamlit
+call :checkpkg pandas
+call :checkpkg numpy
+call :checkpkg matplotlib
+call :checkpkg plotly
+call :checkpkg lightgbm
+call :checkpkg scikit-learn
+call :checkpkg mplsoccer
+call :checkpkg kaleido
 
-!PYTHON_CMD! -c "import streamlit; print('✓ Streamlit:', streamlit.__version__)" 2>nul
-if errorlevel 1 echo ✗ Streamlit installation failed
-
-!PYTHON_CMD! -c "import pandas; print('✓ Pandas:', pandas.__version__)" 2>nul
-if errorlevel 1 echo ✗ Pandas installation failed
-
-!PYTHON_CMD! -c "import lightgbm; print('✓ LightGBM:', lightgbm.__version__)" 2>nul
-if errorlevel 1 echo ✗ LightGBM installation failed
-
-!PYTHON_CMD! -c "import numpy; print('✓ NumPy:', numpy.__version__)" 2>nul
-if errorlevel 1 echo ✗ NumPy installation failed
-
-!PYTHON_CMD! -c "import matplotlib; print('✓ Matplotlib:', matplotlib.__version__)" 2>nul
-if errorlevel 1 echo ✗ Matplotlib installation failed
-
-echo.
-echo ========================================
-echo        SETUP COMPLETED SUCCESSFULLY!
-echo ========================================
-echo.
-echo You can now run the application with:
-echo   - run.bat (direct launch)
-echo   - run_venv.bat (if using virtual environment)
-echo.
-echo If you encounter any issues, try using the virtual environment setup:
-echo   setup_venv.bat
-echo.
-pause
+if %FAIL% NEQ 0 (
+    echo.
+    echo One or more packages failed to import. Please review errors above.
+    pause
+    exit /b 1
+)
 
 echo.
 echo ========================================
@@ -178,9 +102,20 @@ echo Setup completed successfully!
 echo ========================================
 echo.
 echo Next steps:
-echo 1. Place your trained model file (xg_model.joblib) in the root directory
-echo 2. Run 'run.bat' to start the application
-echo.
-echo If you don't have a model file, the app will create a dummy model for demonstration.
-echo.
+echo  - Place your trained model file (xg_model.joblib) in this folder, or
+echo    let the app create a demo model automatically.
+echo  - Start the app with: run.bat
+
 pause
+exit /b 0
+
+:checkpkg
+set PKG=%~1
+%PY% -c "import importlib,sys; m='%PKG%'; mod=importlib.import_module(m); v=getattr(mod,'__version__','unknown'); print(f'  \u2713 {m}: {v}')" 1>nul 2>nul
+if errorlevel 1 (
+    echo   x %PKG% failed to import
+    set FAIL=1
+) else (
+    %PY% -c "import importlib; m='%PKG%'; mod=importlib.import_module(m); v=getattr(mod,'__version__','unknown'); print(f'  ^✓ {m}: {v}')"
+)
+exit /b 0

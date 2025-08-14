@@ -31,6 +31,12 @@
 - Interactive charts and statistics
 - Clean, publication-ready visualizations
 
+### 🖼️ **PNG-only Downloads (Streamlit Cloud Ready)**
+- All visualization exports are provided as PNG files only
+- Plotly static PNG export is attempted first
+- Automatic fallback to Matplotlib PNG if Plotly export is not available
+- No HTML or other fallback formats presented to users
+
 ### 🌍 **Multi-language Support**
 - English and Indonesian language options
 - Seamless language switching
@@ -102,8 +108,9 @@ xg_interface/
         ├── constants.py             # StatsBomb mappings & constants
         ├── data_processing.py       # Data preprocessing pipeline
         ├── visualization.py         # Chart and plot generation
-        ├── language.py              # Internationalization
-        └── custom_shot_manager.py   # Shot simulation logic
+        ├── visualization_seaborn.py # Alternative plotting helpers
+        ├── plotly_export.py         # Robust Plotly PNG exporter
+        └── language.py              # Internationalization
 ```
 
 ---
@@ -155,6 +162,10 @@ minute,second,play_pattern,position,shot_technique,shot_body_part,shot_type,shot
 4. Restart the application
 
 **Note**: If no model is found, the application will display clear instructions on where to place your model file, including the exact path required.
+
+### 📦 Model and Data Licensing
+- The included `xg_model.joblib` (if present) is provided for demonstration purposes under the project’s MIT license unless otherwise stated.
+- If you train a model using third‑party data (e.g., StatsBomb Open Data), ensure your usage complies with the data provider’s terms. This repository does not grant rights to redistribute third‑party datasets.
 
 ---
 
@@ -231,14 +242,25 @@ We welcome contributions! Please see our contributing guidelines for:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+Additionally:
+- Source files include SPDX headers: `SPDX-License-Identifier: MIT`.
+- No registration is required to use the MIT license; simply keep the license file and headers.
+
 ---
 
 ## 🏆 Credits
 
-**Developed by**: Research Team  
-**Framework**: Built with Streamlit and modern Python ML stack  
-**Data Standard**: Compatible with StatsBomb data format  
-**Visualization**: Powered by mplsoccer for authentic football pitch rendering
+**Created by:** Fadhil Raihan Akbar  
+**Institution:** UIN Syarif Hidayatullah Jakarta — Information Systems  
+**Research Purpose:** Undergraduate Thesis — “Application of Light Gradient Boosting Machine (LightGBM) for Expected Goals (xG) Value Prediction in Football Analysis”  
+**Contact:**
+- GitHub: https://github.com/fadhilra101  
+- Instagram: https://www.instagram.com/fadhilra_
+
+**Acknowledgements:**
+- Built with Streamlit and the modern Python ML stack
+- Visualizations use mplsoccer and Matplotlib; interactive plots via Plotly
+- Data format compatible with StatsBomb Open Data (follow their licensing/attribution requirements)
 
 ---
 

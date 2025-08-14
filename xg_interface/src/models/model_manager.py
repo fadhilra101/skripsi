@@ -1,4 +1,6 @@
 """
+SPDX-License-Identifier: MIT
+
 Model management utilities for the xG prediction application.
 """
 

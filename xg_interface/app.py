@@ -1,4 +1,6 @@
 """
+SPDX-License-Identifier: MIT
+
 xG Prediction Interface - Main Application
 
 A Streamlit application for predicting Expected Goals (xG) from shot data.

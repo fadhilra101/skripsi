@@ -10,48 +10,52 @@
         <mxCell id="T-YeJm0OnnebPTPB74lk-1" value="Start" style="html=1;dashed=0;whiteSpace=wrap;shape=mxgraph.dfd.start;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
           <mxGeometry x="360" y="370" width="80" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="T-YeJm0OnnebPTPB74lk-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="T-YeJm0OnnebPTPB74lk-2" target="T-YeJm0OnnebPTPB74lk-4" edge="1">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="T-YeJm0OnnebPTPB74lk-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="T-YeJm0OnnebPTPB74lk-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="500" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="T-YeJm0OnnebPTPB74lk-2" value="Training dataset" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
           <mxGeometry x="340" y="420" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="T-YeJm0OnnebPTPB74lk-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="T-YeJm0OnnebPTPB74lk-4" target="T-YeJm0OnnebPTPB74lk-6" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="T-YeJm0OnnebPTPB74lk-4" value="Tuning Process Configuration" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="340" y="500" width="120" height="60" as="geometry" />
-        </mxCell>
         <mxCell id="T-YeJm0OnnebPTPB74lk-10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="T-YeJm0OnnebPTPB74lk-6" target="T-YeJm0OnnebPTPB74lk-9" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="T-YeJm0OnnebPTPB74lk-6" value="&lt;p&gt;Hyperparameter Search with RandomizedSearchCV&lt;/p&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="340" y="580" width="120" height="60" as="geometry" />
+        <mxCell id="T-YeJm0OnnebPTPB74lk-6" value="&lt;p&gt;Hyperparameter Tuning&lt;/p&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="340" y="500" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="T-YeJm0OnnebPTPB74lk-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="T-YeJm0OnnebPTPB74lk-9" target="T-YeJm0OnnebPTPB74lk-11" edge="1">
+        <mxCell id="u41nIKufW4Fn8OoKBBvk-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="T-YeJm0OnnebPTPB74lk-9" target="u41nIKufW4Fn8OoKBBvk-3">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="T-YeJm0OnnebPTPB74lk-9" value="Best Model with Optimal Hyperparameters" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="340" y="660" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="T-YeJm0OnnebPTPB74lk-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="T-YeJm0OnnebPTPB74lk-11" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="400" y="820" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="T-YeJm0OnnebPTPB74lk-9" value="Best&amp;nbsp;&lt;div&gt;Hyperparameter&lt;/div&gt;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="340" y="580" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="T-YeJm0OnnebPTPB74lk-11" value="&lt;p&gt;Model Probability Calibration&lt;/p&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-          <mxGeometry x="340" y="740" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="T-YeJm0OnnebPTPB74lk-17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" target="T-YeJm0OnnebPTPB74lk-16" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="400" y="880" as="sourcePoint" />
-          </mxGeometry>
+          <mxGeometry x="340" y="820" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="T-YeJm0OnnebPTPB74lk-16" value="End" style="html=1;dashed=0;whiteSpace=wrap;shape=mxgraph.dfd.start;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
-          <mxGeometry x="360" y="900" width="80" height="30" as="geometry" />
+          <mxGeometry x="360" y="980" width="80" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="g3tTApdCK9tCQEGxP9VX-1" value="Final Calibrated LightGBM Model" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-          <mxGeometry x="340" y="820" width="120" height="60" as="geometry" />
+        <mxCell id="g3tTApdCK9tCQEGxP9VX-1" value="Final Calibrated LightGBM Model" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.stored_data;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="340" y="900" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="u41nIKufW4Fn8OoKBBvk-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="T-YeJm0OnnebPTPB74lk-11" target="g3tTApdCK9tCQEGxP9VX-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u41nIKufW4Fn8OoKBBvk-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0.5;entryDx=0;entryDy=-15;entryPerimeter=0;" edge="1" parent="1" source="g3tTApdCK9tCQEGxP9VX-1" target="T-YeJm0OnnebPTPB74lk-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u41nIKufW4Fn8OoKBBvk-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="u41nIKufW4Fn8OoKBBvk-3" target="u41nIKufW4Fn8OoKBBvk-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u41nIKufW4Fn8OoKBBvk-3" value="&lt;p&gt;Train Model&lt;/p&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="340" y="660" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="u41nIKufW4Fn8OoKBBvk-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="u41nIKufW4Fn8OoKBBvk-4" target="T-YeJm0OnnebPTPB74lk-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u41nIKufW4Fn8OoKBBvk-4" value="LightGBM Model" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="340" y="740" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

@@ -1,6 +1,7 @@
 """
 Alternative visualization using Seaborn and manual pitch drawing.
 This approach gives us full control over coordinates and marker visibility.
+Uses consistent theming with main visualization module.
 """
 
 import matplotlib.pyplot as plt
@@ -11,17 +12,32 @@ import numpy as np
 import io
 import base64
 
+# Import consistent theme from main visualization module
+try:
+    from .visualization import PITCH_BG_COLOR, PAPER_BG_COLOR, XG_COLORS
+except ImportError:
+    # Fallback definitions if import fails
+    PITCH_BG_COLOR = '#0a1f14'
+    PAPER_BG_COLOR = '#0d1117'
+    XG_COLORS = {
+        'very_high': '#ff4757',
+        'high': '#ff6348',
+        'medium': '#ffa502',
+        'low': '#3742fa',
+        'very_low': '#70a1ff',
+    }
+
 
 def draw_manual_pitch(ax, half_pitch=False):
     """
-    Manually draw a football pitch with exact coordinate control.
+    Manually draw a football pitch with exact coordinate control and consistent theming.
     
     Args:
         ax: Matplotlib axis
         half_pitch: Whether to draw half pitch only
     """
-    # Set pitch color and style
-    ax.set_facecolor('black')
+    # Set consistent pitch color and style
+    ax.set_facecolor(PITCH_BG_COLOR)
     
     if half_pitch:
         # Half pitch dimensions (attacking half)
@@ -30,10 +46,10 @@ def draw_manual_pitch(ax, half_pitch=False):
         x_min, x_max = 60, 120
         y_min, y_max = 0, 80
         
-        # Draw pitch outline
+        # Draw pitch outline with consistent background
         pitch_rect = patches.Rectangle((60, 0), 60, 80, 
                                      linewidth=4, edgecolor='white', 
-                                     facecolor='black', fill=True)
+                                     facecolor=PITCH_BG_COLOR, fill=True)
         ax.add_patch(pitch_rect)
         
         # Goal area (18-yard box)
@@ -71,10 +87,10 @@ def draw_manual_pitch(ax, half_pitch=False):
         x_min, x_max = 0, 120
         y_min, y_max = 0, 80
         
-        # Draw pitch outline
+        # Draw pitch outline with consistent background
         pitch_rect = patches.Rectangle((0, 0), 120, 80, 
                                      linewidth=4, edgecolor='white', 
-                                     facecolor='black', fill=True)
+                                     facecolor=PITCH_BG_COLOR, fill=True)
         ax.add_patch(pitch_rect)
         
         # Center line
@@ -174,8 +190,8 @@ def create_seaborn_shot_map(df: pd.DataFrame, title: str = "Shot Map with xG",
         ax.text(0.5, 0.5, "No valid shots to display", 
                 ha='center', va='center', transform=ax.transAxes,
                 fontsize=20, color='white', fontweight='bold')
-        ax.set_facecolor('black')
-        fig.patch.set_facecolor('black')
+        ax.set_facecolor(PITCH_BG_COLOR)
+        fig.patch.set_facecolor(PAPER_BG_COLOR)
         return fig, ax
     
     # Create figure
@@ -184,9 +200,9 @@ def create_seaborn_shot_map(df: pd.DataFrame, title: str = "Shot Map with xG",
     else:
         fig, ax = plt.subplots(figsize=(16, 10))
     
-    # Set backgrounds
-    fig.patch.set_facecolor('black')
-    ax.set_facecolor('black')
+    # Set consistent backgrounds
+    fig.patch.set_facecolor(PAPER_BG_COLOR)
+    ax.set_facecolor(PITCH_BG_COLOR)
     
     # Draw the pitch manually
     draw_manual_pitch(ax, half_pitch=half_pitch)
@@ -194,18 +210,18 @@ def create_seaborn_shot_map(df: pd.DataFrame, title: str = "Shot Map with xG",
     # Prepare data for visualization
     valid_shots = valid_shots.copy()
     
-    # Create color mapping based on xG
+    # Create color mapping based on xG using consistent theme colors
     def xg_to_color(xg):
         if xg >= 0.7:
-            return '#FF0040'  # Neon Red
+            return XG_COLORS['very_high']  # Enhanced red
         elif xg >= 0.5:
-            return '#FF8000'  # Neon Orange
+            return XG_COLORS['high']       # Coral red-orange
         elif xg >= 0.3:
-            return '#FFFF00'  # Neon Yellow
+            return XG_COLORS['medium']     # Bright orange
         elif xg >= 0.1:
-            return '#00FFFF'  # Neon Cyan
+            return XG_COLORS['low']        # Bright blue
         else:
-            return '#4080FF'  # Neon Blue
+            return XG_COLORS['very_low']   # Light blue
     
     # Create size mapping based on xG
     def xg_to_size(xg):
@@ -225,56 +241,56 @@ def create_seaborn_shot_map(df: pd.DataFrame, title: str = "Shot Map with xG",
                   linewidths=6,
                   zorder=100)  # Very high z-order
         
-        # Add xG annotation for each shot
+        # Add xG annotation for each shot with consistent styling
         ax.annotate(f"{row['xG']:.2f}", 
                    (row['start_x'], row['start_y']),
                    xytext=(5, 5), textcoords='offset points',
                    fontsize=8, color='white', fontweight='bold',
-                   bbox=dict(boxstyle="round,pad=0.2", facecolor='black', 
+                   bbox=dict(boxstyle="round,pad=0.2", facecolor=PAPER_BG_COLOR, 
                            edgecolor='white', alpha=0.8))
     
-    # Create legend
+    # Create legend with consistent colors
     legend_elements = [
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#FF0040', 
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['very_high'], 
                   markeredgecolor='white', markeredgewidth=3, markersize=15, 
                   linestyle='None', label='Very High xG (≥0.7)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#FF8000', 
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['high'], 
                   markeredgecolor='white', markeredgewidth=3, markersize=12, 
                   linestyle='None', label='High xG (0.5-0.7)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#FFFF00', 
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['medium'], 
                   markeredgecolor='white', markeredgewidth=3, markersize=10, 
                   linestyle='None', label='Medium xG (0.3-0.5)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#00FFFF', 
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['low'], 
                   markeredgecolor='white', markeredgewidth=3, markersize=8, 
                   linestyle='None', label='Low xG (0.1-0.3)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#4080FF', 
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['very_low'], 
                   markeredgecolor='white', markeredgewidth=3, markersize=6, 
                   linestyle='None', label='Very Low xG (<0.1)')
     ]
     
     legend = ax.legend(handles=legend_elements, loc='upper left', 
                       bbox_to_anchor=(1.02, 1), fontsize=11,
-                      facecolor='black', edgecolor='white', labelcolor='white')
+                      facecolor=PAPER_BG_COLOR, edgecolor='white', labelcolor='white')
     legend.get_frame().set_linewidth(2)
     
-    # Title
+    # Title with consistent styling
     ax.set_title(title, fontsize=20, color='white', fontweight='bold', pad=20,
-                bbox=dict(boxstyle="round,pad=0.5", facecolor="black", 
+                bbox=dict(boxstyle="round,pad=0.5", facecolor=PAPER_BG_COLOR, 
                         edgecolor="white", linewidth=2))
     
-    # Summary info
+    # Summary info with consistent styling
     total_xg = valid_shots['xG'].sum()
     summary_text = f"{len(valid_shots)} shots | Total xG: {total_xg:.2f}"
     
     if half_pitch:
         ax.text(90, 82, summary_text, ha='center', va='center',
                 fontsize=12, color='white', fontweight='bold',
-                bbox=dict(boxstyle="round,pad=0.3", facecolor="black", 
+                bbox=dict(boxstyle="round,pad=0.3", facecolor=PAPER_BG_COLOR, 
                         edgecolor="white", alpha=0.8))
     else:
         ax.text(60, 82, summary_text, ha='center', va='center',
                 fontsize=12, color='white', fontweight='bold',
-                bbox=dict(boxstyle="round,pad=0.3", facecolor="black", 
+                bbox=dict(boxstyle="round,pad=0.3", facecolor=PAPER_BG_COLOR, 
                         edgecolor="white", alpha=0.8))
     
     plt.tight_layout()

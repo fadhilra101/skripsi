@@ -14,6 +14,116 @@ import plotly.graph_objects as go
 import plotly.express as px
 from scipy.stats import gaussian_kde
 
+# --- Unified visualization theme helpers (UI/UX tidy and consistent) ---
+PITCH_BG_COLOR = '#0a1f14'  # dark green tone for better contrast
+PAPER_BG_COLOR = '#0d1117'  # consistent dark background
+LINE_COLOR = 'white'
+FONT_FAMILY = 'Inter, Segoe UI, Arial, sans-serif'
+
+# Enhanced high-contrast palette for xG bins - optimized for dark backgrounds
+XG_COLORS = {
+    'very_high': '#ff4757',  # bright red - maximum contrast
+    'high': '#ff6348',       # coral red-orange
+    'medium': '#ffa502',     # bright orange (instead of yellow for better visibility)
+    'low': '#3742fa',        # bright blue
+    'very_low': '#70a1ff',   # lighter blue
+}
+
+
+def apply_plotly_theme(fig: go.Figure, title: str | None = None, legend: bool = True, y_range=None):
+    """Apply a consistent dark pitch theme to Plotly figures.
+    Keeps visuals clean, readable, and elegant across pages.
+    """
+    # Prepare title object pinned to top-left to avoid legend overlap
+    title_text = None
+    if title is not None:
+        title_text = title
+    elif getattr(fig.layout, 'title', None) and getattr(fig.layout.title, 'text', None):
+        title_text = fig.layout.title.text
+
+    fig.update_layout(
+        title=dict(text=title_text, x=0.0, xanchor='left', y=0.98, yanchor='top', font=dict(size=18, color='white', family=FONT_FAMILY)) if title_text else None,
+        plot_bgcolor=PITCH_BG_COLOR,
+        paper_bgcolor=PAPER_BG_COLOR,
+        font=dict(color='white', family=FONT_FAMILY, size=13),
+        showlegend=legend,
+        legend=dict(
+            orientation='h',
+            yanchor='bottom', y=1.02,
+            xanchor='right', x=1.0,
+            font=dict(color='white', size=12),
+            bgcolor='rgba(0,0,0,0.3)',
+            bordercolor='rgba(255,255,255,0.35)', borderwidth=1,
+            itemsizing='constant',
+            itemclick='toggleothers',
+            itemdoubleclick='toggle',
+        ),
+        margin=dict(l=12, r=12, t=68, b=12),
+        hovermode='closest',
+        hoverlabel=dict(
+            bgcolor=PAPER_BG_COLOR,
+            bordercolor='rgba(255,255,255,0.35)',
+            font=dict(color='white', family=FONT_FAMILY, size=11),
+            namelength=-1,
+        ),
+        transition=dict(duration=200, easing='cubic-in-out'),
+    )
+    # Axes tidy
+    fig.update_xaxes(showgrid=False, zeroline=False, visible=False, range=[-5, 85])
+    if y_range is not None:
+        fig.update_yaxes(showgrid=False, zeroline=False, visible=False, range=y_range, scaleanchor='x', scaleratio=1)
+    else:
+        fig.update_yaxes(showgrid=False, zeroline=False, visible=False, scaleanchor='x', scaleratio=1)
+    return fig
+
+
+def get_plotly_chart_config(filename_base: str = 'figure', scale: int = 2, *, compact: bool = False, hide_modebar: bool = False) -> dict:
+    """Return a standard Plotly config for Streamlit plotly_chart.
+    - PNG export enabled via modebar (toImage)
+    - Hide Plotly logo
+    - Optional compact modebar (only toImage button)
+    - Optional hidden modebar (no modebar at all; for small, non-exportable helper plots)
+    """
+    if hide_modebar:
+        return {
+            "displayModeBar": False,
+            "displaylogo": False,
+            "staticPlot": True,
+            "responsive": True,
+        }
+
+    config: dict = {
+        "displayModeBar": True,
+        "displaylogo": False,
+        "responsive": True,
+        "scrollZoom": False,
+        "toImageButtonOptions": {
+            "format": "png",
+            "filename": filename_base,
+            "scale": scale,
+        },
+    }
+
+    if compact:
+        # Keep only the toImage button by removing common interaction buttons
+        config["modeBarButtonsToRemove"] = [
+            "zoom2d",
+            "pan2d",
+            "select2d",
+            "lasso2d",
+            "zoomIn2d",
+            "zoomOut2d",
+            "autoScale2d",
+            "resetScale2d",
+            "hoverClosestCartesian",
+            "hoverCompareCartesian",
+            "toggleSpikelines",
+            "resetViews",
+            "resetViewMapbox",
+        ]
+    return config
+
+
 # Import alternative visualization approaches
 try:
     from .visualization_seaborn import create_seaborn_shot_map, create_bokeh_shot_map
@@ -56,75 +166,82 @@ def create_shot_map(df: pd.DataFrame, title: str = "Shot Map with xG") -> tuple:
     if len(valid_shots) == 0:
         print("ERROR: No valid shots to display!")
         # Create empty plot
-        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='black', line_color='white', linewidth=4)
+        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='white', linewidth=2.5)
         fig, ax = pitch.draw(figsize=(12, 18))
+        fig.patch.set_facecolor(PAPER_BG_COLOR)
+        ax.set_facecolor(PITCH_BG_COLOR)
         ax.text(60, 40, "No valid shots to display", ha='center', va='center', 
-                fontsize=20, color='white', fontweight='bold')
+                fontsize=18, color='white', fontweight='semibold')
         return fig, ax
     
-    # Create the vertical pitch with maximum contrast
-    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='black', line_color='white', 
-                          linewidth=4)
+    # Create the vertical pitch with softer styling
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='white', linewidth=2.5)
     fig, ax = pitch.draw(figsize=(12, 18), constrained_layout=True, tight_layout=False)
     
-    # Set black background for maximum contrast
-    fig.patch.set_facecolor('black')
-    ax.set_facecolor('black')
+    # Apply unified backgrounds
+    fig.patch.set_facecolor(PAPER_BG_COLOR)
+    ax.set_facecolor(PITCH_BG_COLOR)
 
-    # DRAMATICALLY BRIGHT APPROACH: Single large marker per shot
-    for i, (idx, row) in enumerate(valid_shots.iterrows()):
+    # Softer marker styling by xG bins
+    def color_for_xg(xg):
+        if xg >= 0.7: return XG_COLORS['very_high']
+        if xg >= 0.5: return XG_COLORS['high']
+        if xg >= 0.3: return XG_COLORS['medium']
+        if xg >= 0.1: return XG_COLORS['low']
+        return XG_COLORS['very_low']
+
+    for _, row in valid_shots.iterrows():
         x, y, xg = row['start_x'], row['start_y'], row['xG']
-        
-        # Determine base color based on xG with NEON BRIGHT colors
-        if xg >= 0.7:
-            color = '#FF0040'  # Neon Red - Very high xG
-        elif xg >= 0.5:
-            color = '#FF8000'  # Neon Orange - High xG  
-        elif xg >= 0.3:
-            color = '#FFFF00'  # Neon Yellow - Medium xG
-        elif xg >= 0.1:
-            color = '#00FFFF'  # Neon Cyan - Low-Medium xG
-        else:
-            color = '#4080FF'  # Neon Blue - Very low xG
-        
-        # Calculate size based on xG (reduced for full-pitch clarity)
-        size = (xg * 700) + 120  # smaller, readable on full pitch
-        
-        # Single ultra-bright marker with thick outline
-        ax.scatter(x, y, 
-                  s=size, 
-                  c=color, 
-                  alpha=1.0,
-                  edgecolors='white', 
-                  linewidths=8, 
-                  zorder=20)
+        color = color_for_xg(xg)
+        size = (xg * 550) + 90
+        ax.scatter(
+            x, y,
+            s=size,
+            c=color,
+            alpha=0.95,
+            edgecolors='white',
+            linewidths=2.2,
+            zorder=12,
+        )
 
-    # Create high-contrast legend
+    # Legend
     legend_elements = [
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#FF0040', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=18, 
-                  linestyle='None', label='Very High xG (≥0.7)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#FF8000', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=15, 
-                  linestyle='None', label='High xG (0.5-0.7)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#FFFF00', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=12, 
-                  linestyle='None', label='Medium xG (0.3-0.5)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#00FFFF', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=10, 
-                  linestyle='None', label='Low xG (0.1-0.3)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#4080FF', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=8, 
-                  linestyle='None', label='Very Low xG (<0.1)')
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['very_high'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=14, 
+                  linestyle='None', label='Very High (≥0.7)'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['high'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=12, 
+                  linestyle='None', label='High (0.5–0.7)'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['medium'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=11, 
+                  linestyle='None', label='Medium (0.3–0.5)'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['low'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=10, 
+                  linestyle='None', label='Low (0.1–0.3)'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['very_low'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=9, 
+                  linestyle='None', label='Very Low (<0.1)')
     ]
     
-    legend = ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.02, 1), 
-                      fontsize=12, facecolor='black', edgecolor='white', labelcolor='white')
-    legend.get_frame().set_linewidth(2)
+    legend = ax.legend(
+        handles=legend_elements,
+        loc='upper left',
+        bbox_to_anchor=(1.02, 1), 
+        fontsize=11,
+        facecolor=PAPER_BG_COLOR,
+        edgecolor='white',
+        labelcolor='white'
+    )
+    legend.get_frame().set_linewidth(1)
 
-    # High-contrast title
-    ax.set_title(title, fontsize=24, color='white', fontweight='bold', pad=40,
-                bbox=dict(boxstyle="round,pad=0.5", facecolor="black", edgecolor="white", linewidth=2))
+    # Title
+    ax.set_title(
+        title,
+        fontsize=22,
+        color='white',
+        fontweight='semibold',
+        pad=28,
+    )
     
     return fig, ax
 
@@ -158,82 +275,75 @@ def create_half_pitch_shot_map(df: pd.DataFrame, title: str = "Half Pitch Shot M
     if len(valid_shots) == 0:
         print("ERROR: No valid shots in attacking half!")
         # Create empty plot
-        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='black', line_color='white', 
-                              linewidth=4, half=True)
+        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='white', 
+                              linewidth=2.5, half=True)
         fig, ax = pitch.draw(figsize=(14, 14))
+        fig.patch.set_facecolor(PAPER_BG_COLOR)
+        ax.set_facecolor(PITCH_BG_COLOR)
         ax.text(40, 90, "No shots in attacking half", ha='center', va='center', 
-                fontsize=20, color='white', fontweight='bold')
+                fontsize=18, color='white', fontweight='semibold')
         return fig, ax
     
-    # Create vertical half pitch with maximum contrast
-    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='black', line_color='white', 
-                          linewidth=4, half=True)
+    # Create vertical half pitch with softer styling
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='white', 
+                          linewidth=2.5, half=True)
     fig, ax = pitch.draw(figsize=(14, 14), constrained_layout=True, tight_layout=False)
     
-    # Set black background for maximum contrast
-    fig.patch.set_facecolor('black')
-    ax.set_facecolor('black')
+    # Apply unified backgrounds
+    fig.patch.set_facecolor(PAPER_BG_COLOR)
+    ax.set_facecolor(PITCH_BG_COLOR)
 
-    # ULTRA-BRIGHT single marker approach
-    for i, (idx, row) in enumerate(valid_shots.iterrows()):
+    # Softer marker styling
+    def color_for_xg(xg):
+        if xg >= 0.7: return XG_COLORS['very_high']
+        if xg >= 0.5: return XG_COLORS['high']
+        if xg >= 0.3: return XG_COLORS['medium']
+        if xg >= 0.1: return XG_COLORS['low']
+        return XG_COLORS['very_low']
+    
+    for _, row in valid_shots.iterrows():
         x, y, xg = row['start_x'], row['start_y'], row['xG']
-        
-        # Determine base color based on xG - using ultra-bright neon colors
-        if xg >= 0.7:
-            color = '#FF0040'  # Neon Red - Very high xG
-        elif xg >= 0.5:
-            color = '#FF8000'  # Neon Orange - High xG  
-        elif xg >= 0.3:
-            color = '#FFFF00'  # Neon Yellow - Medium xG
-        elif xg >= 0.1:
-            color = '#00FFFF'  # Neon Cyan - Low-Medium xG
-        else:
-            color = '#4080FF'  # Neon Blue - Very low xG
-        
-        # Calculate MASSIVE size for half pitch (even bigger)
-        size = (xg * 10000) + 3000  # Enormous markers
-        
-        # Single ultra-bright marker with ultra-thick white outline
-        ax.scatter(x, y, 
-                  s=size, 
-                  c=color, 
-                  alpha=1.0,
-                  edgecolors='white', 
-                  linewidths=10, 
-                  zorder=20)
+        color = color_for_xg(xg)
+        size = (xg * 2200) + 600
+        ax.scatter(
+            x, y,
+            s=size,
+            c=color,
+            alpha=0.95,
+            edgecolors='white',
+            linewidths=2.4,
+            zorder=12,
+        )
 
-    # Create high-contrast legend
+    # Legend
     legend_elements = [
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#FF0040', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=18, 
-                  linestyle='None', label='Very High xG (≥0.7)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#FF8000', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=15, 
-                  linestyle='None', label='High xG (0.5-0.7)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#FFFF00', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=12, 
-                  linestyle='None', label='Medium xG (0.3-0.5)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#00FFFF', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=10, 
-                  linestyle='None', label='Low xG (0.1-0.3)'),
-        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='#4080FF', 
-                  markeredgecolor='white', markeredgewidth=4, markersize=8, 
-                  linestyle='None', label='Very Low xG (<0.1)')
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['very_high'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=14, 
+                  linestyle='None', label='Very High (≥0.7)'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['high'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=12, 
+                  linestyle='None', label='High (0.5–0.7)'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['medium'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=11, 
+                  linestyle='None', label='Medium (0.3–0.5)'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['low'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=10, 
+                  linestyle='None', label='Low (0.1–0.3)'),
+        plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=XG_COLORS['very_low'], 
+                  markeredgecolor='white', markeredgewidth=2, markersize=9, 
+                  linestyle='None', label='Very Low (<0.1)')
     ]
     
     legend = ax.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1.02, 1), 
-                      fontsize=12, facecolor='black', edgecolor='white', labelcolor='white')
-    legend.get_frame().set_linewidth(3)
+                      fontsize=11, facecolor=PAPER_BG_COLOR, edgecolor='white', labelcolor='white')
+    legend.get_frame().set_linewidth(1)
 
-    # High-contrast title
-    ax.set_title(title, fontsize=24, color='white', fontweight='bold', pad=40,
-                bbox=dict(boxstyle="round,pad=0.5", facecolor="black", edgecolor="white", linewidth=3))
-    
-    # Add subtitle with data info
+    # Title and subtitle
+    ax.set_title(title, fontsize=22, color='white', fontweight='semibold', pad=28)
     total_xg = valid_shots['xG'].sum()
     ax.text(90, 55, f'Final Third Focus | {len(valid_shots)} shots | Total xG: {total_xg:.2f}', 
-            ha='center', va='center', fontsize=14, color='white', fontweight='bold',
-            bbox=dict(boxstyle="round,pad=0.3", facecolor="black", edgecolor="white", alpha=0.8))
+            ha='center', va='center', fontsize=13, color='white', fontweight='semibold',
+            bbox=dict(boxstyle="round,pad=0.3", facecolor=PAPER_BG_COLOR, edgecolor="white", alpha=0.6))
     
     return fig, ax
 
@@ -252,36 +362,36 @@ def create_single_shot_visualization(x: float, y: float, xg_value: float,
     Returns:
         Tuple of (figure, axis) objects
     """
-    # Create professional vertical pitch styling with black background
-    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='black', line_color='white', 
+    # Create professional vertical pitch styling with consistent dark background
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='white', 
                           linewidth=4)
     fig, ax = pitch.draw(figsize=(10, 16), constrained_layout=True, tight_layout=False)
     
-    # Set black background for maximum contrast
-    fig.patch.set_facecolor('black')
-    ax.set_facecolor('black')
+    # Set consistent dark background for maximum contrast
+    fig.patch.set_facecolor(PAPER_BG_COLOR)
+    ax.set_facecolor(PITCH_BG_COLOR)
     
-    # Determine color based on xG value using dramatic neon colors
+    # Determine color based on xG value using enhanced high-contrast colors
     if xg_value >= 0.7:
-        base_color = '#FF0000'  # Pure Red - Very high xG
-        glow_color = '#FF6666'  # Red glow
-        ring_color = '#FFAAAA'  # Light red ring
+        base_color = '#ff4757'  # Bright Red - Very high xG
+        glow_color = '#ff6b7a'  # Red glow
+        ring_color = '#ff9aa7'  # Light red ring
     elif xg_value >= 0.5:
-        base_color = '#FF6600'  # Orange Red - High xG
-        glow_color = '#FF9966'  # Orange glow
-        ring_color = '#FFCC99'  # Light orange ring
+        base_color = '#ff6348'  # Coral Red-Orange - High xG
+        glow_color = '#ff8066'  # Orange glow
+        ring_color = '#ffa899'  # Light orange ring
     elif xg_value >= 0.3:
-        base_color = '#FFAA00'  # Orange - Medium xG
-        glow_color = '#FFCC66'  # Orange glow
-        ring_color = '#FFDD99'  # Light orange ring
+        base_color = '#ffa502'  # Bright Orange - Medium xG
+        glow_color = '#ffb733'  # Orange glow
+        ring_color = '#ffce66'  # Light orange ring
     elif xg_value >= 0.1:
-        base_color = '#00FFFF'  # Cyan - Low-Medium xG
-        glow_color = '#66FFFF'  # Cyan glow
-        ring_color = '#99FFFF'  # Light cyan ring
+        base_color = '#3742fa'  # Bright Blue - Low-Medium xG
+        glow_color = '#5a67fb'  # Blue glow
+        ring_color = '#8890fc'  # Light blue ring
     else:
-        base_color = '#0066FF'  # Blue - Very low xG
-        glow_color = '#6699FF'  # Blue glow
-        ring_color = '#99CCFF'  # Light blue ring
+        base_color = '#70a1ff'  # Light Blue - Very low xG
+        glow_color = '#8fb3ff'  # Blue glow
+        ring_color = '#b3ccff'  # Light blue ring
     
     # Calculate dramatic size for single shot
     base_size = xg_value * 5000 + 1000
@@ -320,14 +430,14 @@ def create_single_shot_visualization(x: float, y: float, xg_value: float,
                 zorder=25,
                 arrowprops=dict(arrowstyle='->', color='white', lw=3))
 
-    # Dramatic title styling
+    # Dramatic title styling with consistent background
     ax.set_title(title, fontsize=24, color='white', fontweight='bold', pad=40,
-                bbox=dict(boxstyle="round,pad=0.8", facecolor="black", edgecolor="white", linewidth=4))
+                bbox=dict(boxstyle="round,pad=0.8", facecolor=PAPER_BG_COLOR, edgecolor="white", linewidth=4))
     
-    # Add coordinate info with dramatic styling
+    # Add coordinate info with consistent styling
     ax.text(x, -15, f'Position: ({x:.1f}, {y:.1f})', 
             ha='center', va='center', fontsize=16, color='white', fontweight='bold',
-            bbox=dict(boxstyle="round,pad=0.5", facecolor="black", edgecolor="white", alpha=0.8))
+            bbox=dict(boxstyle="round,pad=0.5", facecolor=PAPER_BG_COLOR, edgecolor="white", alpha=0.8))
     
     return fig, ax
 
@@ -365,7 +475,7 @@ def save_figure_to_bytes(fig, format='png', dpi=300):
     """
     buf = io.BytesIO()
     fig.savefig(buf, format=format, dpi=dpi, bbox_inches='tight', 
-                facecolor='#22312b', edgecolor='none')
+                facecolor=PAPER_BG_COLOR, edgecolor='none')
     buf.seek(0)
     return buf.getvalue()
 
@@ -450,25 +560,25 @@ def create_custom_shots_visualization(df: pd.DataFrame, title: str = "Custom Sho
         Tuple of (figure, axis) objects
     """
     if df.empty:
-        # Return professional empty plot if no data
-        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
+        # Return professional empty plot if no data with consistent theme
+        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='#30363d', 
                       linewidth=2)
         fig, ax = pitch.draw(figsize=(10, 16))
-        fig.patch.set_facecolor('#0d1117')
-        ax.set_facecolor('#0d1117')
+        fig.patch.set_facecolor(PAPER_BG_COLOR)
+        ax.set_facecolor(PITCH_BG_COLOR)
         ax.set_title("No custom shots to display", fontsize=22, color='#8b949e', fontweight='bold')
         ax.text(60, 40, 'Create some custom shots to see the shot map visualization', 
                 ha='center', va='center', fontsize=14, color='#8b949e', style='italic')
         return fig, ax
     
-    # Create professional vertical pitch styling
-    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
+    # Create professional vertical pitch styling with consistent background
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='#30363d', 
                   linewidth=2)
     fig, ax = pitch.draw(figsize=(10, 16), constrained_layout=True, tight_layout=False)
     
-    # Set dark background for professional look
-    fig.patch.set_facecolor('#0d1117')
-    ax.set_facecolor('#0d1117')
+    # Set consistent dark background for professional look
+    fig.patch.set_facecolor(PAPER_BG_COLOR)
+    ax.set_facecolor(PITCH_BG_COLOR)
 
     # Plot the shots with professional styling based on xG value - mplsoccer handles vertical orientation
     size = df['xg_value'] * 900 + 150  # Size based on xG value, larger for visibility
@@ -528,19 +638,19 @@ def create_shot_heat_map(df: pd.DataFrame, title: str = "Shot Heat Map") -> tupl
         Tuple of (figure, axis) objects
     """
     # Create the pitch with professional styling
-    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='#30363d', linewidth=2)
     fig, ax = pitch.draw(figsize=(10, 16), constrained_layout=True, tight_layout=False)
     
-    # Set dark background for professional look
-    fig.patch.set_facecolor('#0d1117')
-    ax.set_facecolor('#0d1117')
+    # Set consistent dark background for professional look
+    fig.patch.set_facecolor(PAPER_BG_COLOR)
+    ax.set_facecolor(PITCH_BG_COLOR)
 
     # Create smooth continuous heat map using kde
     from scipy.stats import gaussian_kde
     from matplotlib.colors import LinearSegmentedColormap
     import numpy as np
     
-    # Create custom red-to-white colormap for better visibility
+    # Create custom red-to-white colormap (original) for better visibility on dark background
     colors = ['#000000', '#1a0000', '#330000', '#4d0000', '#660000', '#800000', 
               '#990000', '#b30000', '#cc0000', '#e60000', '#ff0000', '#ff1a1a', 
               '#ff3333', '#ff4d4d', '#ff6666', '#ff8080', '#ff9999', '#ffb3b3', '#ffcccc', '#ffffff']
@@ -617,21 +727,21 @@ def create_half_pitch_heat_map(df: pd.DataFrame, title: str = "Half Pitch Heat M
     Returns:
         Tuple of (figure, axis) objects
     """
-    # Create half pitch with professional styling
-    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', 
+    # Create half pitch with professional styling and consistent background
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='#30363d', 
                   linewidth=2, half=True)
     fig, ax = pitch.draw(figsize=(10, 8), constrained_layout=True, tight_layout=False)
     
-    # Set dark background for professional look
-    fig.patch.set_facecolor('#0d1117')
-    ax.set_facecolor('#0d1117')
+    # Set consistent dark background for professional look
+    fig.patch.set_facecolor(PAPER_BG_COLOR)
+    ax.set_facecolor(PITCH_BG_COLOR)
 
     # Create smooth continuous heat map using kde
     from scipy.stats import gaussian_kde
     from matplotlib.colors import LinearSegmentedColormap
     import numpy as np
     
-    # Create custom red-to-white colormap for better visibility
+    # Create custom red-to-white colormap (original) for better visibility on dark background
     colors = ['#000000', '#1a0000', '#330000', '#4d0000', '#660000', '#800000', 
               '#990000', '#b30000', '#cc0000', '#e60000', '#ff0000', '#ff1a1a', 
               '#ff3333', '#ff4d4d', '#ff6666', '#ff8080', '#ff9999', '#ffb3b3', '#ffcccc', '#ffffff']
@@ -709,30 +819,30 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
         Tuple of (figure, axis) objects
     """
     if df.empty:
-        # Return professional empty plot if no data with proper aspect ratio
-        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
+        # Return professional empty plot if no data with proper aspect ratio and consistent theme
+        pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='#30363d', linewidth=2)
         fig, ax = pitch.draw(figsize=(10, 16))  # Proper aspect ratio for vertical pitch
-        fig.patch.set_facecolor('#0d1117')
-        ax.set_facecolor('#0d1117')
+        fig.patch.set_facecolor(PAPER_BG_COLOR)
+        ax.set_facecolor(PITCH_BG_COLOR)
         ax.set_title("No custom shots to display", fontsize=22, color='#8b949e', fontweight='bold')
         ax.text(60, 40, 'Create some custom shots to see the heat map visualization', 
                 ha='center', va='center', fontsize=14, color='#8b949e', style='italic')
         return fig, ax
     
-    # Create professional pitch styling with proper aspect ratio
-    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color='#0d1117', line_color='#30363d', linewidth=2)
+    # Create professional pitch styling with proper aspect ratio and consistent background
+    pitch = VerticalPitch(pitch_type='statsbomb', pitch_color=PITCH_BG_COLOR, line_color='#30363d', linewidth=2)
     fig, ax = pitch.draw(figsize=(10, 16))  # Proper aspect ratio for vertical pitch
     
-    # Set dark background for professional look
-    fig.patch.set_facecolor('#0d1117')
-    ax.set_facecolor('#0d1117')
+    # Set consistent dark background for professional look
+    fig.patch.set_facecolor(PAPER_BG_COLOR)
+    ax.set_facecolor(PITCH_BG_COLOR)
 
     # Create smooth continuous heat map using kde
     from scipy.stats import gaussian_kde
     from matplotlib.colors import LinearSegmentedColormap
     import numpy as np
     
-    # Create custom red-to-white colormap for better visibility
+    # Create custom red-to-white colormap (original) for better visibility on dark background
     colors = ['#000000', '#1a0000', '#330000', '#4d0000', '#660000', '#800000', 
               '#990000', '#b30000', '#cc0000', '#e60000', '#ff0000', '#ff1a1a', 
               '#ff3333', '#ff4d4d', '#ff6666', '#ff8080', '#ff9999', '#ffb3b3', '#ffcccc', '#ffffff']
@@ -782,7 +892,7 @@ def create_custom_shots_heat_map(df: pd.DataFrame, title: str = "Custom Shots He
                     
                     # Apply square root scaling to prevent extreme stretching
                     Z_sqrt = np.sqrt(Z)
-                    Z_normalized = (Z_sqrt - Z_sqrt.min()) / (Z_sqrt.max() - Z_sqrt.min())
+                    Z_normalized = (Z_sqrt - Z_sqrt.min()) / (Z_sqrt.max() - Z_sqrt.min() + 1e-12)
                     
                     # Apply mild power transformation
                     Z_enhanced = np.power(Z_normalized, 0.6)
@@ -863,9 +973,9 @@ def get_visualization_options(lang: str = 'en') -> dict:
     defined in language.py (shot_map_option, heat_map_option).
     """
     from .language import get_translation  # local import to avoid circular
+    # Globally disable Heat Map: return only Shot Map option
     return {
         get_translation('shot_map_option', lang): 'shot_map',
-        get_translation('heat_map_option', lang): 'heat_map',
     }
 
 
@@ -925,6 +1035,9 @@ def create_visualization_by_type(
         # Default mplsoccer versions
         return func(local_df, title=title)
     elif viz_type == 'heat_map':
+        if interactive:
+            fig, _ = create_plotly_heat_map(local_df, title=title, half_pitch=half_pitch, custom_shots=custom_shots)
+            return fig, None
         func = _select_heat_map_function(custom_shots, half_pitch)
         return func(local_df, title=title)
     else:
@@ -946,7 +1059,8 @@ def create_plotly_shot_map(df: pd.DataFrame, title: str = "Shot Map", half_pitch
     # Defensive copy
     if df is None or df.empty:
         fig = go.Figure()
-        fig.update_layout(title=title + " (no data)", plot_bgcolor='black', paper_bgcolor='black')
+        fig.update_layout(title=title + " (no data)")
+        fig = apply_plotly_theme(fig)
         return fig, None
 
     # Ensure numeric columns
@@ -972,32 +1086,31 @@ def create_plotly_shot_map(df: pd.DataFrame, title: str = "Shot Map", half_pitch
     print(f"DEBUG Plotly Shot Map - total rows: {len(work)}, valid rows: {len(valid)}, half_pitch={half_pitch}")
 
     if valid.empty:
-        import plotly.graph_objects as go
         fig = go.Figure()
-        fig.update_layout(title=title + " (no valid shots)", plot_bgcolor='black', paper_bgcolor='black',
-                          xaxis=dict(visible=False), yaxis=dict(visible=False))
+        fig.update_layout(title=title + " (no valid shots)")
+        fig = apply_plotly_theme(fig)
         return fig, None
 
     # Ensure xG column name
     if 'xG' not in valid.columns and 'xg_value' in valid.columns:
         valid = valid.rename(columns={'xg_value': 'xG'})
 
-    # Mapping for colors
+    # Softer color mapping
     def color_for_xg(xg):
-        if xg >= 0.7: return '#FF0040'
-        if xg >= 0.5: return '#FF8000'
-        if xg >= 0.3: return '#FFFF00'
-        if xg >= 0.1: return '#00FFFF'
-        return '#4080FF'
+        if xg >= 0.7: return XG_COLORS['very_high']
+        if xg >= 0.5: return XG_COLORS['high']
+        if xg >= 0.3: return XG_COLORS['medium']
+        if xg >= 0.1: return XG_COLORS['low']
+        return XG_COLORS['very_low']
 
     valid['color'] = valid['xG'].apply(color_for_xg)
-    valid['size'] = (valid['xG'] * 35) + 14  # Reduced, moderate sizes
+    valid['size'] = (valid['xG'] * (34 if half_pitch else 22)) + (14 if half_pitch else 9)
 
     # Transform to vertical pitch
     valid['display_x'] = valid['start_y']
     valid['display_y'] = valid['start_x']
 
-    # Choose label column for hover: player_name -> shot_name -> generic
+    # Choose label column for hover
     label_col = None
     for cand in ['player_name', 'shot_name', 'player', 'shooter', 'name']:
         if cand in valid.columns:
@@ -1006,31 +1119,25 @@ def create_plotly_shot_map(df: pd.DataFrame, title: str = "Shot Map", half_pitch
     if label_col is None:
         valid[label_col := 'temp_label'] = 'Player'
 
-    import plotly.graph_objects as go
     fig = go.Figure()
 
-    # Pitch base rectangle (vertical orientation) with shapes layered below traces
+    # Pitch base shapes (vertical orientation)
     if half_pitch:
-        fig.add_shape(type="rect", x0=0, y0=60, x1=80, y1=120, line=dict(color="white", width=3), fillcolor="rgba(0,0,0,0)", layer='below')
-        # Penalty area & 6-yard (top end)
-        fig.add_shape(type="rect", x0=22, y0=102, x1=58, y1=120, line=dict(color="white", width=2), fillcolor="rgba(0,0,0,0)", layer='below')
-        fig.add_shape(type="rect", x0=30, y0=114, x1=50, y1=120, line=dict(color="white", width=2), fillcolor="rgba(0,0,0,0)", layer='below')
-        # Goal
-        fig.add_shape(type="rect", x0=36, y0=120, x1=44, y1=122, line=dict(color="white", width=2), fillcolor='white', layer='below')
+        fig.add_shape(type="rect", x0=0, y0=60, x1=80, y1=120, line=dict(color=LINE_COLOR, width=3), fillcolor="rgba(0,0,0,0)", layer='below')
+        fig.add_shape(type="rect", x0=22, y0=102, x1=58, y1=120, line=dict(color=LINE_COLOR, width=2), fillcolor="rgba(0,0,0,0)", layer='below')
+        fig.add_shape(type="rect", x0=30, y0=114, x1=50, y1=120, line=dict(color=LINE_COLOR, width=2), fillcolor="rgba(0,0,0,0)", layer='below')
+        fig.add_shape(type="rect", x0=36, y0=120, x1=44, y1=122, line=dict(color=LINE_COLOR, width=2), fillcolor='white', layer='below')
         y_range = [60, 122]
     else:
-        fig.add_shape(type="rect", x0=0, y0=0, x1=80, y1=120, line=dict(color="white", width=3), fillcolor="rgba(0,0,0,0)", layer='below')
-        # Center line & circle
-        fig.add_shape(type="line", x0=0, y0=60, x1=80, y1=60, line=dict(color="white", width=2), layer='below')
-        fig.add_shape(type="circle", x0=30, y0=50, x1=50, y1=70, line=dict(color="white", width=2), layer='below')
-        # Penalty areas (top & bottom)
+        fig.add_shape(type="rect", x0=0, y0=0, x1=80, y1=120, line=dict(color=LINE_COLOR, width=3), fillcolor="rgba(0,0,0,0)", layer='below')
+        fig.add_shape(type="line", x0=0, y0=60, x1=80, y1=60, line=dict(color=LINE_COLOR, width=2), layer='below')
+        fig.add_shape(type="circle", x0=30, y0=50, x1=50, y1=70, line=dict(color=LINE_COLOR, width=2), layer='below')
         for y0 in (0, 102):
-            fig.add_shape(type="rect", x0=22, y0=y0, x1=58, y1=y0+18, line=dict(color="white", width=2), fillcolor="rgba(0,0,0,0)", layer='below')
+            fig.add_shape(type="rect", x0=22, y0=y0, x1=58, y1=y0+18, line=dict(color=LINE_COLOR, width=2), fillcolor="rgba(0,0,0,0)", layer='below')
         for y0 in (0, 114):
-            fig.add_shape(type="rect", x0=30, y0=y0, x1=50, y1=y0+6, line=dict(color="white", width=2), fillcolor="rgba(0,0,0,0)", layer='below')
-        # Goals
-        fig.add_shape(type="rect", x0=36, y0=-2, x1=44, y1=0, line=dict(color="white", width=2), fillcolor='white', layer='below')
-        fig.add_shape(type="rect", x0=36, y0=120, x1=44, y1=122, line=dict(color="white", width=2), fillcolor='white', layer='below')
+            fig.add_shape(type="rect", x0=30, y0=y0, x1=50, y1=y0+6, line=dict(color=LINE_COLOR, width=2), fillcolor="rgba(0,0,0,0)", layer='below')
+        fig.add_shape(type="rect", x0=36, y0=-2, x1=44, y1=0, line=dict(color=LINE_COLOR, width=2), fillcolor='white', layer='below')
+        fig.add_shape(type="rect", x0=36, y0=120, x1=44, y1=122, line=dict(color=LINE_COLOR, width=2), fillcolor='white', layer='below')
         y_range = [-2, 122]
 
     customdata = np.stack([
@@ -1040,13 +1147,13 @@ def create_plotly_shot_map(df: pd.DataFrame, title: str = "Shot Map", half_pitch
         valid['start_y']
     ], axis=1)
 
-    # Build legend by creating separate traces per xG bin
+    # Legend bins
     bins = [
-        ("Very High xG (≥0.7)", valid['xG'] >= 0.7, '#FF0040'),
-        ("High xG (0.5–0.7)", (valid['xG'] >= 0.5) & (valid['xG'] < 0.7), '#FF8000'),
-        ("Medium xG (0.3–0.5)", (valid['xG'] >= 0.3) & (valid['xG'] < 0.5), '#FFFF00'),
-        ("Low xG (0.1–0.3)", (valid['xG'] >= 0.1) & (valid['xG'] < 0.3), '#00FFFF'),
-        ("Very Low xG (<0.1)", valid['xG'] < 0.1, '#4080FF'),
+        ("Very High (≥0.7)", valid['xG'] >= 0.7, XG_COLORS['very_high']),
+        ("High (0.5–0.7)", (valid['xG'] >= 0.5) & (valid['xG'] < 0.7), XG_COLORS['high']),
+        ("Medium (0.3–0.5)", (valid['xG'] >= 0.3) & (valid['xG'] < 0.5), XG_COLORS['medium']),
+        ("Low (0.1–0.3)", (valid['xG'] >= 0.1) & (valid['xG'] < 0.3), XG_COLORS['low']),
+        ("Very Low (<0.1)", valid['xG'] < 0.1, XG_COLORS['very_low']),
     ]
 
     hovertemplate = (
@@ -1065,37 +1172,180 @@ def create_plotly_shot_map(df: pd.DataFrame, title: str = "Shot Map", half_pitch
             sub['start_x'],
             sub['start_y']
         ], axis=1)
-        # Smaller markers for full pitch, keep larger for half-pitch
-        size_series = (sub['xG'] * (35 if half_pitch else 22)) + (14 if half_pitch else 9)
+        size_series = (sub['xG'] * (34 if half_pitch else 22)) + (14 if half_pitch else 9)
         fig.add_trace(go.Scatter(
             x=sub['display_x'],
             y=sub['display_y'],
             mode='markers',
-            marker=dict(size=size_series.tolist(), color=color, line=dict(width=1.5, color='white')),
+            marker=dict(
+                size=size_series.tolist(),
+                color=color,
+                line=dict(width=1.2, color='white'),
+                opacity=0.9
+            ),
             customdata=sub_custom,
             hovertemplate=hovertemplate,
             name=label
         ))
 
-    fig.update_layout(
-        title=title,
-        plot_bgcolor='black',
-        paper_bgcolor='black',
-        showlegend=True,
-        legend=dict(
-            orientation='h',
-            yanchor='bottom', y=1.02,
-            xanchor='left', x=0,
-            font=dict(color='white'),
-            bgcolor='rgba(0,0,0,0.4)',
-            bordercolor='white', borderwidth=1
-        ),
-        margin=dict(l=10, r=10, t=90, b=10),
-        xaxis=dict(range=[-5, 85], showgrid=False, zeroline=False, visible=False),
-        yaxis=dict(range=y_range, showgrid=False, zeroline=False, visible=False, scaleanchor='x', scaleratio=1),
-        font=dict(color='white')
-    )
+    fig = apply_plotly_theme(fig, title=title, legend=True, y_range=y_range)
 
     return fig, None
 
-# End of file
+def create_plotly_heat_map(df: pd.DataFrame, title: str = "Shot Heat Map", half_pitch: bool = False, custom_shots: bool = False):
+    """Create a smooth vertical pitch heat map using Plotly with improved coloring.
+    - Uses KDE with optional xG weighting
+    - Masks very low density so pitch color is preserved (no yellow wash)
+    - Uses 'Inferno' colorscale for better contrast on dark background
+    """
+    # Defensive copy and validation
+    if df is None or df.empty:
+        fig = go.Figure()
+        fig.update_layout(title=title + " (no data)")
+        fig = apply_plotly_theme(fig)
+        return fig, None
+
+    work = df.copy()
+    work['start_x'] = pd.to_numeric(work['start_x'], errors='coerce')
+    work['start_y'] = pd.to_numeric(work['start_y'], errors='coerce')
+
+    # Filter valid coordinates and half pitch constraint
+    if half_pitch:
+        valid = work[(work['start_x'] >= 60) & (work['start_x'] <= 120) & (work['start_y'].between(0, 80))].copy()
+    else:
+        valid = work[(work['start_x'].between(0, 120)) & (work['start_y'].between(0, 80))].copy()
+
+    if valid.empty:
+        fig = go.Figure()
+        fig.update_layout(title=title + " (no valid shots)")
+        fig = apply_plotly_theme(fig)
+        return fig, None
+
+    # Transform to vertical pitch coordinates
+    valid['display_x'] = valid['start_y']
+    valid['display_y'] = valid['start_x']
+
+    # Optional xG weighting (if available)
+    xg_weights = None
+    if 'xG' in valid.columns:
+        try:
+            xg_weights = pd.to_numeric(valid['xG'], errors='coerce').fillna(0.0).clip(lower=0.0).values
+            if np.all(xg_weights == 0):
+                xg_weights = None
+        except Exception:
+            xg_weights = None
+
+    # Build pitch and y-range
+    fig = go.Figure()
+    if half_pitch:
+        fig.add_shape(type="rect", x0=0, y0=60, x1=80, y1=120, line=dict(color=LINE_COLOR, width=3), fillcolor="rgba(0,0,0,0)", layer='above')
+        fig.add_shape(type="rect", x0=22, y0=102, x1=58, y1=120, line=dict(color=LINE_COLOR, width=2), fillcolor="rgba(0,0,0,0)", layer='above')
+        fig.add_shape(type="rect", x0=30, y0=114, x1=50, y1=120, line=dict(color=LINE_COLOR, width=2), fillcolor="rgba(0,0,0,0)", layer='above')
+        fig.add_shape(type="rect", x0=36, y0=120, x1=44, y1=122, line=dict(color=LINE_COLOR, width=2), fillcolor='white', layer='above')
+        y_range = [60, 122]
+        y_min, y_max = 60, 120
+    else:
+        fig.add_shape(type="rect", x0=0, y0=0, x1=80, y1=120, line=dict(color=LINE_COLOR, width=3), fillcolor="rgba(0,0,0,0)", layer='above')
+        fig.add_shape(type="line", x0=0, y0=60, x1=80, y1=60, line=dict(color=LINE_COLOR, width=2), layer='above')
+        fig.add_shape(type="circle", x0=30, y0=50, x1=50, y1=70, line=dict(color=LINE_COLOR, width=2), layer='above')
+        for y0 in (0, 102):
+            fig.add_shape(type="rect", x0=22, y0=y0, x1=58, y1=y0+18, line=dict(color=LINE_COLOR, width=2), fillcolor="rgba(0,0,0,0)", layer='above')
+        for y0 in (0, 114):
+            fig.add_shape(type="rect", x0=30, y0=y0, x1=50, y1=y0+6, line=dict(color=LINE_COLOR, width=2), fillcolor="rgba(0,0,0,0)", layer='above')
+        fig.add_shape(type="rect", x0=36, y0=-2, x1=44, y1=0, line=dict(color=LINE_COLOR, width=2), fillcolor='white', layer='above')
+        fig.add_shape(type="rect", x0=36, y0=120, x1=44, y1=122, line=dict(color=LINE_COLOR, width=2), fillcolor='white', layer='above')
+        y_range = [-2, 122]
+        y_min, y_max = 0, 120
+
+    # Build grid
+    x_grid = np.linspace(0, 80, 180)
+    y_grid = np.linspace(y_min, y_max, 260)
+    X, Y = np.meshgrid(x_grid, y_grid)
+
+    positions = np.column_stack([valid['display_x'].values, valid['display_y'].values])
+
+    # Compute density (with fallbacks) and normalize nicely
+    Z = None
+    try:
+        uniq = np.unique(positions, axis=0)
+        if len(uniq) > 1 and np.var(positions[:, 0]) > 1e-6 and np.var(positions[:, 1]) > 1e-6:
+            kde = gaussian_kde(positions.T, weights=xg_weights)
+            n = len(positions)
+            bw = 0.32 if half_pitch else 0.36
+            if n > 20:
+                bw *= 0.85
+            elif n < 6:
+                bw *= 1.25
+            kde.set_bandwidth(bw_method=bw)
+            Z_raw = kde(np.vstack([X.ravel(), Y.ravel()])).reshape(X.shape)
+            zmin_raw, zmax_raw = Z_raw.min(), Z_raw.max()
+            Z_norm = (Z_raw - zmin_raw) / (zmax_raw - zmin_raw + 1e-12)
+            low, high = np.quantile(Z_norm, 0.02), np.quantile(Z_norm, 0.995)
+            Z_clip = np.clip((Z_norm - low) / (high - low + 1e-12), 0, 1)
+            Z = np.power(Z_clip, 0.65)
+        else:
+            raise np.linalg.LinAlgError("insufficient variance")
+    except (np.linalg.LinAlgError, ValueError):
+        # Manual radial kernels (optionally weighted)
+        Z_manual = np.zeros_like(X)
+        sigma = 6 if half_pitch else 8
+        if xg_weights is None:
+            weights_iter = np.ones(len(positions))
+        else:
+            weights_iter = xg_weights
+        for (x0, y0), w in zip(positions, weights_iter):
+            D = np.sqrt((X - x0) ** 2 + (Y - y0) ** 2)
+            Z_manual += w * np.exp(-(D ** 2) / (2 * sigma ** 2))
+        Z_manual = np.sqrt(Z_manual)
+        m = Z_manual.max()
+        Z = (Z_manual / m) if m > 0 else Z_manual
+
+    # Mask very low densities to keep pitch background visible
+    base_thr = 0.06 if half_pitch else 0.08
+    adaptive_thr = float(np.quantile(Z[~np.isnan(Z)], 0.15)) * 0.9
+    thr = min(0.12, max(base_thr, adaptive_thr))
+    Z_plot = np.where(Z >= thr, Z, np.nan)
+
+    # Use 'Inferno' colorscale for Plotly heatmap (original)
+    colorscale = 'Inferno'
+
+    # Heat layer
+    heat = go.Heatmap(
+        x=x_grid,
+        y=y_grid,
+        z=Z_plot,
+        colorscale=colorscale,
+        reversescale=False,
+        showscale=True,
+        opacity=0.85,
+        zsmooth='best',
+        zmin=0.0,
+        zmax=1.0,
+        hoverinfo='skip',
+        colorbar=dict(
+            title=dict(text='Shot Density', side='right', font=dict(color='white')),
+            thickness=14,
+            x=1.02,
+            xanchor='left',
+            outlinecolor='rgba(255,255,255,0.35)',
+            outlinewidth=1,
+            tickfont=dict(color='white')
+        )
+    )
+    fig.add_trace(heat)
+
+    # Subtle contour lines for extra definition (above heat layer)
+    try:
+        fig.add_trace(go.Contour(
+            x=x_grid,
+            y=y_grid,
+            z=Z_plot,
+            showscale=False,
+            contours=dict(coloring='lines', showlines=True, start=thr, end=0.95, size=0.15),
+            line=dict(color='rgba(255,255,255,0.25)', width=1)
+        ))
+    except Exception:
+        pass
+
+    fig = apply_plotly_theme(fig, title=title, legend=False, y_range=y_range)
+    return fig, None

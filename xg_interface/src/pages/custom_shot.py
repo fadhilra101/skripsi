@@ -7,7 +7,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 from ..utils.data_processing import preprocess_shot_data
-from ..utils.visualization import create_single_shot_visualization, save_figure_to_bytes, create_download_filename, create_custom_shots_visualization, get_visualization_options, create_visualization_by_type, create_shot_map
+from ..utils.visualization import get_visualization_options, create_visualization_by_type, create_download_filename, get_plotly_chart_config
 from ..utils.language import get_translation, get_language_options
 from ..utils.custom_shot_manager import (
     initialize_custom_shots_session, add_custom_shot, get_custom_shots_dataframe,
@@ -15,7 +15,6 @@ from ..utils.custom_shot_manager import (
     clear_all_custom_shots, remove_custom_shot, validate_shot_name
 )
 from ..models.model_manager import predict_xg
-from ..utils.plotly_export import fig_to_png_bytes_plotly
 
 
 def create_interactive_pitch_simple(current_x=108, current_y=40):
@@ -41,7 +40,7 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         type="rect",
         x0=0, y0=0, x1=80, y1=120,
         line=dict(color="white", width=3),
-        fillcolor="rgba(34, 100, 34, 0.8)",
+        fillcolor="rgba(0,0,0,0)",
         layer='below'
     )
     
@@ -118,29 +117,18 @@ def create_interactive_pitch_simple(current_x=108, current_y=40):
         hovertemplate=f"<b>Shot Location</b><br>x: {current_x:.1f}, y: {current_y:.1f}<extra></extra>"
     ))
     
-    # Update layout for vertical pitch
+    # Update layout for vertical pitch with unified theme
     fig.update_layout(
-        plot_bgcolor='rgba(34, 49, 43, 1)',
-        paper_bgcolor='rgba(34, 49, 43, 1)',
+        plot_bgcolor='#22312b',
+        paper_bgcolor='#1b2622',
+        font=dict(color='white'),
         showlegend=False,
         width=400,  # Narrower for vertical
         height=600,  # Taller for vertical
         margin=dict(l=10, r=10, t=10, b=10),
-        xaxis=dict(
-            range=[-5, 85],
-            showgrid=False,
-            showticklabels=False,
-            zeroline=False
-        ),
-        yaxis=dict(
-            range=[-5, 125],
-            showgrid=False,
-            showticklabels=False,
-            zeroline=False,
-            scaleanchor="x",
-            scaleratio=1
-        )
     )
+    fig.update_xaxes(range=[-5, 85], showgrid=False, showticklabels=False, zeroline=False)
+    fig.update_yaxes(range=[-5, 125], showgrid=False, showticklabels=False, zeroline=False, scaleanchor="x", scaleratio=1)
     
     return fig
 
@@ -239,13 +227,27 @@ def render_custom_shot_page(model, lang="en"):
         
         with col_time1:
             minute_slider = st.slider(get_translation("minute", lang), 0, 120, 45, key="minute_slider")
-            minute_input = st.number_input("", min_value=0, max_value=120, value=minute_slider, key="minute_input")
+            minute_input = st.number_input(
+                get_translation("minute", lang),
+                min_value=0,
+                max_value=120,
+                value=minute_slider,
+                key="minute_input",
+                label_visibility="collapsed"
+            )
             # Use the input value if it's different from slider, otherwise use slider
             minute = minute_input if minute_input != minute_slider else minute_slider
             
         with col_time2:
             second_slider = st.slider(get_translation("second", lang), 0, 59, 30, key="second_slider")
-            second_input = st.number_input("", min_value=0, max_value=59, value=second_slider, key="second_input")
+            second_input = st.number_input(
+                get_translation("second", lang),
+                min_value=0,
+                max_value=59,
+                value=second_slider,
+                key="second_input",
+                label_visibility="collapsed"
+            )
             # Use the input value if it's different from slider, otherwise use slider
             second = second_input if second_input != second_slider else second_slider
 
@@ -272,7 +274,7 @@ def render_custom_shot_page(model, lang="en"):
     with col_left:
         # Display pitch visualization with current coordinates
         fig = create_interactive_pitch_simple(st.session_state.shot_x, st.session_state.shot_y)
-        st.plotly_chart(fig, use_container_width=True, key="pitch_display")
+        st.plotly_chart(fig, use_container_width=True, key="pitch_display", config=get_plotly_chart_config(hide_modebar=True))
     
     with col_right:
         # Professional coordinate input panel
@@ -297,7 +299,7 @@ def render_custom_shot_page(model, lang="en"):
         st.markdown("### ⚙️ Manual Input")
         
         # Enhanced sliders with better styling and visual feedback
-        st.markdown("**� Distance from Goal (X-Axis)**")
+        st.markdown("**📏 Distance from Goal (X-Axis)**")
         new_x = st.slider(
             label="X Coordinate",
             min_value=0, max_value=120, 
@@ -570,65 +572,8 @@ def render_custom_shot_page(model, lang="en"):
                         value=f"{prediction_time:.4f}s"
                     )
 
-                # Unified visualization for the current single shot (interactive + hover)
-                # Build a one-row DataFrame compatible with the factory
-                single_vis_df = pd.DataFrame([
-                    {
-                        'start_x': shot_df.start_x.iloc[0],
-                        'start_y': shot_df.start_y.iloc[0],
-                        'xG': xg_value,
-                        'shot_name': (shot_name.strip() if shot_name else 'Current Shot')
-                    }
-                ])
-
-                st.markdown("---")
-                st.subheader(get_translation("shot_map", lang))
-
-                # Visualization type selector (same as dataset page)
-                viz_options = get_visualization_options(lang)
-                col_viz_sel, col_viz_sp = st.columns([1, 2])
-                with col_viz_sel:
-                    single_viz_type = st.selectbox(
-                        get_translation("visualization_type", lang),
-                        options=list(viz_options.keys()),
-                        index=0,
-                        key="single_shot_viz_type"
-                    )
-                selected_single_viz = viz_options[single_viz_type]
-
-                # Full pitch visualization
-                fig_single_full, ax_single_full = create_visualization_by_type(
-                    single_vis_df,
-                    selected_single_viz,
-                    get_translation('shot_map', lang),
-                    half_pitch=False,
-                    interactive=True,
-                    custom_shots=False
-                )
-
-                if ax_single_full is None:
-                    st.plotly_chart(fig_single_full, use_container_width=True)
-                    st.session_state.current_fig = fig_single_full
-                    st.session_state.current_plotly = True
-                else:
-                    st.pyplot(fig_single_full)
-                    st.session_state.current_fig = fig_single_full
-                    st.session_state.current_plotly = False
-
-                # Half pitch visualization
-                st.subheader(get_translation("half_pitch_map", lang))
-                fig_single_half, ax_single_half = create_visualization_by_type(
-                    single_vis_df,
-                    selected_single_viz,
-                    get_translation('half_pitch_map', lang),
-                    half_pitch=True,
-                    interactive=True,
-                    custom_shots=False
-                )
-                if ax_single_half is None:
-                    st.plotly_chart(fig_single_half, use_container_width=True)
-                else:
-                    st.pyplot(fig_single_half)
+                # (Removed) Single-shot visualizations. We now only show visualizations
+                # based on the entire custom shots dataset below in the collection section.
                 
                 # Automatically add to collection - use default name if empty
                 final_shot_name = shot_name.strip() if shot_name and shot_name.strip() else f"Shot {get_custom_shots_count() + 1}"
@@ -652,32 +597,8 @@ def render_custom_shot_page(model, lang="en"):
         except Exception as e:
             st.error(f"{get_translation('prediction_error_custom', lang)} {e}")
     
-    # Show download option for current visualization if available
-    if hasattr(st.session_state, 'current_fig') and st.session_state.current_fig is not None:
-        st.markdown("---")
-        st.subheader("📥 " + ("Unduh Visualisasi" if lang == "id" else "Download Visualization"))
-        if getattr(st.session_state, 'current_plotly', False):
-            png = fig_to_png_bytes_plotly(st.session_state.current_fig)
-            if png is not None:
-                img_data = png
-            else:
-                # Re-render with Matplotlib for PNG fallback
-                mfig, _ = create_shot_map(pd.DataFrame([{
-                    'start_x': st.session_state.shot_x,
-                    'start_y': st.session_state.shot_y,
-                    'xG': st.session_state.current_xg_value if 'current_xg_value' in st.session_state else 0.05
-                }]), title=get_translation('shot_map', lang))
-                img_data = save_figure_to_bytes(mfig, 'png', 220)
-        else:
-            img_data = save_figure_to_bytes(st.session_state.current_fig, 'png', 300)
-        st.download_button(
-            label=("📥 Unduh PNG" if lang == 'id' else "📥 Download PNG"),
-            data=img_data,
-            file_name=create_download_filename("custom_shot_visualization", 'png'),
-            mime='image/png',
-            help=get_translation("download_viz_desc", lang),
-            use_container_width=True
-        )
+    # Remove custom PNG download section and rely on Plotly modebar
+    # (Previously provided manual PNG download buttons here.)
     
     # Custom Shots Collection Section
     st.markdown("---")
@@ -723,42 +644,54 @@ def render_custom_shot_page(model, lang="en"):
                         remove_custom_shot(shot['shot_id'])
                         st.rerun()
         
-        # Visualization and download options
+        # Visualization and download options for the entire simulation dataset
         st.subheader(get_translation("custom_shots_visualization", lang))
-        
-        # Visualization type selector for custom shots
-        viz_options = get_visualization_options(lang)
-        col_viz_selector, col_viz_spacer = st.columns([1, 2])
-        
-        with col_viz_selector:
-            custom_viz_type = st.selectbox(
-                get_translation("visualization_type", lang),
-                options=list(viz_options.keys()),
-                index=0,  # Default to shot map
-                key="custom_shots_viz_type"
-            )
-        
-        selected_custom_viz_type = viz_options[custom_viz_type]
-        
-        # Create interactive visualization for custom shots
+
+        # Visualization type fixed to Shot Map (dropdown removed)
+        selected_custom_viz_type = 'shot_map'
+
+        # Create interactive visualization for all custom shots (full pitch)
         fig_custom, ax_custom = create_visualization_by_type(
-            df_custom, 
+            df_custom,
             selected_custom_viz_type,
             get_translation("custom_shots_visualization", lang),
             half_pitch=False,
             custom_shots=True,
             interactive=True
         )
-        
+
         # Display interactive visualization
         if ax_custom is None:  # This is a Plotly figure
-            st.plotly_chart(fig_custom, use_container_width=True)
+            st.plotly_chart(
+                fig_custom,
+                use_container_width=True,
+                config=get_plotly_chart_config(filename_base="custom_shots", scale=2, compact=True),
+            )
         else:  # This is a matplotlib figure (fallback)
             st.pyplot(fig_custom)
-        
+
+        # Add Half-pitch visualization for all custom shots
+        st.subheader(get_translation("half_pitch_map", lang))
+        fig_custom_half, ax_custom_half = create_visualization_by_type(
+            df_custom,
+            selected_custom_viz_type,
+            get_translation('half_pitch_map', lang),
+            half_pitch=True,
+            custom_shots=True,
+            interactive=True
+        )
+        if ax_custom_half is None:
+            st.plotly_chart(
+                fig_custom_half,
+                use_container_width=True,
+                config=get_plotly_chart_config(filename_base="custom_shots_half", scale=2, compact=True),
+            )
+        else:
+            st.pyplot(fig_custom_half)
+
         # Download options
         col_download, col_action = st.columns(2)
-        
+
         with col_download:
             if shots_count >= 3:  # Only show CSV download if 3 or more shots
                 csv_data = prepare_custom_shots_for_download()
@@ -771,26 +704,7 @@ def render_custom_shot_page(model, lang="en"):
                 )
             else:
                 st.info(f"Need at least 3 shots for CSV download (current: {shots_count})")
-            
-            # Download visualization (PNG only)
-            if ax_custom is None:  # Plotly figure
-                png = fig_to_png_bytes_plotly(fig_custom)
-                if png is not None:
-                    img_custom_data = png
-                else:
-                    mfig, _ = create_custom_shots_visualization(df_custom, title=get_translation("custom_shots_visualization", lang))
-                    img_custom_data = save_figure_to_bytes(mfig, 'png', 220)
-            else:  # Matplotlib figure
-                img_custom_data = save_figure_to_bytes(fig_custom, 'png', 300)
-            
-            st.download_button(
-                label=("📥 Unduh PNG" if lang == 'id' else "📥 Download PNG"),
-                data=img_custom_data,
-                file_name=create_download_filename("custom_shots_visualization", 'png'),
-                mime='image/png',
-                use_container_width=True
-            )
-        
+
         with col_action:
             st.write("")  # Spacing
             st.write("")  # Spacing

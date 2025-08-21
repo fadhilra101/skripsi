@@ -7,7 +7,7 @@ import pandas as pd
 
 from ..utils.constants import REQUIRED_COLUMNS
 from ..utils.data_processing import validate_columns, preprocess_shot_data
-from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, get_visualization_options, create_visualization_by_type, create_shot_heat_map, create_half_pitch_heat_map
+from ..utils.visualization import create_shot_map, create_half_pitch_shot_map, save_figure_to_bytes, create_download_filename, prepare_csv_download, create_visualization_by_type, get_plotly_chart_config
 from ..utils.language import get_translation
 from ..models.model_manager import predict_xg
 from ..utils.plotly_export import fig_to_png_bytes_plotly
@@ -33,6 +33,7 @@ def render_dataset_prediction_page(model, lang="en"):
         st.write(f"**{get_translation('time_context', lang)}**")
         st.write(f"• `minute` - {get_translation('minute_desc', lang)}")
         st.write(f"• `second` - {get_translation('second_desc', lang)}")
+        st.write(f"• `period` - {get_translation('period_desc', lang)}")
         st.write(f"• `play_pattern` - {get_translation('play_pattern_desc', lang)}")
         st.write(f"• `type_before` - {get_translation('type_before_desc', lang)}")
         
@@ -42,8 +43,10 @@ def render_dataset_prediction_page(model, lang="en"):
         
         st.write(f"**{get_translation('shot_technique', lang)}**")
         st.write(f"• `shot_technique` - {get_translation('shot_technique_desc', lang)}")
+        st.write(f"• `shot_first_time` - {get_translation('shot_first_time_desc', lang)}")
         st.write(f"• `shot_body_part` - {get_translation('shot_body_part_desc', lang)}")
         st.write(f"• `shot_type` - {get_translation('shot_type_desc', lang)}")
+        st.write(f"• `shot_key_pass` - {get_translation('shot_key_pass_desc', lang)}")
     
     with col2:
         st.write(f"**{get_translation('shot_location', lang)}**")
@@ -57,8 +60,34 @@ def render_dataset_prediction_page(model, lang="en"):
         
         st.write(f"**{get_translation('optional_analysis', lang)}**")
         st.write(f"• `shot_outcome` - {get_translation('shot_outcome_desc', lang)}")
+        st.write(f"• `team_name` - {get_translation('team_name_desc', lang)}")
+        st.write(f"• `player_name` - {get_translation('player_name_desc', lang)}")
     
     st.info(get_translation("tip_message", lang))
+
+    # Visual divider
+    st.markdown("---")
+    
+    # Download CSV template (required + optional columns)
+    try:
+        optional_columns = ['shot_outcome', 'team_name', 'player_name']
+        template_columns = list(REQUIRED_COLUMNS) + [c for c in optional_columns if c not in REQUIRED_COLUMNS]
+        template_df = pd.DataFrame(columns=template_columns)
+        template_csv_bytes = template_df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label=("📥 Unduh Template CSV" if lang == 'id' else "📥 Download CSV Template"),
+            data=template_csv_bytes,
+            file_name=create_download_filename("xg_dataset_template", "csv"),
+            mime="text/csv",
+            help=(
+                "Template berisi kolom wajib dan opsional (mis. shot_outcome, team_name, player_name)" 
+                if lang == 'id' else 
+                "Template includes required and optional columns (e.g., shot_outcome, team_name, player_name)"
+            ),
+            use_container_width=True
+        )
+    except Exception:
+        pass
     
     # StatsBomb reference section
     if lang == "id":
@@ -167,7 +196,8 @@ def render_dataset_prediction_page(model, lang="en"):
                             
                             # Add important shot context columns
                             important_cols = ['minute', 'start_x', 'start_y', 'shot_type', 'shot_body_part', 
-                                            'shot_technique', 'position', 'play_pattern']
+                                            'shot_technique', 'position', 'play_pattern',
+                                            'player_name', 'team_name']
                             
                             for col in important_cols:
                                 if col in processed_df.columns and col not in key_columns:
@@ -205,6 +235,16 @@ def render_dataset_prediction_page(model, lang="en"):
                                 "shot_outcome": st.column_config.TextColumn(
                                     "Shot Outcome",
                                     help="Actual shot result",
+                                    width="medium"
+                                ),
+                                "player_name": st.column_config.TextColumn(
+                                    get_translation("player_name", lang),
+                                    help=get_translation("player_name_desc", lang),
+                                    width="medium"
+                                ),
+                                "team_name": st.column_config.TextColumn(
+                                    get_translation("team_name", lang),
+                                    help=get_translation("team_name_desc", lang),
                                     width="medium"
                                 ),
                                 "is_goal": st.column_config.NumberColumn(
@@ -263,22 +303,9 @@ def render_dataset_prediction_page(model, lang="en"):
                             st.warning(f"{get_translation('summary_stats_error', lang)} {e}")
                             st.info(get_translation("predictions_accurate", lang))
 
-                        # Visualization section with type selector
+                        # Visualization section (fixed to Shot Map, selector removed)
                         st.write(f"### {get_translation('shot_map', lang)}")
-                        
-                        # Visualization type selector
-                        viz_options = get_visualization_options(lang)
-                        col_viz_selector, col_viz_spacer = st.columns([1, 2])
-                        
-                        with col_viz_selector:
-                            viz_type = st.selectbox(
-                                get_translation("visualization_type", lang),
-                                options=list(viz_options.keys()),
-                                index=0,  # Default to shot map
-                                key="dataset_viz_type"
-                            )
-                        
-                        selected_viz_type = viz_options[viz_type]
+                        selected_viz_type = 'shot_map'
                         
                         # Create the interactive full pitch visualization
                         fig_full, ax_full = create_visualization_by_type(
@@ -291,7 +318,11 @@ def render_dataset_prediction_page(model, lang="en"):
                         
                         # Display interactive visualization using plotly_chart
                         if ax_full is None:  # This is a Plotly figure
-                            st.plotly_chart(fig_full, use_container_width=True)
+                            st.plotly_chart(
+                                fig_full,
+                                use_container_width=True,
+                                config=get_plotly_chart_config(filename_base="shot_map_full", scale=2, compact=True),
+                            )
                         else:  # This is a matplotlib figure (fallback)
                             st.pyplot(fig_full)
                         
@@ -307,74 +338,27 @@ def render_dataset_prediction_page(model, lang="en"):
                         
                         # Display interactive half pitch
                         if ax_half is None:  # This is a Plotly figure
-                            st.plotly_chart(fig_half, use_container_width=True)
+                            st.plotly_chart(
+                                fig_half,
+                                use_container_width=True,
+                                config=get_plotly_chart_config(filename_base="shot_map_half", scale=2, compact=True),
+                            )
                         else:  # This is a matplotlib figure (fallback)
                             st.pyplot(fig_half)
                         
                         # Download section
                         st.write(f"### {get_translation('download_section', lang)}")
                         
-                        col_d1, col_d2, col_d3 = st.columns(3)
-                        
-                        with col_d1:
-                            # CSV download
-                            csv_data = prepare_csv_download(display_df)
-                            st.download_button(
-                                label=get_translation("download_csv", lang),
-                                data=csv_data,
-                                file_name=create_download_filename("xg_predictions", "csv"),
-                                mime="text/csv",
-                                help=get_translation("download_csv_desc", lang),
-                                use_container_width=True
-                            )
-                        
-                        with col_d2:
-                            # Full pitch visualization download (PNG only)
-                            if ax_full is None:  # Plotly figure shown
-                                png_bytes = fig_to_png_bytes_plotly(fig_full)
-                                if png_bytes is not None:
-                                    img_data_full = png_bytes
-                                else:
-                                    # Rebuild Matplotlib equivalent for PNG
-                                    if selected_viz_type == 'heat_map':
-                                        mfig, _ = create_shot_heat_map(processed_df, title=get_translation('shot_map', lang))
-                                    else:
-                                        mfig, _ = create_shot_map(processed_df, title=get_translation('shot_map', lang))
-                                    img_data_full = save_figure_to_bytes(mfig, 'png', 220)
-                            else:  # Matplotlib figure
-                                img_data_full = save_figure_to_bytes(fig_full, 'png', 300)
-
-                            st.download_button(
-                                label=("📥 Unduh PNG" if lang == 'id' else "📥 Download PNG"),
-                                data=img_data_full,
-                                file_name=create_download_filename("shot_map_full", 'png'),
-                                mime='image/png',
-                                use_container_width=True
-                            )
-
-                        with col_d3:
-                            # Half pitch visualization download (PNG only)
-                            if ax_half is None:  # Plotly figure shown
-                                png_bytes_half = fig_to_png_bytes_plotly(fig_half)
-                                if png_bytes_half is not None:
-                                    img_data_half = png_bytes_half
-                                else:
-                                    # Rebuild Matplotlib equivalent for PNG (half pitch)
-                                    if selected_viz_type == 'heat_map':
-                                        mfig_h, _ = create_half_pitch_heat_map(processed_df, title=get_translation('half_pitch_map', lang))
-                                    else:
-                                        mfig_h, _ = create_half_pitch_shot_map(processed_df, title=get_translation('half_pitch_map', lang))
-                                    img_data_half = save_figure_to_bytes(mfig_h, 'png', 220)
-                            else:  # Matplotlib figure
-                                img_data_half = save_figure_to_bytes(fig_half, 'png', 300)
-
-                            st.download_button(
-                                label=("📥 Unduh PNG (Half)" if lang == 'id' else "📥 Download PNG (Half)"),
-                                data=img_data_half,
-                                file_name=create_download_filename("shot_map_half", 'png'),
-                                mime='image/png',
-                                use_container_width=True
-                            )
+                        # Only CSV download; use Plotly's built-in modebar for PNG
+                        csv_data = prepare_csv_download(display_df)
+                        st.download_button(
+                            label=get_translation("download_csv", lang),
+                            data=csv_data,
+                            file_name=create_download_filename("xg_predictions", "csv"),
+                            mime="text/csv",
+                            help=get_translation("download_csv_desc", lang),
+                            use_container_width=True
+                        )
                 except Exception as e:
                     st.error(f"{get_translation('prediction_error', lang)} {e}")
                     st.info(get_translation('data_mismatch', lang))

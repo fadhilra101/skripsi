@@ -18,6 +18,7 @@ from src.models.model_manager import create_dummy_model_if_not_exists, load_mode
 from src.pages.dataset_prediction import render_dataset_prediction_page
 from src.pages.custom_shot import render_custom_shot_page
 from src.utils.language import LANGUAGES, TRANSLATIONS, get_translation
+from src.utils.ui import apply_compact_ui
 
 
 def initialize_session_state():
@@ -151,6 +152,9 @@ def main():
         page_title="xG Prediction App",
         page_icon="⚽"
     )
+    
+    # Apply compact UI across the app
+    apply_compact_ui()
     
     # App title with version
     st.title(f"{get_translation('app_title', lang)} v0.0.1")

@@ -135,6 +135,13 @@ TRANSLATIONS = {
         "shot_one_on_one_desc": "Satu lawan satu (0/1)",
         "shot_aerial_won_desc": "Duel udara dimenangkan (0/1)",
         "shot_outcome_desc": "Hasil aktual (1=Gol, 0=Bukan Gol)",
+        "period_desc": "ID babak pertandingan (1=Babak Pertama, 2=Babak Kedua)",
+        "shot_first_time_desc": "Tembakan tanpa kontrol/first time (0/1)",
+        "shot_key_pass_desc": "Tembakan berasal dari key pass (0/1)",
+        "team_name": "Nama Tim",
+        "team_name_desc": "Nama tim (opsional)",
+        "player_name": "Nama Pemain",
+        "player_name_desc": "Nama pemain (opsional)",
         
         # ID Mappings
         "play_pattern_ids": "**ID Pola Permainan:**",
@@ -368,6 +375,13 @@ TRANSLATIONS = {
         "shot_one_on_one_desc": "One on one (0/1)",
         "shot_aerial_won_desc": "Aerial won (0/1)",
         "shot_outcome_desc": "Actual result (1=Goal, 0=No Goal)",
+        "period_desc": "Match period ID (1=First Half, 2=Second Half)",
+        "shot_first_time_desc": "First-time shot (0/1)",
+        "shot_key_pass_desc": "Shot resulting from key pass (0/1)",
+        "team_name": "Team Name",
+        "team_name_desc": "Team name (optional)",
+        "player_name": "Player Name",
+        "player_name_desc": "Player name (optional)",
         
         # ID Mappings
         "play_pattern_ids": "**Play Pattern IDs:**",

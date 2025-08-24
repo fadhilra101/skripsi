@@ -1,0 +1,571 @@
+﻿{
+	"network": {
+		"items": [
+			{
+				"id": 1,
+				"label": "artificial intelligence",
+				"x": 0.2863,
+				"y": 0.0576,
+				"cluster": 2,
+				"weights": {
+					"Links": 11.0000,
+					"Total link strength": 22.0000,
+					"Occurrences": 56.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.4107,
+					"Avg. citations": 38.8214,
+					"Avg. norm. citations": 1.8025
+				}
+			},
+			{
+				"id": 2,
+				"label": "artificial neural network",
+				"x": 0.1635,
+				"y": 0.3768,
+				"cluster": 2,
+				"weights": {
+					"Links": 11.0000,
+					"Total link strength": 26.0000,
+					"Occurrences": 23.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.0000,
+					"Avg. citations": 6.8696,
+					"Avg. norm. citations": 0.5000
+				}
+			},
+			{
+				"id": 3,
+				"label": "convolutional neural network",
+				"x": 0.6242,
+				"y": -0.2481,
+				"cluster": 3,
+				"weights": {
+					"Links": 10.0000,
+					"Total link strength": 22.0000,
+					"Occurrences": 24.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.0833,
+					"Avg. citations": 36.7083,
+					"Avg. norm. citations": 1.5791
+				}
+			},
+			{
+				"id": 4,
+				"label": "decision tree",
+				"x": -0.6252,
+				"y": -0.1606,
+				"cluster": 1,
+				"weights": {
+					"Links": 9.0000,
+					"Total link strength": 51.0000,
+					"Occurrences": 28.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.2143,
+					"Avg. citations": 34.8571,
+					"Avg. norm. citations": 1.5901
+				}
+			},
+			{
+				"id": 5,
+				"label": "decision trees",
+				"x": -0.8937,
+				"y": 0.0658,
+				"cluster": 1,
+				"weights": {
+					"Links": 8.0000,
+					"Total link strength": 22.0000,
+					"Occurrences": 11.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.0909,
+					"Avg. citations": 27.5455,
+					"Avg. norm. citations": 1.3721
+				}
+			},
+			{
+				"id": 6,
+				"label": "deep learning model",
+				"x": 0.7972,
+				"y": -0.4631,
+				"cluster": 3,
+				"weights": {
+					"Links": 8.0000,
+					"Total link strength": 17.0000,
+					"Occurrences": 18.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.5000,
+					"Avg. citations": 22.8333,
+					"Avg. norm. citations": 0.9746
+				}
+			},
+			{
+				"id": 7,
+				"label": "deep neural network",
+				"x": 0.9619,
+				"y": 0.5064,
+				"cluster": 2,
+				"weights": {
+					"Links": 6.0000,
+					"Total link strength": 10.0000,
+					"Occurrences": 15.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2021.7333,
+					"Avg. citations": 27.9333,
+					"Avg. norm. citations": 1.1997
+				}
+			},
+			{
+				"id": 8,
+				"label": "extreme gradient boosting",
+				"x": -0.0331,
+				"y": 0.8204,
+				"cluster": 2,
+				"weights": {
+					"Links": 9.0000,
+					"Total link strength": 15.0000,
+					"Occurrences": 11.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.5455,
+					"Avg. citations": 9.4545,
+					"Avg. norm. citations": 0.6539
+				}
+			},
+			{
+				"id": 9,
+				"label": "k nearest neighbor",
+				"x": -0.2118,
+				"y": -0.7290,
+				"cluster": 1,
+				"weights": {
+					"Links": 9.0000,
+					"Total link strength": 21.0000,
+					"Occurrences": 11.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.1818,
+					"Avg. citations": 11.3636,
+					"Avg. norm. citations": 0.6729
+				}
+			},
+			{
+				"id": 10,
+				"label": "linear regression",
+				"x": -0.2472,
+				"y": 0.4086,
+				"cluster": 1,
+				"weights": {
+					"Links": 11.0000,
+					"Total link strength": 26.0000,
+					"Occurrences": 19.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.5789,
+					"Avg. citations": 15.0526,
+					"Avg. norm. citations": 0.7133
+				}
+			},
+			{
+				"id": 11,
+				"label": "logistic regression",
+				"x": -0.9258,
+				"y": -0.1581,
+				"cluster": 1,
+				"weights": {
+					"Links": 9.0000,
+					"Total link strength": 43.0000,
+					"Occurrences": 26.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.2308,
+					"Avg. citations": 23.9231,
+					"Avg. norm. citations": 0.9925
+				}
+			},
+			{
+				"id": 12,
+				"label": "long short term memory",
+				"x": 0.9909,
+				"y": -0.3231,
+				"cluster": 3,
+				"weights": {
+					"Links": 6.0000,
+					"Total link strength": 8.0000,
+					"Occurrences": 16.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2021.0000,
+					"Avg. citations": 15.1250,
+					"Avg. norm. citations": 0.5186
+				}
+			},
+			{
+				"id": 13,
+				"label": "random forest",
+				"x": -0.4552,
+				"y": 0.0693,
+				"cluster": 1,
+				"weights": {
+					"Links": 12.0000,
+					"Total link strength": 88.0000,
+					"Occurrences": 60.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.4500,
+					"Avg. citations": 22.3000,
+					"Avg. norm. citations": 1.1443
+				}
+			},
+			{
+				"id": 14,
+				"label": "support vector machine",
+				"x": -0.4321,
+				"y": -0.2230,
+				"cluster": 1,
+				"weights": {
+					"Links": 11.0000,
+					"Total link strength": 59.0000,
+					"Occurrences": 28.0000
+				},
+				"scores": {
+					"Avg. pub. year": 2022.1071,
+					"Avg. citations": 24.0714,
+					"Avg. norm. citations": 1.0949
+				}
+			}
+		],
+		"links": [
+			{
+				"source_id": 1,
+				"target_id": 2,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 3,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 4,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 5,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 6,
+				"strength": 4.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 7,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 8,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 9,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 10,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 13,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 1,
+				"target_id": 14,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 4,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 5,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 7,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 8,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 9,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 10,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 11,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 12,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 13,
+				"strength": 6.0000
+			},
+			{
+				"source_id": 2,
+				"target_id": 14,
+				"strength": 5.0000
+			},
+			{
+				"source_id": 3,
+				"target_id": 4,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 3,
+				"target_id": 6,
+				"strength": 4.0000
+			},
+			{
+				"source_id": 3,
+				"target_id": 7,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 3,
+				"target_id": 8,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 3,
+				"target_id": 9,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 3,
+				"target_id": 11,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 3,
+				"target_id": 12,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 3,
+				"target_id": 13,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 3,
+				"target_id": 14,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 4,
+				"target_id": 8,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 4,
+				"target_id": 9,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 4,
+				"target_id": 10,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 4,
+				"target_id": 11,
+				"strength": 8.0000
+			},
+			{
+				"source_id": 4,
+				"target_id": 13,
+				"strength": 17.0000
+			},
+			{
+				"source_id": 4,
+				"target_id": 14,
+				"strength": 12.0000
+			},
+			{
+				"source_id": 5,
+				"target_id": 9,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 5,
+				"target_id": 10,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 5,
+				"target_id": 11,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 5,
+				"target_id": 12,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 5,
+				"target_id": 13,
+				"strength": 8.0000
+			},
+			{
+				"source_id": 5,
+				"target_id": 14,
+				"strength": 5.0000
+			},
+			{
+				"source_id": 6,
+				"target_id": 7,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 6,
+				"target_id": 9,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 6,
+				"target_id": 10,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 6,
+				"target_id": 12,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 6,
+				"target_id": 13,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 6,
+				"target_id": 14,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 7,
+				"target_id": 8,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 7,
+				"target_id": 10,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 8,
+				"target_id": 10,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 8,
+				"target_id": 11,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 8,
+				"target_id": 13,
+				"strength": 4.0000
+			},
+			{
+				"source_id": 8,
+				"target_id": 14,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 9,
+				"target_id": 11,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 9,
+				"target_id": 13,
+				"strength": 3.0000
+			},
+			{
+				"source_id": 9,
+				"target_id": 14,
+				"strength": 5.0000
+			},
+			{
+				"source_id": 10,
+				"target_id": 11,
+				"strength": 2.0000
+			},
+			{
+				"source_id": 10,
+				"target_id": 12,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 10,
+				"target_id": 13,
+				"strength": 10.0000
+			},
+			{
+				"source_id": 10,
+				"target_id": 14,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 11,
+				"target_id": 13,
+				"strength": 17.0000
+			},
+			{
+				"source_id": 11,
+				"target_id": 14,
+				"strength": 7.0000
+			},
+			{
+				"source_id": 12,
+				"target_id": 13,
+				"strength": 1.0000
+			},
+			{
+				"source_id": 13,
+				"target_id": 14,
+				"strength": 16.0000
+			}
+		]
+	}
+}

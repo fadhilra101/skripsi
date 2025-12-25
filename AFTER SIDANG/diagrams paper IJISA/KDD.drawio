@@ -1,0 +1,97 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram name="Page-1" id="CdU6Kiq377Rvoj4NpgLK">
+    <mxGraphModel dx="872" dy="529" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-7" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="kGLCKUWWMM1W8OsPtcUK-1" target="kGLCKUWWMM1W8OsPtcUK-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-1" value="Data" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="230" y="260" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-6" value="Data Target" style="sketch=0;verticalLabelPosition=bottom;sketch=0;aspect=fixed;html=1;verticalAlign=top;strokeColor=none;fillColor=#000000;align=center;outlineConnect=0;pointerEvents=1;shape=mxgraph.citrix2.citrix_provisioning_target_device;" vertex="1" parent="1">
+          <mxGeometry x="320" y="230" width="58.54" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-9" value="&lt;span style=&quot;&quot;&gt;Processed Data&lt;/span&gt;" style="sketch=0;html=1;aspect=fixed;strokeColor=none;shadow=0;fillColor=light-dark(#000000,#3F85DB);verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;shape=mxgraph.gcp2.process;labelBackgroundColor=default;" vertex="1" parent="1">
+          <mxGeometry x="413.5" y="200" width="54" height="64.29" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-10" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.056;entryY=0.549;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="kGLCKUWWMM1W8OsPtcUK-6" target="kGLCKUWWMM1W8OsPtcUK-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-17" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="kGLCKUWWMM1W8OsPtcUK-12" target="kGLCKUWWMM1W8OsPtcUK-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-12" value="Transformed Data" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#000000;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.transform;" vertex="1" parent="1">
+          <mxGeometry x="508" y="170" width="70" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-13" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="kGLCKUWWMM1W8OsPtcUK-9" target="kGLCKUWWMM1W8OsPtcUK-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-16" value="Data&lt;div&gt;Patterns&lt;/div&gt;" style="shape=cloud;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=bottom;align=center;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="600" y="120" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="740" y="360" as="targetPoint" />
+            <mxPoint x="740" y="200" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-18" value="Knowledge" style="shape=mxgraph.signs.healthcare.brain;html=1;pointerEvents=1;fillColor=#000000;strokeColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;" vertex="1" parent="1">
+          <mxGeometry x="700" y="97.5" width="80" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-19" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.015;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="kGLCKUWWMM1W8OsPtcUK-16" target="kGLCKUWWMM1W8OsPtcUK-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-20" value="1. Selection" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="190" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-21" value="2. Preprocessing" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="155" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-22" value="3. Transformation" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="120" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-23" value="4. Data Mining" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="80" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-24" value="5.Evaluations" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="610" y="40" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="300" y="290" as="targetPoint" />
+            <mxPoint x="730" y="360" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="300" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-27" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="250" as="targetPoint" />
+            <mxPoint x="390" y="360" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-28" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="480" y="220" as="targetPoint" />
+            <mxPoint x="480" y="360" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-29" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="185" as="targetPoint" />
+            <mxPoint x="590" y="360" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="kGLCKUWWMM1W8OsPtcUK-30" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="690" y="144.64" as="targetPoint" />
+            <mxPoint x="690" y="360" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
